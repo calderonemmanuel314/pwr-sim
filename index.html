@@ -66,7 +66,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:56px;heigh
 input[type=range]::-moz-range-thumb{width:56px;height:56px;background:var(--g);border:0;border-radius:0}
 .tg{width:100%;min-height:15dvh;font-size:1.5rem;border:3px solid var(--dim);color:var(--dim);background:transparent}
 .tg.on{border-color:var(--y);color:#000;background:var(--y);box-shadow:0 0 22px #ffd40077}
-#ex{width:100%;min-height:11dvh;font-size:1.5rem;border-width:3px}
+#ex{width:100%;min-height:11dvh;font-size:1.5rem;border-width:3px;transition:box-shadow .3s}
+#ex:not(:disabled){box-shadow:0 0 22px #39ff1488}
 #cd{height:11dvh;border:2px solid var(--y);position:relative;display:none}
 #cd i{position:absolute;inset:0 auto 0 0;width:0;background:#ffd40033}
 #cd span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--y);font-size:1.05rem;text-align:center;padding:0 3vw}
@@ -123,7 +124,9 @@ body.cold #hud{filter:saturate(.2) hue-rotate(160deg) brightness(.6);transition:
 .bm{position:relative;height:5vh;border:1px solid #b36bff66;border-radius:10px;overflow:hidden;background:#b36bff14}
 .bm i{position:absolute;width:.9vh;height:.9vh;border-radius:50%;background:#b36bff;box-shadow:0 0 6px #b36bff;animation:bf 3s ease-in-out infinite;opacity:0;transition:opacity .5s}
 .bm u{position:absolute;inset:auto 0 0 0;height:0;background:#b36bff33;transition:height .6s}
-#log{display:flex;flex-direction:row;gap:6px;overflow:hidden;padding:2px 8px;min-height:22px;max-height:22px;align-items:center;border-top:1px solid #1f3a1f40;border-bottom:1px solid #1f3a1f40;background:#050805}
+/* Horizontal activity ticker — collapses when empty so the reactor gets more room */
+#log{display:flex;flex-direction:row;gap:6px;overflow:hidden;padding:2px 8px;min-height:20px;max-height:20px;align-items:center;border-top:1px solid #1f3a1f40;border-bottom:1px solid #1f3a1f40;background:#050805}
+#log:empty{display:none}
 #log div{flex:0 0 auto;white-space:nowrap;font-size:.68rem;padding:2px 8px;background:#000b;border-left:3px solid var(--y);border-radius:4px;animation:li .3s}
 @keyframes li{from{opacity:0;transform:translateX(-8px)}}
 #log div.x{border-color:#b36bff}#log div.r{border-color:var(--r)}
@@ -131,10 +134,15 @@ body.cold #hud{filter:saturate(.2) hue-rotate(160deg) brightness(.6);transition:
 #pm{position:fixed;inset:0;z-index:25;background:#000e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;padding:2vh 3vw}
 .pmbox{display:flex;gap:2vw;width:min(1500px,96vw);align-items:stretch}.pmbox svg{flex:1.3;min-width:0;background:#0b100c;border:1px solid var(--ln);border-radius:16px}
 .pmtx{flex:1;display:flex;flex-direction:column;gap:1.1vh;font-size:clamp(.72rem,1vw,1.02rem)}.pmtx div{border-left:4px solid var(--c);background:#101a12;padding:.8vh 1vw;border-radius:10px}.pmtx b{display:block}
-.student-status{position:absolute;top:5.2vh;left:50%;transform:translateX(-50%);z-index:4;padding:.45em .9em;border:1px solid #39ff14;border-radius:18px;background:#071008eF;color:#39ff14;font-weight:800;font-size:clamp(.72rem,1vw,1rem);text-align:center;max-width:90%;white-space:normal;line-height:1.35}.student-status.warn{border-color:#ffd400;color:#ffd400}.student-status.danger{border-color:#ff5b5b;color:#ff7777}
-#phase{position:absolute;top:1vh;right:1vw;z-index:3;font-size:clamp(.7rem,1vw,1rem);background:#000b;padding:.35em .8em;border-radius:99px;border:1px solid currentColor;cursor:pointer}
+/* NEW in-flow status strip: pushes SVG down instead of covering it */
+#statusStrip{flex:0 0 auto;padding:.35vh .8vw;border-bottom:1px solid #39ff1430;background:#050b06;display:flex;flex-direction:column;gap:.1vh;text-align:center;justify-content:center}
+.student-status{font-weight:800;font-size:clamp(.68rem,.9vw,.9rem);color:#39ff14;white-space:normal;line-height:1.25;letter-spacing:.01em;min-height:2em;display:flex;align-items:center;justify-content:center}
+.student-status.warn{color:#ffd400}
+.student-status.danger{color:#ff7777}
+#coach{font-size:clamp(.62rem,.8vw,.8rem);color:#35c8ff;white-space:normal;line-height:1.2;min-height:1.2em}
+#coach.hide{visibility:hidden;display:block}
+#phase{font-size:clamp(.55rem,.7vw,.7rem);color:var(--dim);cursor:pointer;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1em}
 #bpm{position:fixed;left:9vw;bottom:.6vh;z-index:30;border:1px solid var(--ln);background:#0008;color:var(--c);border-radius:99px;padding:.3em 1em;font-size:.8rem}
-#phase{right:auto;left:50%;transform:translateX(-50%)}
 #ovp{left:19vw;transform:none;bottom:.6vh;font-size:.75rem}
 #hud{bottom:4.8vh}
 #bar{position:fixed;left:0;right:0;bottom:0;height:4.8vh;z-index:30;display:flex;align-items:center;gap:.8vw;padding:0 1vw}
@@ -171,7 +179,7 @@ body.sbx #tl,body.sbx #tv{display:none!important}
 .dcard b{font-size:1.6em}.dcard i{color:var(--tx)}.dcard p{color:var(--dim)}.dcard small{color:var(--c)}.dcard:hover{background:#1a251a}
 .dcard.easy{border-color:var(--g)}.dcard.easy b{color:var(--g)}.dcard.moderate{border-color:var(--y)}.dcard.moderate b{color:var(--y)}.dcard.hard{border-color:var(--r)}.dcard.hard b{color:var(--r)}
 #brf{position:fixed;inset:0;z-index:55;background:#000d;display:flex;align-items:center;justify-content:center}
-#coach{position:absolute;left:50%;transform:translateX(-50%);bottom:15vh;z-index:3;background:#0a2a0aee;border:1px solid var(--g);color:var(--g);padding:.5em 1.2em;border-radius:99px;font-size:clamp(.8rem,1.2vw,1.2rem);white-space:nowrap;max-width:94%}
+#coach{} /* styled by #statusStrip context above */
 body.hard #phase{display:none}
 #learn{overflow:auto;justify-content:flex-start}.lhead{display:flex;gap:2vw;align-items:center}.lhead h1{font-size:clamp(1.6rem,3.4vw,3rem)}
 .lrow{display:flex;gap:2vw;width:96vw;align-items:stretch}#lsvg{flex:1.5;min-width:0;background:#070b08;border:1px solid var(--ln);border-radius:16px;padding:1vh}#lsvg svg{width:100%;height:auto;max-height:66vh}
@@ -199,9 +207,10 @@ body.hard #phase{display:none}
  .ctl input[type=range]{height:44px}.ctl input[type=range]::-webkit-slider-thumb{width:34px;height:34px;margin-top:-10px}.ctl input[type=range]::-moz-range-thumb{width:34px;height:34px}
  .tb{padding:12px 0;font-size:.85rem}
  #bar{height:auto;flex-wrap:wrap;gap:6px;padding:6px 8px;background:#050805}#bar button,#bar #ovp{font-size:.72rem;padding:.4em .8em}#bar #ovp{margin-left:0}#bar #modelbadge{white-space:normal;max-width:100%;font-size:.62rem}
- #coach,#phase,#log{position:relative;top:auto;left:auto;bottom:auto;transform:none;white-space:normal}#coach{margin:6px 8px;text-align:center;border-radius:12px}#phase{margin:6px auto 0;font-size:.7rem}#log{font-size:.7rem;padding:0 8px}#kg{height:90px}
+ #log{font-size:.7rem;padding:0 8px}#kg{height:90px}
  .pmbox{flex-direction:column}#pm{justify-content:flex-start}.pmtx{font-size:.8rem}
  .cfb{padding:20px}
+ #statusStrip{padding:.3vh .5vw}
 }
 </style>
 </head>
@@ -259,7 +268,12 @@ body.hard #phase{display:none}
   <div class="pn tr"><h3>DIV 3 · PRESSURIZER</h3><div class="big" id="rPres" style="font-size:clamp(1.2rem,2.2vw,2.4rem)">--</div><div class="bar"><i id="bPres"></i></div><div class="lnk" id="lPres"></div><div class="ctl"><button class="tb" id="oSpr">▼ SPRAY</button><button class="tb" id="oHold">■ HOLD</button><button class="tb" id="oHeat">▲ HEAT</button></div></div>
   <div class="pn br"><h3>DIV 4 · SOLUBLE BORON</h3><div class="big" id="rBor">--</div><div class="bm" id="bmini"></div><div class="bar"><i id="bBor"></i></div><div class="lnk" id="lBor"></div><div class="ctl"><input type="range" id="oBor" min="0" max="2000" step="10"><b id="tBor"></b></div></div>
   <div id="ctr">
-    <div id="coach" class="hide"></div><div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div><div id="phase">--</div><div id="svgw">
+    <div id="statusStrip">
+      <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
+      <div id="coach" class="hide"></div>
+      <div id="phase">--</div>
+    </div>
+    <div id="svgw">
 <svg viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg" font-family="monospace" fill="none" stroke-width="2.5" stroke-linecap="round">
  <defs>
   <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#1e2b21"/><stop offset=".5" stop-color="#5f7763"/><stop offset="1" stop-color="#1b261e"/></linearGradient>
@@ -309,7 +323,7 @@ body.hard #phase{display:none}
     </div>
     <div id="kbox"><div class="kh"><span>CHAIN REACTION · k<sub>eff</sub> (next gen ÷ current gen)</span><b id="kv">1.0000</b><span id="kst">CRITICAL</span><small id="krate">Power change +0.0 MWth/s · ρ +0.0000</small></div><div id="kw"><svg id="kg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg><span class="kt1">▲ k<sub>eff</sub> &gt; 1 · CHAIN GROWS</span><span class="kt2">▼ k<sub>eff</sub> &lt; 1 · CHAIN FADES</span><span class="kt3">k<sub>eff</sub> = 1 · STEADY</span><span class="ktlo">0.98</span><span class="kthi">1.02</span><span id="kclip" class="kclip hide"></span></div></div>
     <div id="log"></div>
-    <div id="tm"><h3 style="font-weight:400;color:var(--dim)" id="tl">SCENARIO TIMER</h3><div class="big ok" id="tv">10:00</div><div class="bar" style="margin:.5vh 2vw 0;height:2vh"><i id="hold"></i></div><div class="lnk" id="hl" style="color:var(--dim);margin-top:.4vh">HOLD · grid ≈315 MWe · coolant 280–350°C · cooling margin ≥10°C · pressure safe · 0 / 15 s</div></div>
+    <div id="tm"><h3 style="font-weight:400;color:var(--dim)" id="tl">SCENARIO TIMER</h3><div class="big ok" id="tv">10:00</div><div class="bar" style="margin:.5vh 2vw 0;height:2vh"><i id="hold"></i></div><div class="lnk" id="hl" style="color:var(--dim);margin-top:.4vh">HOLD · grid ≈315 MWe · coolant 280–350°C · cooling margin ≥10°C · pressure safe · 0 / 5 s</div></div>
   </div>
 </div>
 
@@ -392,37 +406,37 @@ const joinPage=()=>{show('#menu',false);show('#join',true);let sel='';
   $('#jb').onclick=()=>{const c=$('#jc').value;if(!/^\d{4}$/.test(c))return $('#je').textContent='Enter the 4-digit join code.';if(!sel)return $('#je').textContent='Pick your division.';
     location.href=location.pathname+'?role='+sel+'&room=gpwr-host-'+c}};
 const DIFF={
-easy:{k:'easy',n:'EASY',t:'Morning Ramp-Up',rem:600,band:200,hold:10,cd:5,subcoolMargin:5,
-  pressureDrift:.08,tempDrift:2.5,powerDrift:40,
+easy:{k:'easy',n:'EASY',t:'Morning Ramp-Up',rem:600,band:300,hold:5,cd:5,subcoolMargin:5,
+  pressureDrift:.10,tempDrift:3.0,powerDrift:55,
   thermalTau:250,pressureRate:0.5,alphaDoppler:0.00015,
   thermalHigh:360,thermalCritical:400,pressureHigh:19,pressureLow:11,pressureCriticalHigh:23,pressureCriticalLow:10,
   failOver:26,failDepr:9,
   rodsMin:5,rodsMax:95,pumpMin:25,pumpMax:100,boronMin:100,boronMax:1500,
   initialFissionPower:275,hints:1,
  story:'Overnight demand was light, so the reactor has been at about 30% power for 8 hours. Factories open at 7:00 and the city needs full output.',
- goal:'Supply about 300–330 megawatts of electricity to the grid, keep conditions safe, and hold steady for 10 seconds. Coach hints are on. Control ranges are limited to help you keep things stable — the rods, pump and boron cannot be taken to their absolute extremes.',
- short:'Bring grid power to about 315 MWe, then keep the system steady for 10 seconds. Controls are gently limited for safety.',
+ goal:'Supply about 300–330 megawatts of electricity to the grid, keep conditions safe, and hold steady for 5 seconds. Coach hints are on. Control ranges are gently limited so a single slider move cannot crash the reactor.',
+ short:'Bring grid power to about 315 MWe, then keep the system steady for 5 seconds. Controls are gently limited for safety.',
  st:{rods:70,pump:50,boron:500,T:298,P:15.5,xe:.45,xi:.11},
  ph:{rods:'Withdraw rods in steps to add power. On Easy, rods cannot fully insert or fully withdraw.',coolant:'The pump is your main cooling lever. Raise it as power grows. On Easy, minimum flow is enforced.',pressure:'Heaters when pressure sags, spray when it climbs.',xenon:'Keep boron near 500 ppm unless you need a small nudge.'}},
-moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:100,hold:15,cd:10,subcoolMargin:8,
-  pressureDrift:.06,tempDrift:2,powerDrift:30,
+moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:150,hold:8,cd:10,subcoolMargin:8,
+  pressureDrift:.08,tempDrift:2.5,powerDrift:40,
   thermalTau:175,pressureRate:0.75,alphaDoppler:0.00008,
   thermalHigh:350,thermalCritical:375,pressureHigh:18,pressureLow:12,pressureCriticalHigh:22,pressureCriticalLow:10,
   failOver:25,failDepr:9.5,
   rodsMin:0,rodsMax:100,pumpMin:15,pumpMax:100,boronMin:50,boronMax:2000,
   initialFissionPower:105,hints:0,
  story:'The reactor has run at low power for 15 hours. A heatwave drives up demand, and the grid requests about 315 MWe of electrical power. After a power increase, xenon may initially burn away faster; delayed iodine decay can later replenish it and add negative reactivity.',
- goal:'Supply about 315 MWe to the grid, watch the delayed xenon effect, keep conditions safe, and hold steady for 15 seconds.',short:'Heatwave surge: supply about 315 MWe and stabilize for 15 seconds.',
+ goal:'Supply about 315 MWe to the grid, watch the delayed xenon effect, keep conditions safe, and hold steady for 8 seconds.',short:'Heatwave surge: supply about 315 MWe and stabilize for 8 seconds.',
  st:{rods:58,pump:30,boron:900,T:293,P:14.8,xe:.3319,xi:.06}},
-hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:60,hold:30,cd:15,subcoolMargin:6,
-  pressureDrift:.05,tempDrift:1.5,powerDrift:25,
+hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:90,hold:15,cd:15,subcoolMargin:6,
+  pressureDrift:.06,tempDrift:2.0,powerDrift:32,
   thermalTau:150,pressureRate:1.0,alphaDoppler:0.00005,
   thermalHigh:350,thermalCritical:355,pressureHigh:17.5,pressureLow:13,pressureCriticalHigh:20,pressureCriticalLow:10,
   failOver:24,failDepr:10,
   rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000,
   initialFissionPower:.05,hints:0,
  story:'Another plant tripped offline. Your reactor shut down several hours ago and the crew is attempting a restart near the modeled xenon peak. Xenon-135 suppresses the initial power response; as neutron flux returns, xenon burns out while delayed iodine production can later change the trend. The city needs about 315 MWe of electricity within 8 minutes.',
- goal:'Supply about 315 MWe, manage xenon and equipment problems, keep conditions safe, and hold steady for 30 seconds.',short:'Restart the chain reaction and supply about 315 MWe within 8 minutes. Expect equipment problems.',
+ goal:'Supply about 315 MWe, manage xenon and equipment problems, keep conditions safe, and hold steady for 15 seconds.',short:'Restart the chain reaction and supply about 315 MWe within 8 minutes. Expect equipment problems.',
  xeLockout:1.05,st:{rods:100,pump:40,boron:1200,T:285,P:14.2,xe:1.4,xi:.168}}};
 DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,
   rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
@@ -497,7 +511,7 @@ const THERMAL_TO_ELECTRIC=0.33;
 const STATION_SERVICE_FRACTION=0.05;
 const H_FUEL_COOLANT=3.33;
 const TAU_FUEL=3;
-const ALPHA_DOPPLER=0.00005; // baseline; scenario override passed per-call
+const ALPHA_DOPPLER=0.00005;
 const gridPowerMWe=thermalMW=>Math.max(0,thermalMW*THERMAL_TO_ELECTRIC*(1-STATION_SERVICE_FRACTION));
 const NEUTRON_SOURCE=0.00005;
 const NEUTRON_WEIGHTS={fuelCapture:.25,structuralCapture:.35,rodCapture:.20,boronCapture:.47,xenonCapture:.42,leakage:.35};
@@ -714,22 +728,33 @@ function host(mode,diff){
     const pl=clamp((P-8)/12,0,1);$('#plev').setAttribute('y',110-pl*18);$('#plev').setAttribute('height',57+pl*18);
     $('#tv').textContent=fmt(Math.max(0,S.rem));cls($('#tv'),S.rem<=60?'cr':S.rem<=180?'wn':'ok');
     $('#hold').style.width=(S.mode==='sandbox'?0:S.hold/WH*100)+'%';
+    // Shorter, single-line status messages
     {const tsNow=P<22.064?tsat(P):Infinity,sub=tsNow-T;let msg='LOOKING GOOD — reactor conditions are within the model’s safe range',level=0;
       const pCritLow=D.pressureCriticalLow||10,pCritHigh=D.pressureCriticalHigh||20,tCritHigh=D.thermalCritical||350,pLowWarn=D.pressureLow||13,pHighWarn=D.pressureHigh||17.5,tWarm=(D.thermalHigh||350)-20;
-      if(P<pCritLow){msg='PRESSURE TOO LOW — the coolant has very little room before boiling. Check the pressurizer.';level=2}
-      else if(P>=pCritHigh){msg='PRESSURE VERY HIGH — the system is near its game pressure limit. Lower pressure carefully.';level=2}
-      else if(T>tCritHigh){msg='COOLANT TOO HOT — the coolant is near its game temperature limit. Increase heat removal.';level=2}
-      else if(P<pLowWarn){msg='PRESSURE LOW — the coolant has less room before boiling. Check the pressurizer.';level=1}
-      else if(P>pHighWarn){msg='PRESSURE HIGH — the system is above its usual range. Use spray to lower it.';level=1}
-      else if(sub<(D.subcoolMargin||10)){msg='COOLING MARGIN LOW — the coolant is close to its boiling temperature at the current pressure. Improve cooling or raise pressure.';level=1}
-      else if(T>tWarm){msg='COOLANT WARM — heat removal may be lagging. Check pump speed.';level=1}
-      else if(S.k>1.01){msg='CHAIN REACTION GROWING QUICKLY — each neutron generation is producing more than the last. Watch reactor power.';level=1}
-      else if(S.k<.99&&S.Nf>10){msg='CHAIN REACTION WEAKENING — too few neutrons are left to sustain the current chain reaction.';level=1}
+      if(P<pCritLow){msg='PRESSURE TOO LOW — coolant may boil soon. Check the pressurizer.';level=2}
+      else if(P>=pCritHigh){msg='PRESSURE VERY HIGH — near pressure limit. Lower it carefully.';level=2}
+      else if(T>tCritHigh){msg='COOLANT TOO HOT — near temperature limit. Increase heat removal.';level=2}
+      else if(P<pLowWarn){msg='PRESSURE LOW — less room before boiling. Check the pressurizer.';level=1}
+      else if(P>pHighWarn){msg='PRESSURE HIGH — above usual range. Use spray to lower it.';level=1}
+      else if(sub<(D.subcoolMargin||10)){msg='COOLING MARGIN LOW — coolant near boiling. Improve cooling.';level=1}
+      else if(T>tWarm){msg='COOLANT WARM — heat removal may lag. Check pump speed.';level=1}
+      else if(S.k>1.01){msg='CHAIN REACTION GROWING — more neutrons each generation. Watch power.';level=1}
+      else if(S.k<.99&&S.Nf>10){msg='CHAIN REACTION WEAKENING — too few neutrons to sustain it.';level=1}
       $('#studentStatus').textContent=msg;$('#studentStatus').className='student-status'+(level===2?' danger':level===1?' warn':'');
     }
-    {const ph=phaseOf(T,P),ts=tsat(P);$('#phase').textContent=ph[0]+(P<22.064?' · subcooling '+(ts-T).toFixed(0)+' °C':'');$('#phase').style.color=ph[1];
-    const d=$('#pmdot'),d2=$('#pmdot2'),y=380-Math.min(P,30)*12;d.setAttribute('cx',50+Math.min(T,500)*.98);d.setAttribute('cy',y);d2.setAttribute('cy',y);
-    $('#pmlive').innerHTML='<b>LIVE · '+ph[0]+'</b>Pressure '+P.toFixed(2)+' MPa; the illustrative saturation temperature is '+ts.toFixed(0)+' °C. Hot-leg coolant is '+T.toFixed(0)+' °C. '+(P<22.064?(T<ts?'Subcooling margin '+(ts-T).toFixed(0)+' °C.':'At or above saturation; the model applies a simplified void-region heat-removal penalty.'):T>=373.946?'Above the water critical point.':'Compressed liquid below the critical temperature.')}
+    {const ph=phaseOf(T,P),ts=tsat(P);
+      // shorten phase text for badge display
+      let ptxt='';
+      if(ph[0].indexOf('SUPERCRITICAL')>=0)ptxt='SUPERCRITICAL';
+      else if(ph[0].indexOf('SUBCOOLED')>=0)ptxt='SUBCOOLED';
+      else if(ph[0].indexOf('SATURATION')>=0)ptxt='SATURATION';
+      else if(ph[0].indexOf('SUPERHEATED')>=0)ptxt='SUPERHEATED';
+      else if(ph[0].indexOf('VAPOR')>=0)ptxt='VAPOR REGION';
+      else ptxt=ph[0];
+      $('#phase').textContent=ptxt+(P<22.064?' · '+(ts-T).toFixed(0)+'°C margin':'');
+      $('#phase').style.color=ph[1];
+      const d=$('#pmdot'),d2=$('#pmdot2'),y=380-Math.min(P,30)*12;d.setAttribute('cx',50+Math.min(T,500)*.98);d.setAttribute('cy',y);d2.setAttribute('cy',y);
+      $('#pmlive').innerHTML='<b>LIVE · '+ph[0]+'</b>Pressure '+P.toFixed(2)+' MPa; the illustrative saturation temperature is '+ts.toFixed(0)+' °C. Hot-leg coolant is '+T.toFixed(0)+' °C. '+(P<22.064?(T<ts?'Subcooling margin '+(ts-T).toFixed(0)+' °C.':'At or above saturation; the model applies a simplified void-region heat-removal penalty.'):T>=373.946?'Above the water critical point.':'Compressed liquid below the critical temperature.')}
     {const k=S.k??1,rho=S.rho??0,promptCritical=k>1&&rho>=BETA_EFF;
       let label,color;
       if(S.Nf<1&&k<1){label='CHAIN REACTION VERY WEAK · little fission power';color='#35c8ff'}
@@ -763,11 +788,11 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNS
   function evt(m){const d=document.createElement('div');d.textContent=m;d.className='r';$('#log').prepend(d);setTimeout(()=>d.remove(),20000);AU.tone(500,.4,'square',.15,0,250);
     while($('#log').children.length>3)$('#log').lastChild.remove()}
   function coach(){const i=S.in,N=S.N,T=S.T,P=S.P;
-    if(P<(D.pressureLow||13)+0.5)return'Division 3: pressure is getting low. Use ▲ HEAT to raise it.';if(P>(D.pressureHigh||17.5)-0.5)return'Division 3: pressure is high. Use ▼ SPRAY to lower it.';
-    if(P<22.064&&T>=tsat(P)-(D.subcoolMargin||10))return'Coolant subcooling margin is below '+(D.subcoolMargin||10)+' °C. Coordinate cooling and pressure control.';
-    if(T>(D.thermalHigh||350)-20&&i.pump<70)return'Hot-leg coolant is warm. Div 2: review the pump setting.';
-    if(Math.abs(N-1000)<=D.band)return'Power is on target and coolant margin is adequate. Check drift, then hold controls.';
-    if(N<1000)return'Grid power is below the target. Division 1 can withdraw rods; Division 4 can dilute boron. Coordinate changes.';return'Grid power is above the target. Division 1 can insert rods; Division 4 can add boron. Coordinate changes.'}
+    if(P<(D.pressureLow||13)+0.5)return'Div 3: pressure low — use ▲ HEAT.';if(P>(D.pressureHigh||17.5)-0.5)return'Div 3: pressure high — use ▼ SPRAY.';
+    if(P<22.064&&T>=tsat(P)-(D.subcoolMargin||10))return'Margin low — coordinate cooling and pressure.';
+    if(T>(D.thermalHigh||350)-20&&i.pump<70)return'Coolant warm — Div 2: review pump.';
+    if(Math.abs(N-1000)<=D.band)return'On target — hold controls steady.';
+    if(N<1000)return'Below target — Div 1: withdraw rods; Div 4: dilute boron.';return'Above target — Div 1: insert rods; Div 4: add boron.'}
   function note(r,k,o,n){const L={rods:['DIV 1','Control rods','% inserted'],pump:['DIV 2','Pump speed','%'],boron:['DIV 4','Boron',' ppm']};let m;
     if(k==='heat'||k==='spray')m='DIV 3 ▸ '+(k==='heat'?(n?'▲ Heaters ON':'Heaters off'):(n?'▼ Spray ON':'Spray off'));
     else{const l=L[k];m=l[0]+' ▸ '+l[1]+' '+o+' → '+n+l[2]+(k==='boron'?(n>o?'  (adding poison)':'  (diluting)'):k==='rods'?(n>o?'  (inserting)':'  (withdrawing)'):'')}
