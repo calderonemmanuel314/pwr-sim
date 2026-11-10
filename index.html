@@ -19,13 +19,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow:0 0 18px #39ff1466}
 .sub{color:var(--dim);max-width:60ch}
 .row{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center}
-/* lobby */
 #hid{font-size:clamp(1.6rem,3.4vw,3rem);color:var(--c);border:2px dashed var(--c);padding:.3em .8em}
 .slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4vh 2vw;width:min(1100px,92vw);text-align:left}
 .slot{border:1px solid var(--ln);padding:1vh 1vw;background:var(--pn);font-size:clamp(.8rem,1.1vw,1.1rem)}
 .slot b{display:block;color:var(--dim);font-weight:400}.slot.on{border-color:var(--g)}.slot.on .st{color:var(--g)}.st{color:var(--r)}
 .slot a{color:var(--c);word-break:break-all;font-size:.8em}
-/* host hud */
 #hud{position:fixed;inset:0;display:grid;grid-template-columns:23vw 1fr 23vw;grid-template-rows:14vh 1fr 1fr;gap:1.2vh 1vw;padding:1.2vh 1vw}
 .pn{background:var(--pn);border:1px solid var(--ln);padding:1.2vh 1vw;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
 .pn h3{font-weight:400;font-size:clamp(.8rem,1.2vw,1.2rem);color:var(--dim)}
@@ -42,13 +40,11 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 #tm{text-align:center;padding:.6vh 0 1vh}#tm .big{font-size:clamp(2.4rem,5vw,5.4rem)}
 .tl{grid-column:1;grid-row:2}.bl{grid-column:1;grid-row:3}.tr{grid-column:3;grid-row:2}.br{grid-column:3;grid-row:3}
 .lnk{font-size:clamp(.7rem,.9vw,.95rem)}
-/* svg */
 .flow{stroke-dasharray:8 8;animation:dash var(--fs,1s) linear infinite}
 @keyframes dash{to{stroke-dashoffset:-16}}
 .spin{transform-box:fill-box;transform-origin:center;animation:spin var(--ts,3s) linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .drop{animation:fall .7s linear infinite}@keyframes fall{from{transform:translateY(0);opacity:1}to{transform:translateY(34px);opacity:0}}
-/* overlays */
 #ovr{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;background:#000d;text-align:center}
 #ovr h1{font-size:clamp(3rem,9vw,8rem)}
 #ovr.lose{background:#300d;animation:blink 1s steps(2) infinite}#ovr.lose h1{color:var(--r)}
@@ -56,7 +52,6 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 #ovp h3{color:var(--y);font-weight:400}
 #ovp label{display:flex;justify-content:space-between;gap:1em;font-size:.95rem;align-items:center}
 #ovp input[type=range]{flex:1}
-/* clients */
 #cl{position:fixed;inset:0;display:flex;flex-direction:column;gap:1.6dvh;padding:2dvh 5vw;height:100dvh}
 #cl header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ln);padding-bottom:1dvh}
 #cl h2{font-weight:400;color:var(--g);font-size:1.25rem}
@@ -128,8 +123,10 @@ body.cold #hud{filter:saturate(.2) hue-rotate(160deg) brightness(.6);transition:
 .bm{position:relative;height:5vh;border:1px solid #b36bff66;border-radius:10px;overflow:hidden;background:#b36bff14}
 .bm i{position:absolute;width:.9vh;height:.9vh;border-radius:50%;background:#b36bff;box-shadow:0 0 6px #b36bff;animation:bf 3s ease-in-out infinite;opacity:0;transition:opacity .5s}
 .bm u{position:absolute;inset:auto 0 0 0;height:0;background:#b36bff33;transition:height .6s}
-#log{position:absolute;top:1vh;left:1vw;z-index:3;font-size:clamp(.7rem,1vw,1rem);display:flex;flex-direction:column;gap:.4vh;pointer-events:none}
-#log div{background:#000b;border-left:3px solid var(--y);padding:.3em .7em;border-radius:6px;animation:li .3s}@keyframes li{from{opacity:0;transform:translateX(-14px)}}
+#log{display:flex;flex-direction:row;gap:6px;overflow:hidden;padding:2px 8px;min-height:22px;max-height:22px;align-items:center;border-top:1px solid #1f3a1f40;border-bottom:1px solid #1f3a1f40;background:#050805}
+#log div{flex:0 0 auto;white-space:nowrap;font-size:.68rem;padding:2px 8px;background:#000b;border-left:3px solid var(--y);border-radius:4px;animation:li .3s}
+@keyframes li{from{opacity:0;transform:translateX(-8px)}}
+#log div.x{border-color:#b36bff}#log div.r{border-color:var(--r)}
 
 #pm{position:fixed;inset:0;z-index:25;background:#000e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;padding:2vh 3vw}
 .pmbox{display:flex;gap:2vw;width:min(1500px,96vw);align-items:stretch}.pmbox svg{flex:1.3;min-width:0;background:#0b100c;border:1px solid var(--ln);border-radius:16px}
@@ -186,7 +183,7 @@ body.hard #phase{display:none}
 @media(max-width:800px){.dcards,.lrow{flex-direction:column}.dcard{max-width:none}}
 
 #kbox{padding:0 1vw .4vh;display:flex;flex-direction:column;gap:.3vh}.kh{display:flex;gap:.65vw;align-items:baseline;flex-wrap:wrap;font-size:clamp(.65rem,.9vw,.95rem);color:var(--dim)}.kh b{font-size:1.55em;font-weight:700}#krate{font-size:clamp(.58rem,.72vw,.75rem);color:var(--tx);margin-left:auto}
-#kw{position:relative}#kg{display:block;width:100%;height:11vh;background:#0a0f0b;border-radius:10px}#kw span{position:absolute;font-size:clamp(.58rem,.75vw,.78rem);pointer-events:none}.kt1{left:8px;top:4px;color:#ff9a5a}.kt2{left:8px;bottom:4px;color:#7fd8ff}.kt3{right:8px;top:calc(50% - 1.3em);color:#39ff14}.ktlo{right:8px;bottom:3px;color:#6b8f6b}.kthi{right:8px;top:3px;color:#6b8f6b}.kclip{position:absolute!important;left:50%!important;top:calc(50% - .7em)!important;right:auto!important;bottom:auto!important;transform:translateX(-50%);z-index:4;background:#000e;border:1px solid var(--y);border-radius:6px;padding:.12em .5em;color:var(--y);white-space:nowrap;font-size:clamp(.58rem,.75vw,.78rem)}.kclip.hide{display:none!important}
+#kw{position:relative}#kg{display:block;width:100%;height:9vh;background:#0a0f0b;border-radius:10px}#kw span{position:absolute;font-size:clamp(.58rem,.75vw,.78rem);pointer-events:none}.kt1{left:8px;top:4px;color:#ff9a5a}.kt2{left:8px;bottom:4px;color:#7fd8ff}.kt3{right:8px;top:calc(50% - 1.3em);color:#39ff14}.ktlo{right:8px;bottom:3px;color:#6b8f6b}.kthi{right:8px;top:3px;color:#6b8f6b}.kclip{position:absolute!important;left:50%!important;top:calc(50% - .7em)!important;right:auto!important;bottom:auto!important;transform:translateX(-50%);z-index:4;background:#000e;border:1px solid var(--y);border-radius:6px;padding:.12em .5em;color:var(--y);white-space:nowrap;font-size:clamp(.58rem,.75vw,.78rem)}.kclip.hide{display:none!important}
 .cflow{font-size:clamp(.65rem,.85vw,.9rem);color:var(--c);line-height:1.3}
 .flowbar{height:16px;border-radius:99px;background:#12303a;overflow:hidden}.flowbar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#35c8ff 0 14px,transparent 14px 28px);animation:fb 1s linear infinite}@keyframes fb{to{background-position:28px 0}}
 .src{color:var(--dim);font-size:.75rem;text-align:center}
@@ -262,7 +259,7 @@ body.hard #phase{display:none}
   <div class="pn tr"><h3>DIV 3 · PRESSURIZER</h3><div class="big" id="rPres" style="font-size:clamp(1.2rem,2.2vw,2.4rem)">--</div><div class="bar"><i id="bPres"></i></div><div class="lnk" id="lPres"></div><div class="ctl"><button class="tb" id="oSpr">▼ SPRAY</button><button class="tb" id="oHold">■ HOLD</button><button class="tb" id="oHeat">▲ HEAT</button></div></div>
   <div class="pn br"><h3>DIV 4 · SOLUBLE BORON</h3><div class="big" id="rBor">--</div><div class="bm" id="bmini"></div><div class="bar"><i id="bBor"></i></div><div class="lnk" id="lBor"></div><div class="ctl"><input type="range" id="oBor" min="0" max="2000" step="10"><b id="tBor"></b></div></div>
   <div id="ctr">
-    <div id="coach" class="hide"></div><div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div><div id="phase">--</div><div id="log"></div><div id="svgw">
+    <div id="coach" class="hide"></div><div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div><div id="phase">--</div><div id="svgw">
 <svg viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg" font-family="monospace" fill="none" stroke-width="2.5" stroke-linecap="round">
  <defs>
   <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#1e2b21"/><stop offset=".5" stop-color="#5f7763"/><stop offset="1" stop-color="#1b261e"/></linearGradient>
@@ -272,13 +269,11 @@ body.hard #phase{display:none}
   <clipPath id="rc"><rect x="50" y="146" width="140" height="290"/></clipPath>
  </defs>
  <path id="dome" d="M20 490V240Q20 30 300 30T580 240V490Z" stroke="#1f3a1f" stroke-dasharray="4 6" fill="#0c120d" fill-opacity=".5"/>
- <path d="M20 490H580" stroke="#2a4a2a"/><text x="30" y="482" fill="#6b8f6b" stroke="none" font-size="11">CONTAINMENT</text>
- <!-- primary pipes -->
+ <path d="M20 490H580" stroke="#2a4a2a"/>
  <path d="M180 250H340M340 400H180M245 170V250" stroke="#1b2a26" stroke-width="16"/>
  <path id="hot" class="flow" d="M180 250H340" stroke="#ff7a2a"/><path id="cold" class="flow" d="M340 400H180" stroke="#35c8ff"/>
  <circle cx="260" cy="400" r="24" fill="#0b120d" stroke="#9bb59d"/><g id="pump" class="spin" style="--ts:1s"><path d="M260 384V416M244 400H276M249 389L271 411M271 389L249 411" stroke="#35c8ff" stroke-width="2"/></g>
- <text x="222" y="445" fill="#35c8ff" stroke="none" font-size="11">PRIMARY PUMP</text>
- <!-- vessel -->
+ <text x="228" y="448" fill="#35c8ff" stroke="none" font-size="10">PUMP</text>
  <rect x="60" y="200" width="120" height="230" rx="40" fill="#0b120d"/>
  <rect id="water" x="60" y="200" width="120" height="230" clip-path="url(#vc)" fill="#1e6bff" stroke="none" opacity=".85"/>
  <g id="fuel" clip-path="url(#vc)"><rect x="64" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="91" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="115" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="139" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="166" y="315" width="12" height="100" rx="3" fill="url(#fp)"/></g>
@@ -286,39 +281,35 @@ body.hard #phase{display:none}
  <rect x="60" y="200" width="120" height="230" rx="40" fill="url(#sheen)" opacity=".45" stroke="none"/>
  <rect id="vessel" x="60" y="200" width="120" height="230" rx="40" stroke="#9bb59d" stroke-width="5"/>
  <rect x="66" y="146" width="108" height="56" rx="10" fill="url(#metal)" stroke="#9bb59d" opacity=".9"/><rect x="96" y="128" width="48" height="20" rx="7" fill="url(#metal)" stroke="#9bb59d"/>
- <text x="44" y="120" fill="#c8ffc8" stroke="none" font-size="11">CONTROL RODS</text><text x="190" y="335" fill="#f2c94c" stroke="none" font-size="11">◄ FUEL</text>
- <!-- pressurizer -->
+ <text x="44" y="120" fill="#c8ffc8" stroke="none" font-size="10">RODS</text><text x="190" y="335" fill="#f2c94c" stroke="none" font-size="10">◄ FUEL</text>
  <rect x="215" y="60" width="60" height="110" rx="22" fill="#0b120d" stroke="#9bb59d" stroke-width="4"/>
  <rect id="plev" x="219" y="110" width="52" height="57" rx="18" fill="#1e6bff" stroke="none" opacity=".7"/>
  <path id="heat" d="M226 164H264" stroke="#ff2a2a" stroke-width="5" opacity="0"/>
  <g id="spray" opacity="0"><circle class="drop" cx="230" cy="78" r="3" fill="#35c8ff" stroke="none"/><circle class="drop" cx="245" cy="74" r="3" fill="#35c8ff" stroke="none" style="animation-delay:.25s"/><circle class="drop" cx="260" cy="78" r="3" fill="#35c8ff" stroke="none" style="animation-delay:.5s"/></g>
- <text x="206" y="52" fill="#6b8f6b" stroke="none" font-size="11">PRESSURIZER</text>
- <!-- steam generator -->
+ <text x="210" y="52" fill="#6b8f6b" stroke="none" font-size="10">PRESS.</text>
  <rect x="340" y="150" width="90" height="290" rx="30" fill="#0b120d" stroke="#9bb59d" stroke-width="4"/>
  <path d="M356 250H414V400H356M368 262H402V388H368" stroke="#ff7a2a" opacity=".65" stroke-width="2"/>
- <text x="332" y="462" fill="#6b8f6b" stroke="none" font-size="11">STEAM GENERATOR</text>
- <!-- secondary -->
+ <text x="332" y="462" fill="#6b8f6b" stroke="none" font-size="10">STEAM GEN</text>
  <path d="M385 150V90H470M545 130V425H385V440" stroke="#1b2a26" stroke-width="12"/>
  <path id="steam" class="flow" d="M385 150V90H470" stroke="#e8f6ff"/><path id="feed" class="flow" d="M545 130V425H385V440" stroke="#35c8ff" opacity=".8"/>
  <polygon points="470,66 540,44 540,136 470,114" fill="url(#metal)" stroke="#9bb59d"/>
  <g id="turb" class="spin" style="--ts:2s"><path d="M505 70V110M485 90H525M491 76L519 104M519 76L491 104" stroke="#ffd400" stroke-width="2"/></g>
  <rect x="548" y="60" width="50" height="60" rx="10" fill="#0b120d" stroke="#ffd400"/><path id="gl" d="M556 90h34" stroke="#ffd400" stroke-width="7" opacity=".2"/>
- <text x="470" y="30" fill="#6b8f6b" stroke="none" font-size="11">TURBINE → GENERATOR</text>
- <rect x="480" y="430" width="70" height="30" rx="8" stroke="#35c8ff" opacity=".7"/><text x="486" y="478" fill="#6b8f6b" stroke="none" font-size="11">CONDENSER</text>
- <!-- boron -->
+ <text x="470" y="30" fill="#6b8f6b" stroke="none" font-size="10">TURB/GEN</text>
+ <rect x="480" y="430" width="70" height="30" rx="8" stroke="#35c8ff" opacity=".7"/><text x="486" y="478" fill="#6b8f6b" stroke="none" font-size="10">CONDENSER</text>
  <rect x="296" y="274" width="40" height="68" rx="8" fill="#0b120d" stroke="#b36bff"/><rect id="blev" x="299" y="339" width="34" height="0" rx="5" fill="#b36bff" opacity=".75" stroke="none"/>
- <text x="286" y="266" fill="#b36bff" stroke="none" font-size="10">BORON TANK</text>
+ <text x="288" y="266" fill="#b36bff" stroke="none" font-size="9">BORON</text>
  <path id="bpipe" class="flow" d="M316 342V400" stroke="#b36bff" opacity="0"/>
  <g id="bdots" stroke="none"></g><g id="nflux" stroke="none"></g>
  <path id="prv" d="M238 56l-6-10M245 56v-12M252 56l6-10" stroke="#e8f6ff" stroke-width="2.5" opacity="0"/>
- <text x="262" y="242" fill="#ff9a5a" stroke="none" font-size="10">HOT LEG ▸</text><text x="184" y="418" fill="#7fd8ff" stroke="none" font-size="9">◂COLD LEG</text>
- <text x="150" y="476" fill="#6b8f6b" stroke="none" font-size="9">closed loop: cooled water returns from the steam generator</text>
- <!-- meltdown FX -->
+ <text x="262" y="242" fill="#ff9a5a" stroke="none" font-size="10">HOT ▶</text><text x="184" y="418" fill="#7fd8ff" stroke="none" font-size="9">◀ COLD</text>
  <path id="crack" d="M120 200L110 240L130 275L108 320L132 365L116 430" stroke="#fff" stroke-width="3"/>
  <ellipse id="molten" cx="120" cy="450" rx="110" ry="30" fill="#ff5a00" stroke="none" opacity=".9"/>
 </svg>
     </div>
-    <div id="kbox"><div class="kh"><span>CHAIN REACTION · k<sub>eff</sub> (next generation ÷ current generation)</span><b id="kv">1.0000</b><span id="kst">CRITICAL</span><small id="krate">Power change +0.0 MWth/s · reactivity ρ +0.0000</small></div><div id="kw"><svg id="kg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg><span class="kt1">▲ k<sub>eff</sub> &gt; 1 · CHAIN REACTION GROWS</span><span class="kt2">▼ k<sub>eff</sub> &lt; 1 · CHAIN REACTION FADES</span><span class="kt3">k<sub>eff</sub> = 1 · STEADY CHAIN REACTION</span><span class="ktlo">0.98</span><span class="kthi">1.02</span><span id="kclip" class="kclip hide"></span></div></div><div id="tm"><h3 style="font-weight:400;color:var(--dim)" id="tl">SCENARIO TIMER</h3><div class="big ok" id="tv">10:00</div><div class="bar" style="margin:.6vh 2vw 0"><i id="hold"></i></div><div class="lnk" id="hl" style="color:var(--dim)">HOLD · grid ≈315 MWe · coolant 280–350°C · cooling margin ≥10°C · pressure safe · 0 / 15 s</div></div>
+    <div id="kbox"><div class="kh"><span>CHAIN REACTION · k<sub>eff</sub> (next gen ÷ current gen)</span><b id="kv">1.0000</b><span id="kst">CRITICAL</span><small id="krate">Power change +0.0 MWth/s · ρ +0.0000</small></div><div id="kw"><svg id="kg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg><span class="kt1">▲ k<sub>eff</sub> &gt; 1 · CHAIN GROWS</span><span class="kt2">▼ k<sub>eff</sub> &lt; 1 · CHAIN FADES</span><span class="kt3">k<sub>eff</sub> = 1 · STEADY</span><span class="ktlo">0.98</span><span class="kthi">1.02</span><span id="kclip" class="kclip hide"></span></div></div>
+    <div id="log"></div>
+    <div id="tm"><h3 style="font-weight:400;color:var(--dim)" id="tl">SCENARIO TIMER</h3><div class="big ok" id="tv">10:00</div><div class="bar" style="margin:.5vh 2vw 0;height:2vh"><i id="hold"></i></div><div class="lnk" id="hl" style="color:var(--dim);margin-top:.4vh">HOLD · grid ≈315 MWe · coolant 280–350°C · cooling margin ≥10°C · pressure safe · 0 / 15 s</div></div>
   </div>
 </div>
 
@@ -339,7 +330,7 @@ body.hard #phase{display:none}
   <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY · NOT FOR REACTOR OPERATION</p><div id="cb"></div><div id="cv"></div>
   <div id="cc"></div>
   <div id="cd"><i id="cdi"></i><span>Transmitting mechanical command to core…</span></div>
-  <button class="btn" id="ex" disabled>WAITING FOR HOST</button>
+  <button class="btn" id="ex" disabled>CONNECTING…</button>
 </div>
 
 <script>
@@ -401,26 +392,46 @@ const joinPage=()=>{show('#menu',false);show('#join',true);let sel='';
   $('#jb').onclick=()=>{const c=$('#jc').value;if(!/^\d{4}$/.test(c))return $('#je').textContent='Enter the 4-digit join code.';if(!sel)return $('#je').textContent='Pick your division.';
     location.href=location.pathname+'?role='+sel+'&room=gpwr-host-'+c}};
 const DIFF={
-easy:{k:'easy',n:'EASY',t:'Morning Ramp-Up',rem:600,band:100,hold:10,cd:5,subcoolMargin:10,pressureDrift:.05,initialFissionPower:275,hints:1,
+easy:{k:'easy',n:'EASY',t:'Morning Ramp-Up',rem:600,band:200,hold:10,cd:5,subcoolMargin:5,
+  pressureDrift:.08,tempDrift:2.5,powerDrift:40,
+  thermalTau:250,pressureRate:0.5,alphaDoppler:0.00015,
+  thermalHigh:360,thermalCritical:400,pressureHigh:19,pressureLow:11,pressureCriticalHigh:23,pressureCriticalLow:10,
+  failOver:26,failDepr:9,
+  rodsMin:5,rodsMax:95,pumpMin:25,pumpMax:100,boronMin:100,boronMax:1500,
+  initialFissionPower:275,hints:1,
  story:'Overnight demand was light, so the reactor has been at about 30% power for 8 hours. Factories open at 7:00 and the city needs full output.',
- goal:'Supply about 300–330 megawatts of electricity to the grid, keep the reactor conditions safe, and hold steady for 10 seconds. Coach hints are on.',short:'Bring grid power to about 315 MWe, then keep the system steady for 10 seconds.',
- st:{rods:63,pump:50,boron:500,T:298,P:15.5,xe:.45,xi:.11},
- ph:{rods:'Withdraw rods in steps to add power.',coolant:'Raise the pump as power rises.',pressure:'Heaters when pressure sags, spray when it climbs.',xenon:'Keep boron near 500 ppm unless told otherwise.'}},
-moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:50,hold:15,cd:10,subcoolMargin:10,pressureDrift:.05,initialFissionPower:105,hints:0,
+ goal:'Supply about 300–330 megawatts of electricity to the grid, keep conditions safe, and hold steady for 10 seconds. Coach hints are on. Control ranges are limited to help you keep things stable — the rods, pump and boron cannot be taken to their absolute extremes.',
+ short:'Bring grid power to about 315 MWe, then keep the system steady for 10 seconds. Controls are gently limited for safety.',
+ st:{rods:70,pump:50,boron:500,T:298,P:15.5,xe:.45,xi:.11},
+ ph:{rods:'Withdraw rods in steps to add power. On Easy, rods cannot fully insert or fully withdraw.',coolant:'The pump is your main cooling lever. Raise it as power grows. On Easy, minimum flow is enforced.',pressure:'Heaters when pressure sags, spray when it climbs.',xenon:'Keep boron near 500 ppm unless you need a small nudge.'}},
+moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:100,hold:15,cd:10,subcoolMargin:8,
+  pressureDrift:.06,tempDrift:2,powerDrift:30,
+  thermalTau:175,pressureRate:0.75,alphaDoppler:0.00008,
+  thermalHigh:350,thermalCritical:375,pressureHigh:18,pressureLow:12,pressureCriticalHigh:22,pressureCriticalLow:10,
+  failOver:25,failDepr:9.5,
+  rodsMin:0,rodsMax:100,pumpMin:15,pumpMax:100,boronMin:50,boronMax:2000,
+  initialFissionPower:105,hints:0,
  story:'The reactor has run at low power for 15 hours. A heatwave drives up demand, and the grid requests about 315 MWe of electrical power. After a power increase, xenon may initially burn away faster; delayed iodine decay can later replenish it and add negative reactivity.',
  goal:'Supply about 315 MWe to the grid, watch the delayed xenon effect, keep conditions safe, and hold steady for 15 seconds.',short:'Heatwave surge: supply about 315 MWe and stabilize for 15 seconds.',
- st:{rods:57,pump:30,boron:900,T:293,P:14.8,xe:.3319,xi:.06}},
-hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:25,hold:30,cd:15,subcoolMargin:6,pressureDrift:.05,initialFissionPower:.05,hints:0,
+ st:{rods:58,pump:30,boron:900,T:293,P:14.8,xe:.3319,xi:.06}},
+hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:60,hold:30,cd:15,subcoolMargin:6,
+  pressureDrift:.05,tempDrift:1.5,powerDrift:25,
+  thermalTau:150,pressureRate:1.0,alphaDoppler:0.00005,
+  thermalHigh:350,thermalCritical:355,pressureHigh:17.5,pressureLow:13,pressureCriticalHigh:20,pressureCriticalLow:10,
+  failOver:24,failDepr:10,
+  rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000,
+  initialFissionPower:.05,hints:0,
  story:'Another plant tripped offline. Your reactor shut down several hours ago and the crew is attempting a restart near the modeled xenon peak. Xenon-135 suppresses the initial power response; as neutron flux returns, xenon burns out while delayed iodine production can later change the trend. The city needs about 315 MWe of electricity within 8 minutes.',
  goal:'Supply about 315 MWe, manage xenon and equipment problems, keep conditions safe, and hold steady for 30 seconds.',short:'Restart the chain reaction and supply about 315 MWe within 8 minutes. Expect equipment problems.',
  xeLockout:1.05,st:{rods:100,pump:40,boron:1200,T:285,P:14.2,xe:1.4,xi:.168}}};
-DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null});
+DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,
+  rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
 const LEARN={
 core:['Reactor vessel and coolant','The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.','The top temperature gauge is the modeled hot-leg coolant temperature, not fuel or cladding temperature.'],
 fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction. Fuel, cladding, and coolant have different temperatures.','The simulation does not calculate separate fuel or cladding temperatures. Its thermal-power value is normalized MW-equivalent and includes a fixed 20 MW-equivalent residual-heat allowance in the heat balance.'],
-rods:['Control rods','Control rods contain neutron-absorbing materials. Inserting them increases neutron absorption and adds negative reactivity; withdrawing them reduces absorption. The reactivity effect is not linear with insertion depth: the middle of the core has the highest neutron flux, so a rod moving through the middle removes more worth per centimetre than one moving near the top or bottom. The integral rod worth curve is therefore S-shaped, with the steepest differential worth near the middle of the core. A rapid insertion is used for reactor shutdown (SCRAM), subject to the reactor design and shutdown margin.','Division 1. 0% means fully withdrawn; 100% means fully inserted. The integral worth curve uses a smoothstep shape (steep in the middle, flat near the ends). The differential worth peaks around 50% insertion, so the same 1% rod movement changes k_eff roughly 1.5× more near mid-core than the average.'],
-boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber. Increasing boron concentration generally adds negative reactivity; dilution removes some absorber and adds positive reactivity. Real boron changes involve chemistry, mixing, and transport processes.','Division 4 sets a simplified boron concentration in ppm. In this game its reactivity effect is applied directly through the model, rather than through a separately simulated mixing system.'],
-pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator. The primary water transfers heat through the steam-generator tubes to a separate secondary loop; the two water inventories do not normally mix.','Division 2 adjusts a normalized pump setting. The model uses pump setting as a simplified heat-removal factor; it does not calculate detailed flow, pressure drop, pump curves, or system hydraulics.'],
+rods:['Control rods','Control rods contain neutron-absorbing materials. Inserting them increases neutron absorption and adds negative reactivity; withdrawing them reduces absorption. The reactivity effect is not linear with insertion depth: the middle of the core has the highest neutron flux, so a rod moving through the middle removes more worth per centimetre than one moving near the top or bottom. The integral rod worth curve is therefore S-shaped, with the steepest differential worth near the middle of the core. A rapid insertion is used for reactor shutdown (SCRAM), subject to the reactor design and shutdown margin.','Division 1. 0% means fully withdrawn; 100% means fully inserted. The integral worth curve uses a smoothstep shape (steep in the middle, flat near the ends). On Easy difficulty the rod range is limited to 5–95 % so a single command cannot trigger a full SCRAM or a full withdraw.'],
+boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber. Increasing boron concentration generally adds negative reactivity; dilution removes some absorber and adds positive reactivity. Real boron changes involve chemistry, mixing, and transport processes.','Division 4 sets a simplified boron concentration in ppm. In this game its reactivity effect is applied directly through the model, rather than through a separately simulated mixing system. On Easy the range is limited to 100–1500 ppm.'],
+pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator. The primary water transfers heat through the steam-generator tubes to a separate secondary loop; the two water inventories do not normally mix.','Division 2 adjusts a normalized pump setting. The model uses pump setting as a simplified heat-removal factor; it does not calculate detailed flow, pressure drop, pump curves, or system hydraulics. On Easy minimum flow is 25 % so the core always has some cooling.'],
 press:['Pressurizer','The pressurizer helps control primary-system pressure. Electric heaters can boil a small amount of water to increase pressure; spray condenses steam and reduces pressure. Pressure is important because it sets the saturation temperature of the coolant.','Division 3 selects heaters, spray, or hold. The pressure response is an illustrative game equation, not a pressurizer control-system model.'],
 valve:['Pressurizer relief valve','A relief valve provides overpressure protection by opening when its set pressure is exceeded. Discharging fluid also changes coolant inventory and system conditions in a real plant.','This model opens at 17.2 MPa and reseats near 16.4 MPa. It applies a pressure decrement only; it does not simulate discharged mass, makeup, or valve flow capacity.'],
 keff:['Chain reaction: is it growing, shrinking, or steady?','Imagine one generation of neutrons causing fissions that release the next generation. k_eff compares the two: k_eff = neutrons in the next generation ÷ neutrons in the current generation. If k_eff < 1, each generation is smaller than the last and the chain reaction gradually weakens (subcritical). If k_eff = 1, each generation exactly replaces itself and the chain reaction stays steady (critical). If k_eff > 1, each generation is larger than the last and the chain reaction grows (supercritical). Control rods and soluble boron absorb neutrons, so inserting rods or adding boron lowers k_eff. k_eff describes how the chain reaction is behaving — it is not the same as reactor power. Reactor heat tells you how quickly energy is being produced; net grid power tells you how much electricity leaves the plant.','k_eff comes from a simplified one-group neutron balance. Each neutron has competing channels: fission in fuel, non-fission capture in fuel and structures, absorption by control rods, soluble boron, and xenon, plus leakage. The fission-channel share sets k_eff, and reactivity is ρ = (k_eff − 1) / k_eff. The model uses ν̄ = 2.43 neutrons per fission, a representative delayed-neutron fraction β ≈ 0.0065, six delayed-neutron groups, and a stretched prompt generation time Λ = 0.10 s (real thermal reactors: ~10⁻⁴–10⁻⁵ s) for game pacing. A small constant neutron source lets a deeply subcritical reactor restart. Ordinary supercriticality (0 < ρ < β) is gentle because delayed neutrons slow the response; prompt supercriticality (ρ ≥ β) is much more extreme. Capture, leakage, and feedback weights are calibrated classroom parameters — the result is a modeled one-group k_eff, not a validated plant value. The model also includes a fuel-temperature / Doppler feedback: fuel temperature lags behind fission power with a short time constant, and Doppler adds negative reactivity proportional to (T_fuel − T_coolant). This is the prompt, self-limiting fuel-temperature feedback that dominates fast reactor stability. Together with the moderator-temperature feedback and the coolant density/void feedback, these provide the negative reactivity feedbacks that stabilise reactor operation.'],
@@ -451,8 +462,6 @@ const learn=()=>{show('#menu',false);show('#learn',true);
   $('#lchips').innerHTML=Object.keys(LEARN).map(k=>'<button class="chip" data-p="'+k+'">'+LEARN[k][0]+'</button>').join('');
   document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>one(c.dataset.p));
   $('#lback').onclick=()=>{show('#learn',false);show('#menu',true)};one('rods')};
-// Wagner–Pruss saturation-vapor-pressure correlation for ordinary water.
-// Used only for the liquid-vapor saturation boundary; this is NOT a full water-property solver.
 const WATER_TC_K=647.096,WATER_PC_MPA=22.064,WATER_TTRIPLE_C=0.01,WATER_PTRIPLE_MPA=0.000611657;
 const psat=T=>{
   if(T<=WATER_TTRIPLE_C)return WATER_PTRIPLE_MPA;
@@ -468,7 +477,6 @@ const tsat=P=>{
   for(let n=0;n<48;n++){const mid=(lo+hi)/2;if(psat(mid)<P)lo=mid;else hi=mid;}
   return (lo+hi)/2;
 };
-// Sample the accurate saturation relation for the SVG phase-map curve.
 const PS=Array.from({length:75},(_,j)=>{const t=WATER_TTRIPLE_C+(WATER_TC_K-273.15-WATER_TTRIPLE_C)*j/74;return [t,psat(t)]});
 const phaseOf=(T,P)=>{
   if(T>=373.946&&P>=22.064)return ['SUPERCRITICAL FLUID','#b36bff'];
@@ -480,42 +488,33 @@ const phaseOf=(T,P)=>{
   return ['VAPOR-SIDE / VOID-PENALTY REGION (MODEL)','#ff2a2a'];
 };
 
-// Educational one-group neutron balance: all channel weights are normalized reaction/loss
-// worths. They are deliberately calibrated, not microscopic cross sections or a core solution.
-const NU_BAR=2.43; // representative total prompt + delayed neutrons emitted per thermal U-235 fission
+const NU_BAR=2.43;
 const BETA_GROUPS=[.000215,.001424,.001274,.002568,.000748,.000273];
-const LAMBDA_GROUPS=[.0124,.0305,.111,.301,1.14,3.01]; // s^-1, representative six-group U-235 data
-const BETA_EFF=BETA_GROUPS.reduce((a,b)=>a+b,0); // thermal-U-235 delayed fraction used as a classroom β_eff proxy (~0.00650)
-const LAMBDA_PROMPT_MODEL=.10; // s; intentionally stretched versus a real thermal-reactor prompt generation time (~1e-4 to 1e-5 s)
-// Classroom energy conversion: 33% of reactor heat becomes gross generator electricity;
+const LAMBDA_GROUPS=[.0124,.0305,.111,.301,1.14,3.01];
+const BETA_EFF=BETA_GROUPS.reduce((a,b)=>a+b,0);
+const LAMBDA_PROMPT_MODEL=.10;
 const THERMAL_TO_ELECTRIC=0.33;
-const STATION_SERVICE_FRACTION=0.05; // fraction of gross generator output used by plant equipment
-// ===== Fuel-temperature / Doppler feedback =====
-// Fuel temperature lags the coolant with a short time constant. Doppler adds
-// negative reactivity proportional to (T_fuel - T_coolant); this is the prompt,
-// self-limiting feedback that dominates fast reactor stability.
-const H_FUEL_COOLANT=3.33;    // MWth/°C, gives Tf - Tc ≈ 300 °C at 1000 MWth
-const TAU_FUEL=3;             // s, fuel thermal time constant (real ~5-10 s)
-const ALPHA_DOPPLER=0.00003;  // normalised reactivity weight per °C of (Tf - Tc)
+const STATION_SERVICE_FRACTION=0.05;
+const H_FUEL_COOLANT=3.33;
+const TAU_FUEL=3;
+const ALPHA_DOPPLER=0.00005; // baseline; scenario override passed per-call
 const gridPowerMWe=thermalMW=>Math.max(0,thermalMW*THERMAL_TO_ELECTRIC*(1-STATION_SERVICE_FRACTION));
-const NEUTRON_SOURCE=0.00005; // MW-eq.-scaled source term so a deeply subcritical shutdown can be restarted
-const NEUTRON_WEIGHTS={fuelCapture:.25,structuralCapture:.35,rodCapture:.44,boronCapture:.47,xenonCapture:.42,leakage:.21406};
+const NEUTRON_SOURCE=0.00005;
+const NEUTRON_WEIGHTS={fuelCapture:.25,structuralCapture:.35,rodCapture:.20,boronCapture:.47,xenonCapture:.42,leakage:.35};
 const smoothStep=x=>{x=clamp(x,0,1);return x*x*(3-2*x)};
 const coolantFeedbackFraction=(T,P)=>{
   if(P<22.064)return smoothStep((T-tsat(P))/30);
   if(T>=373.946)return smoothStep((T-373.946)/60);
   return 0;
 };
-const neutronBalance=(i,xe,T,P,Tf)=>{
+const neutronBalance=(i,xe,T,P,Tf,alphaD)=>{
   const w=NEUTRON_WEIGHTS;
+  const aD=(alphaD!==undefined)?alphaD:ALPHA_DOPPLER;
   const rodFrac=clamp(i.rods,0,100)/100;
-  // S-shaped integral rod worth: shallow at the ends, steepest near the axial
-  // flux peak at core mid-plane. Differential worth = 6·u·(1-u), peaks at u=0.5.
   const rodWorthShape=rodFrac*rodFrac*(3-2*rodFrac);
-  const moderatorFeedback=.00008*Math.max(0,T-280); // calibrated negative moderator-temperature feedback
-  const coolantDensityFeedback=.05*coolantFeedbackFraction(T,P); // calibrated negative void/density feedback
-  // Doppler: negative feedback proportional to fuel temperature above coolant temperature.
-  const dopplerFeedback=ALPHA_DOPPLER*Math.max(0,(Tf??T)-T);
+  const moderatorFeedback=.00008*Math.max(0,T-280);
+  const coolantDensityFeedback=.05*coolantFeedbackFraction(T,P);
+  const dopplerFeedback=aD*Math.max(0,(Tf??T)-T);
   const channels={
     fuelFission:1,
     fuelNonFissionCapture:w.fuelCapture,
@@ -530,17 +529,12 @@ const neutronBalance=(i,xe,T,P,Tf)=>{
   };
   const totalWeight=Object.values(channels).reduce((a,b)=>a+b,0);
   const fissionProbability=channels.fuelFission/totalWeight;
-  // One source neutron is lost into exactly one normalized channel per generation.
-  // k_eff is the expected number of fission neutrons produced by that lost neutron.
   const kEff=NU_BAR*fissionProbability;
   const rho=(kEff-1)/kEff;
   return {kEff,rho,fissionProbability,channels,totalWeight};
 };
 const equilibriumPrecursors=power=>BETA_GROUPS.map((b,j)=>b*power/(LAMBDA_PROMPT_MODEL*LAMBDA_GROUPS[j]));
 function advancePointKinetics(power,precursors,rho){
-  // Six-group one-point kinetics, integrated by RK4 over one model second.
-  // dP/dt=((rho-beta_eff)/Lambda)*P + sum(lambda_i*C_i) + S
-  // dC_i/dt=(beta_i/Lambda)*P - lambda_i*C_i
   const steps=100,h=1/steps,y0=[Math.max(0,power),...precursors];
   const derivative=y=>{
     const n=y[0],c=y.slice(1),d=[0,0,0,0,0,0,0];
@@ -558,7 +552,6 @@ function advancePointKinetics(power,precursors,rho){
   return {power:y[0],precursors:y.slice(1)};
 }
 const coolantHeatRemovalFactor=(T,P)=>{
-  // Continuous heat-transfer penalty through the model's vapor-side region; no abrupt phase cliff.
   if(P>=22.064&&T>=373.946)return 1-.35*smoothStep((T-373.946)/60);
   return 1-.45*smoothStep(Math.max(0,T-tsat(P))/30);
 };
@@ -582,7 +575,6 @@ let LP='';const phaseFx=(ph,m)=>{if(ph===LP)return;LP=ph;document.body.classList
   if(ph==='win'){chime();navigator.vibrate&&navigator.vibrate(200)}};
 addEventListener('pointerdown',()=>AU.init());
 document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,.05,'square',.05)});
-/* ================= CLIENT ================= */
 function client(){
   const role=ROLE, R=ROLES[role], cur=DEF(); let conn,peer,locked=false,retry,CD=10;
   show('#menu',false);show('#cl',true);$('#cn').textContent=R.n;$('#chome').onclick=async()=>{if(await ask('Leave this panel and go back to the join page?'))goto(location.pathname+'?role=join')};
@@ -594,14 +586,14 @@ function client(){
     if(role==='pressure')cv.innerHTML='<span style="font-size:.42em">'+(cur.heat?'▲ PRESSURE RISING':cur.spray?'▼ PRESSURE FALLING':'■ HOLDING')+'</span>';
   };
   const slider=(k,max,step,txt,lo,hi)=>{cc.innerHTML='<p>'+txt+'</p><div class="srow"><button class="pm" data-d="-1">−</button><input type="range" id="sl" min="0" max="'+max+'" step="'+step+'" value="'+cur[k]+'"><button class="pm" data-d="1">+</button></div><div class="ends"><span>'+lo+'</span><span>'+hi+'</span></div>';
-    $('#sl').oninput=e=>{cur[k]=+e.target.value;draw()};cc.querySelectorAll('.pm').forEach(b=>b.onclick=()=>{const q=$('#sl'),v=clamp(+q.value+(+b.dataset.d)*(k==='boron'?50:5),0,+q.max);q.value=v;cur[k]=v;draw()})};
+    $('#sl').oninput=e=>{cur[k]=+e.target.value;draw()};cc.querySelectorAll('.pm').forEach(b=>b.onclick=()=>{const q=$('#sl'),v=clamp(+q.value+(+b.dataset.d)*(k==='boron'?50:5),+q.min,+q.max);q.value=v;cur[k]=v;draw()})};
   if(role==='rods')slider('rods',100,1,'Insert rods to slow the reaction. Withdraw them for more power.','◄ WITHDRAW · more power','INSERT · less power ►');
   if(role==='coolant'){slider('pump',100,1,'A faster pump removes more heat from the core.','◄ SLOWER · less cooling','FASTER · more cooling ►');cc.insertAdjacentHTML('beforeend','<div class="flowbar"><i id="fbi"></i></div><p class="src">Closed loop: cooled water returns from the steam generator (about 280 °C) and the pump drives it through the core.</p>');draw()}
   if(role==='xenon')slider('boron',2000,10,'Boron absorbs neutrons. Dilute it for more power, add it for less.','◄ DILUTE · more power','ADD BORON · less power ►');
   if(role==='pressure'){cc.innerHTML='<p>Pick what the pressurizer does.</p><button class="tg up" data-m="1">▲ INCREASE PRESSURE<small>heaters ON</small></button><button class="tg" data-m="0">■ HOLD<small>heaters and spray off</small></button><button class="tg dn" data-m="-1">▼ DECREASE PRESSURE<small>spray ON</small></button>';
     cc.querySelectorAll('.tg').forEach(b=>b.onclick=()=>{const m=+b.dataset.m;cur.heat=m===1?1:0;cur.spray=m===-1?1:0;sync();draw()});}
   const sync=()=>{const m=cur.heat?1:cur.spray?-1:0;cc.querySelectorAll('.tg').forEach(b=>b.classList.toggle('on',+b.dataset.m===m))};
-  const link=(t,ok)=>{$('#lk').textContent=t;$('#lk').className=ok?'ok':'st';$('#ex').disabled=!ok;};
+  const link=(t,ok,btnText)=>{$('#lk').textContent=t;$('#lk').className=ok?'ok':'st';$('#ex').disabled=!ok;if(btnText!==undefined)$('#ex').textContent=btnText;};
   const cool=()=>{locked=true;$('#cl').classList.add('lock');$('#ex').style.display='none';$('#cd').style.display='block';
     const t0=Date.now(),iv=setInterval(()=>{const p=Math.min(1,(Date.now()-t0)/(CD*1000));$('#cdi').style.width=p*100+'%';
       if(p>=1){clearInterval(iv);locked=false;$('#cl').classList.remove('lock');$('#ex').style.display='';$('#cd').style.display='none'}},100);};
@@ -610,17 +602,23 @@ function client(){
     try{conn.send({t:'cmd',role,v});}catch(err){link('SEND FAILED · RETRY',false);$('#cb').textContent='The command was not transmitted. Check the connection.';return;}
     AU.init();AU.tone(300,.25,'sawtooth',.1,0,900);navigator.vibrate&&navigator.vibrate(40);cool();};
   const go=()=>{
-    if(!ROOM){link('NO ROOM IN URL',false);return}
-    link('CONNECTING…',false);
+    if(!ROOM){link('NO ROOM IN URL',false,'NO ROOM');return}
+    link('CONNECTING…',false,'CONNECTING…');
     if(!window.Peer){loadPeer().then(go).catch(()=>{link('PEERJS BLOCKED · RETRYING',false);re()});return}try{peer=new Peer();}catch(e){link('PEERJS BLOCKED',false);return}
     peer.on('open',()=>{conn=peer.connect(ROOM,{reliable:true});
-      conn.on('open',()=>{link('CONNECTED · WAITING FOR HOST',false);conn.send({t:'hello',role})});
+      conn.on('open',()=>{link('CONNECTED · WAITING FOR HOST',false,'WAITING FOR HOST');conn.send({t:'hello',role})});
       conn.on('data',d=>{if(!d)return;
-        if(d.t==='cap'&&role==='coolant'){const q=$('#sl');if(q){q.max=d.v;if(+q.value>d.v){q.value=d.v;cur.pump=d.v;draw()}}}
+        if(d.t==='cap'&&d.lim){const q=$('#sl');if(q){const key=R.k[0];const mn=d.lim[key+'Min'];const mx=d.lim[key+'Max'];
+          if(mn!==undefined)q.min=mn;if(mx!==undefined)q.max=mx;
+          if(+q.value<+q.min){q.value=q.min;cur[key]=+q.min}
+          if(+q.value>+q.max){q.value=q.max;cur[key]=+q.max}
+          draw()}}
         if(d.t==='ack'){if(d.cd)CD=d.cd;if(d.br!==undefined)$('#cb').textContent=d.br+(d.hint?' · '+d.hint:'');Object.assign(cur,d.v);draw();sync();const s=$('#sl');if(s)s.value=cur[R.k[0]]}
-        if(d.t==='st'){const e=d.ph==='win'?'MISSION COMPLETE':d.ph==='lose'?'MISSION FAILED':d.ph==='lobby'?'WAITING FOR START':d.ph==='brief'?'BRIEFING ON SCREEN':'';
-          link(e||'ONLINE',d.ph==='run'&&!!conn&&conn.open);phaseFx(d.ph,d.m)}});
-      conn.on('close',()=>{link('LINK LOST · RETRYING',false);re()});conn.on('error',()=>{});});
+        if(d.t==='st'){
+          const e=d.ph==='win'?'MISSION COMPLETE':d.ph==='lose'?'MISSION FAILED':d.ph==='lobby'?'WAITING FOR START':d.ph==='brief'?'BRIEFING ON SCREEN':'ONLINE';
+          const btn=d.ph==='run'?'SEND ORDER':d.ph==='lobby'?'WAITING FOR HOST':d.ph==='brief'?'BRIEFING…':d.ph==='win'?'COMPLETE ✓':d.ph==='lose'?'ENDED':'WAITING…';
+          link(e,d.ph==='run'&&!!conn&&conn.open,btn);phaseFx(d.ph,d.m)}});
+      conn.on('close',()=>{link('LINK LOST · RETRYING',false,'LINK LOST');re()});conn.on('error',()=>{});});
     peer.on('error',e=>{link(e&&e.type==='peer-unavailable'?'ROOM NOT FOUND · CHECK CODE':'LINK ERROR · RETRYING',false);re()});
     peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   };
@@ -628,18 +626,23 @@ function client(){
   draw();sync();go();
 }
 
-/* ================= HOST ================= */
 function host(mode,diff){
-  let WH=15,D=DIFF[mode==='group'?diff:'sandbox'];const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,pcap:100,stuck:0,conns:{},ov:false,peer:null};
+  let WH=15,D=DIFF[mode==='group'?diff:'sandbox'];const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null};
   const id='gpwr-host-'+(1000+Math.floor(Math.random()*9000));
   const base=location.origin+location.pathname;
   const pick=r=>{const o={};ROLES[r].k.forEach(k=>o[k]=S.in[k]);return o};
+  const getLim=()=>({
+    rodsMin:D.rodsMin||0,rodsMax:D.rodsMax||100,
+    pumpMin:D.pumpMin||0,pumpMax:Math.min(S.pcap,D.pumpMax||100),
+    boronMin:D.boronMin||0,boronMax:D.boronMax||2000
+  });
   const apply=(r,v)=>{if(!v||typeof v!=='object')return;ROLES[r].k.forEach(k=>{if(typeof v[k]==='number'&&isFinite(v[k])){
-      const mx=k==='boron'?2000:(k==='heat'||k==='spray')?1:k==='pump'?S.pcap:100;const o=S.in[k];S.in[k]=clamp(Math.round(v[k]),0,mx);if(o!==S.in[k])note(r,k,o,S.in[k])}});};
+      const mx=k==='boron'?(D.boronMax||2000):(k==='heat'||k==='spray')?1:k==='pump'?Math.min(S.pcap,D.pumpMax||100):(D.rodsMax||100);
+      const mn=k==='boron'?(D.boronMin||0):k==='pump'?(D.pumpMin||0):k==='rods'?(D.rodsMin||0):0;
+      const o=S.in[k];S.in[k]=clamp(Math.round(v[k]),mn,mx);if(o!==S.in[k])note(r,k,o,S.in[k])}});};
   const bc=m=>Object.values(S.conns).forEach(c=>{try{c.open&&c.send(m)}catch(e){}});
   const nconn=()=>Object.keys(S.conns).length;
 
-  /* lobby */
   const lobby=()=>{$('#slots').innerHTML=Object.keys(ROLES).map(r=>'<div class="slot'+(S.conns[r]?' on':'')+'"><b>'+ROLES[r].n+'</b><span class="st">'+(S.conns[r]?'CONNECTED':'WAITING')+'</span></div>').join('');
     $('#bStart').disabled=!(nconn()===4||S.ov);
     ['Rods','Pump','Pres','Bor'].forEach((x,i)=>{const r=Object.keys(ROLES)[i],l=$('#l'+x);if(l)l.textContent=S.conns[r]?'● LINK OK':(S.mode==='sandbox'?'':'○ OFFLINE · override')});};
@@ -650,8 +653,13 @@ function host(mode,diff){
     S.peer.on('connection',c=>{
       c.on('data',d=>{if(!d||typeof d!=='object'||!ROLES[d.role])return;const r=d.role;
         if(d.t==='hello'){const old=S.conns[r];S.conns[r]=c;c._r=r;if(old&&old!==c)try{old.close()}catch(e){}
-          c.send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''});c.send({t:'cap',v:S.pcap});c.send({t:'st',ph:S.phase});lobby();}
-        else if(d.t==='cmd'&&c._r===r&&S.conns[r]===c&&S.phase==='run'){apply(r,d.v);AU.tone(520,.12,'triangle',.1,0,780);sync()}});
+          c.send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''});
+          c.send({t:'cap',pcap:S.pcap,lim:getLim()});
+          c.send({t:'st',ph:S.phase});lobby();}
+        else if(d.t==='cmd'&&c._r===r&&S.conns[r]===c&&S.phase==='run'){
+          apply(r,d.v);
+          c.send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''});
+          AU.tone(520,.12,'triangle',.1,0,780);sync()}});
       c.on('close',()=>{if(S.conns[c._r]===c){delete S.conns[c._r];lobby()}});c.on('error',()=>{});
     });
   };
@@ -666,7 +674,6 @@ function host(mode,diff){
   bm.appendChild(document.createElement('u'));
   for(let k=0;k<10;k++){const c=document.createElementNS(NS,'circle');c.setAttribute('cx',64);c.setAttribute('cy',225+Math.random()*180);c.setAttribute('r',1.8);c.setAttribute('fill','#fff59a');c.setAttribute('class','nu');c.style.animationDelay=(-Math.random()*1.4)+'s';nf.appendChild(c)}
 
-  /* override panel */
   const sync=()=>{const i=S.in;$('#oRods').value=i.rods;$('#oPump').value=i.pump;$('#oBor').value=i.boron;
     $('#tRods').textContent=i.rods+'%';$('#tPump').textContent=i.pump+'%';$('#tBor').textContent=i.boron;
     $('#oHeat').classList.toggle('on',!!i.heat);$('#oSpr').classList.toggle('on',!!i.spray);$('#oHold').classList.toggle('on',!i.heat&&!i.spray);render()};
@@ -676,7 +683,6 @@ function host(mode,diff){
   addEventListener('keydown',e=>{if(e.shiftKey&&(e.key==='O'||e.key==='o')){e.preventDefault();
     S.ov=!S.ov;show('#ovp',S.ov);document.body.classList.toggle('ov',S.ov);if(S.phase==='lobby')lobby();}});
 
-  /* render */
   const cls=(el,c)=>{el.className='big '+c};
   const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
   function render(){
@@ -684,8 +690,9 @@ function host(mode,diff){
     const grossP=N*THERMAL_TO_ELECTRIC,plantUseP=grossP*STATION_SERVICE_FRACTION,netGrid=gridPowerMWe(N);
     $('#vT').firstChild.nodeValue=T.toFixed(0);$('#vP').firstChild.nodeValue=P.toFixed(2);$('#vN').firstChild.nodeValue=netGrid.toFixed(0);
     $('#thermalReadout').innerHTML='Heat '+N.toFixed(0)+' MWth · Gen '+grossP.toFixed(0)+' MWe gross<br>Plant use '+plantUseP.toFixed(1)+' MWe · To grid <b>'+netGrid.toFixed(0)+' MWe</b> net';
-    cls($('#vT'),(P<22.064&&T>=tsat(P))?'cr':T>350?'wn':'ok');cls($('#vP'),(P<11||P>20)?'cr':(P<13||P>17.5)?'wn':'ok');
-    cls($('#vN'),Math.abs(N-1000)<=D.band?'ok':N>1150?'wn':'');
+    cls($('#vT'),(P<22.064&&T>=tsat(P))?'cr':T>(D.thermalHigh||350)?'wn':'ok');
+    cls($('#vP'),(P<(D.pressureCriticalLow||10)||P>(D.pressureCriticalHigh||20))?'cr':(P<(D.pressureLow||13)||P>(D.pressureHigh||17.5))?'wn':'ok');
+    cls($('#vN'),Math.abs(N-1000)<=D.band?'ok':'wn');
     $('#rRods').firstChild&&($('#rRods').innerHTML=i.rods+'<span class="unit">% inserted</span>');$('#bRods').style.width=i.rods+'%';
     $('#rPump').textContent=i.pump+'%';$('#bPump').style.width=i.pump+'%';
     $('#rPres').textContent=i.heat?'▲ HEATING':(i.spray||S.stuck>0)?'▼ SPRAYING':'■ HOLDING';
@@ -708,13 +715,14 @@ function host(mode,diff){
     $('#tv').textContent=fmt(Math.max(0,S.rem));cls($('#tv'),S.rem<=60?'cr':S.rem<=180?'wn':'ok');
     $('#hold').style.width=(S.mode==='sandbox'?0:S.hold/WH*100)+'%';
     {const tsNow=P<22.064?tsat(P):Infinity,sub=tsNow-T;let msg='LOOKING GOOD — reactor conditions are within the model’s safe range',level=0;
-      if(P<10){msg='PRESSURE TOO LOW — the coolant has very little room before boiling. Check the pressurizer.';level=2}
-      else if(P>=20){msg='PRESSURE VERY HIGH — the system is near its game pressure limit. Lower pressure carefully.';level=2}
-      else if(T>350){msg='COOLANT TOO HOT — the coolant is near its game temperature limit. Increase heat removal.';level=2}
-      else if(P<13){msg='PRESSURE LOW — the coolant has less room before boiling. Check the pressurizer.';level=1}
-      else if(P>17.5){msg='PRESSURE HIGH — the system is above its usual range. Use spray to lower it.';level=1}
+      const pCritLow=D.pressureCriticalLow||10,pCritHigh=D.pressureCriticalHigh||20,tCritHigh=D.thermalCritical||350,pLowWarn=D.pressureLow||13,pHighWarn=D.pressureHigh||17.5,tWarm=(D.thermalHigh||350)-20;
+      if(P<pCritLow){msg='PRESSURE TOO LOW — the coolant has very little room before boiling. Check the pressurizer.';level=2}
+      else if(P>=pCritHigh){msg='PRESSURE VERY HIGH — the system is near its game pressure limit. Lower pressure carefully.';level=2}
+      else if(T>tCritHigh){msg='COOLANT TOO HOT — the coolant is near its game temperature limit. Increase heat removal.';level=2}
+      else if(P<pLowWarn){msg='PRESSURE LOW — the coolant has less room before boiling. Check the pressurizer.';level=1}
+      else if(P>pHighWarn){msg='PRESSURE HIGH — the system is above its usual range. Use spray to lower it.';level=1}
       else if(sub<(D.subcoolMargin||10)){msg='COOLING MARGIN LOW — the coolant is close to its boiling temperature at the current pressure. Improve cooling or raise pressure.';level=1}
-      else if(T>330){msg='COOLANT WARM — heat removal may be lagging. Check pump speed.';level=1}
+      else if(T>tWarm){msg='COOLANT WARM — heat removal may be lagging. Check pump speed.';level=1}
       else if(S.k>1.01){msg='CHAIN REACTION GROWING QUICKLY — each neutron generation is producing more than the last. Watch reactor power.';level=1}
       else if(S.k<.99&&S.Nf>10){msg='CHAIN REACTION WEAKENING — too few neutrons are left to sustain the current chain reaction.';level=1}
       $('#studentStatus').textContent=msg;$('#studentStatus').className='student-status'+(level===2?' danger':level===1?' warn':'');
@@ -730,11 +738,13 @@ function host(mode,diff){
       else if(promptCritical){if(k>=1.01){label='VERY RAPID CHAIN-REACTION GROWTH';color='#ff2a2a'}else{label='RAPID CHAIN-REACTION GROWTH';color='#ffd400'}}
       else{label='CHAIN REACTION GROWING · delayed neutrons help sustain it';color='#ffd400'}
       $('#kv').textContent=k.toFixed(4);$('#kv').style.color=color;$('#kst').textContent=label;$('#kst').style.color=color;
-      const rate=S.dPower||0;$('#krate').textContent='Power change '+(rate>=0?'+':'')+rate.toFixed(1)+' MWth/s · reactivity ρ '+(rho>=0?'+':'')+rho.toFixed(4);
+      const rate=S.dPower||0;$('#krate').textContent='Power change '+(rate>=0?'+':'')+rate.toFixed(1)+' MWth/s · ρ '+(rho>=0?'+':'')+rho.toFixed(4);
       const clip=k<.98?'CURRENT k BELOW GRAPH RANGE ↓':k>1.02?'CURRENT k ABOVE GRAPH RANGE ↑':'';$('#kclip').textContent=clip;$('#kclip').classList.toggle('hide',!clip);
       const ky=v=>60-(clamp(v,.98,1.02)-.98)/.04*60;$('#kl').setAttribute('points',(S.kh||[]).map((v,j)=>(j*300/89).toFixed(1)+','+ky(v).toFixed(1)).join(' '))}
     $('#cflow').textContent='closed loop · model cold-leg reference 280 °C ▸ pump ▸ core ▸ hot leg '+T.toFixed(0)+' °C (ΔT '+(T-280).toFixed(0)+' °C)';$('#prv').setAttribute('opacity',S.valve?1:0);
-    $('#hl').textContent=S.mode==='sandbox'?'SANDBOX · open exploration · no automatic win timer':'HOLD · grid ≈315 MWe · coolant 280–350°C · cooling margin ≥'+(D.subcoolMargin||10)+'°C · pressure safe · '+S.hold+'/'+WH+'s';{const ct=D.hints&&S.phase==='run'?coach():'';$('#coach').textContent=ct;$('#coach').classList.toggle('hide',!ct)}
+    const holdActive = S.hold > 0;
+    $('#hl').style.color = holdActive ? '#39ff14' : 'var(--dim)';
+    $('#hl').textContent=S.mode==='sandbox'?'SANDBOX · open exploration · no automatic win timer':(holdActive?'● HOLDING · ':'HOLD · ')+'grid ≈315 MWe · coolant 280–'+(D.thermalHigh||350)+'°C · margin ≥'+(D.subcoolMargin||10)+'°C · '+S.hold+'/'+WH+'s';{const ct=D.hints&&S.phase==='run'?coach():'';$('#coach').textContent=ct;$('#coach').classList.toggle('hide',!ct)}
   }
   function burst(){const cv=$('#fx'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;show('#fx',true);
     const q=$('#svgw svg').getBoundingClientRect(),sc=Math.min(q.width/640,q.height/500),cx=q.left+(q.width-640*sc)/2+120*sc,cy=q.top+(q.height-500*sc)/2+315*sc,ps=[];
@@ -750,16 +760,18 @@ win:{res:'win',m:0,cls:'es-win',t:'SUCCESS · STEADY ELECTRICITY TO THE GRID',x:
 heat:{res:'lose',m:0,cls:'es-boil',t:'COOLANT TEMPERATURE TOO HIGH',x:'The modeled hot-leg coolant became much hotter than the game’s allowed limit. The simulation does not calculate fuel or cladding temperature, so this does not mean it calculated that the fuel melted.'},
 over:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO HIGH · SYSTEM LIMIT REACHED',x:'Pressure went beyond this game’s pressure limit. The critical point of water is a separate science idea; reaching it does not automatically mean a real reactor vessel breaks. This game limit is not a real plant limit.'},
 depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNSAFE',x:'Pressure fell below this game’s limit. Whether water starts to boil also depends on its temperature. The game uses a simplified rule and does not calculate the detailed formation of steam bubbles.'}};
-  function evt(m){const d=document.createElement('div');d.textContent=m;d.style.borderColor='var(--r)';$('#log').prepend(d);setTimeout(()=>d.remove(),20000);AU.tone(500,.4,'square',.15,0,250)}
+  function evt(m){const d=document.createElement('div');d.textContent=m;d.className='r';$('#log').prepend(d);setTimeout(()=>d.remove(),20000);AU.tone(500,.4,'square',.15,0,250);
+    while($('#log').children.length>3)$('#log').lastChild.remove()}
   function coach(){const i=S.in,N=S.N,T=S.T,P=S.P;
-    if(P<13.5)return'Division 3: pressure is getting low. Use ▲ HEAT to raise it.';if(P>17)return'Division 3: pressure is high. Use ▼ SPRAY to lower it.';
-    if(P<22.064&&T>=tsat(P)-(D.subcoolMargin||10))return'Coolant subcooling margin is below '+(D.subcoolMargin||10)+' °C. Coordinate cooling and pressure control.';if(T>330&&i.pump<70)return'Hot-leg coolant is warm. Div 2: review the pump setting.';
-    if(Math.abs(N-1000)<=D.band&&T<=350&&P>=13&&P<=17.5&&P<22.064&&tsat(P)-T>=(D.subcoolMargin||10))return'Power is on target and coolant margin is adequate. Check drift, then hold controls.';
+    if(P<(D.pressureLow||13)+0.5)return'Division 3: pressure is getting low. Use ▲ HEAT to raise it.';if(P>(D.pressureHigh||17.5)-0.5)return'Division 3: pressure is high. Use ▼ SPRAY to lower it.';
+    if(P<22.064&&T>=tsat(P)-(D.subcoolMargin||10))return'Coolant subcooling margin is below '+(D.subcoolMargin||10)+' °C. Coordinate cooling and pressure control.';
+    if(T>(D.thermalHigh||350)-20&&i.pump<70)return'Hot-leg coolant is warm. Div 2: review the pump setting.';
+    if(Math.abs(N-1000)<=D.band)return'Power is on target and coolant margin is adequate. Check drift, then hold controls.';
     if(N<1000)return'Grid power is below the target. Division 1 can withdraw rods; Division 4 can dilute boron. Coordinate changes.';return'Grid power is above the target. Division 1 can insert rods; Division 4 can add boron. Coordinate changes.'}
   function note(r,k,o,n){const L={rods:['DIV 1','Control rods','% inserted'],pump:['DIV 2','Pump speed','%'],boron:['DIV 4','Boron',' ppm']};let m;
-    if(k==='heat'||k==='spray')m='DIV 3 ▸ '+(k==='heat'?(n?'▲ Heaters ON · pressure rising':'Heaters off'):(n?'▼ Spray ON · pressure falling':'Spray off'));
+    if(k==='heat'||k==='spray')m='DIV 3 ▸ '+(k==='heat'?(n?'▲ Heaters ON':'Heaters off'):(n?'▼ Spray ON':'Spray off'));
     else{const l=L[k];m=l[0]+' ▸ '+l[1]+' '+o+' → '+n+l[2]+(k==='boron'?(n>o?'  (adding poison)':'  (diluting)'):k==='rods'?(n>o?'  (inserting)':'  (withdrawing)'):'')}
-    const d=document.createElement('div');d.textContent=m;if(r==='xenon')d.style.borderColor='#b36bff';$('#log').prepend(d);setTimeout(()=>d.remove(),9000);while($('#log').children.length>4)$('#log').lastChild.remove()}
+    const d=document.createElement('div');d.textContent=m;if(r==='xenon')d.className='x';$('#log').prepend(d);setTimeout(()=>d.remove(),9000);while($('#log').children.length>3)$('#log').lastChild.remove()}
   function end(k){const e=ES[k],b=document.body;S.phase=e.res;bc({t:'st',ph:e.res,m:e.m});AU.klaxon(false);b.classList.remove('alarm');
     const fin=()=>{if(S.phase==='lobby')return;$('#ovr').className=e.cls;$('#ot').style.color='';$('#ot').textContent=e.t;$('#om').textContent=e.x;show('#ovr',true)};
     if(e.res==='win'){chime();return fin()}
@@ -768,28 +780,24 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNS
     setTimeout(()=>{AU.klaxon(false);b.classList.add('boom');AU.noise(2.6,1,1400);AU.tone(110,2,'sawtooth',.4,0,25);burst()},3400);
     setTimeout(fin,5600);}
 
-  /* Simplified coupled model, updated once per second. These are normalized teaching equations, not plant kinetics or thermal-hydraulic correlations. */
   function tick(){
     if(S.phase!=='run')return;
     const i=S.in,prev=S.prev||{N:S.N,T:S.T,P:S.P,Nf:S.Nf};
-    // --- fuel-temperature / Doppler state (first-order lag) ---
     {
       const TfEq=S.T+(S.Nf+20)/H_FUEL_COOLANT;
       let TfNext=S.Tfuel+(TfEq-S.Tfuel)/TAU_FUEL;
       if(!isFinite(TfNext))TfNext=S.T;
       S.Tfuel=clamp(TfNext,0,2000);
     }
-    const balance=neutronBalance(i,S.xe,S.T,S.P,S.Tfuel);
+    const balance=neutronBalance(i,S.xe,S.T,S.P,S.Tfuel,D.alphaDoppler);
     S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;
     const oldFissionPower=S.Nf;
     const kinetics=advancePointKinetics(S.Nf,S.precursors,S.rho);
     S.Nf=kinetics.power;S.precursors=kinetics.precursors;
-    S.dPower=S.Nf-oldFissionPower; // actual one-second change in modeled fission power, MW-eq./s
+    S.dPower=S.Nf-oldFissionPower;
     S.kh=(S.kh||[]).concat(S.k).slice(-90);
-    const n=S.Nf+20; // fixed illustrative residual-heat allowance in the thermal balance
+    const n=S.Nf+20;
     S.N=n;
-    // Explicit one-second iodine/xenon update: both derivatives use beginning-of-step states.
-    // Coefficients are compressed/normalized for gameplay, not isotope-accurate kinetics.
     {
       const f=Math.min(1.2,S.Nf/1500),xi0=S.xi,xe0=S.xe;
       S.xi=Math.max(0,xi0+.0077*f-.0167*xi0);
@@ -797,13 +805,17 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNS
     }
     const heatFactor=coolantHeatRemovalFactor(S.T,S.P);
     const rem=32*(Math.min(i.pump,S.pcap)/100)*(S.T-280)*heatFactor;
-    S.T=Math.max(280,S.T+(n-rem)/150);
-    S.P+=.0025*(S.T-305)-.015+(i.heat?.05:0)-(i.spray||S.stuck>0?.08:0);
+    const thermalTau=D.thermalTau||150;
+    S.T=Math.max(280,S.T+(n-rem)/thermalTau);
+    const pRate=D.pressureRate||1;
+    S.P+=pRate*(.0025*(S.T-305)-.015+(i.heat?.05:0)-(i.spray||S.stuck>0?.08:0));
     if(S.P>17.2)S.valve=1;else if(S.P<16.4)S.valve=0;
     if(S.valve){S.P-=.15;if(!S.vlog){S.vlog=1;evt('MODEL RELIEF VALVE · pressure above 17.2 MPa')}}else S.vlog=0;
     S.P=clamp(S.P,0,26);if(S.stuck>0)S.stuck--;
     if(S.mode==='group'){S.rem--;const el=D.rem-S.rem;if(D.k==='hard'){
-      if(el>=180&&!S.e1){S.e1=1;S.pcap=55;S.in.pump=Math.min(S.in.pump,55);$('#oPump').max=55;bc({t:'cap',v:55});evt('EVENT · Primary pump degraded: model maximum 55%');sync()}
+      if(el>=180&&!S.e1){S.e1=1;S.pcap=55;S.in.pump=Math.min(S.in.pump,55);$('#oPump').max=55;
+        bc({t:'cap',pcap:55,lim:{rodsMin:D.rodsMin||0,rodsMax:D.rodsMax||100,pumpMin:D.pumpMin||0,pumpMax:Math.min(55,D.pumpMax||100),boronMin:D.boronMin||0,boronMax:D.boronMax||2000}});
+        evt('EVENT · Primary pump degraded: model maximum 55%');sync()}
       if(el>=300&&!S.e2){S.e2=1;S.stuck=20;evt('EVENT · Pressurizer spray valve stuck OPEN for 20 s')}}}
     const shutdownSetup=i.rods>=98&&i.boron>=1000;
     if(S.mode==='group'&&D.k==='hard'&&!shutdownSetup)S.lockoutArmed=true;
@@ -812,33 +824,43 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNS
     S.bh=(S.bh||[]).concat(i.boron).slice(-30);
     const sig=JSON.stringify(i),chg=sig!==S.sig;S.sig=sig;
     const satMargin=S.P<22.064?tsat(S.P)-S.T:-Infinity;
-    const thermalOK=S.T<=350&&S.T>=280&&S.P>=13&&S.P<=17.5&&satMargin>=(D.subcoolMargin||10);
-    const driftOK=Math.abs(S.N-prev.N)<=12&&Math.abs(S.T-prev.T)<=1.5&&Math.abs(S.P-prev.P)<=(D.pressureDrift||.05);
-    const powerOK=Math.abs(S.N-1000)<=D.band; // Internal reactor-heat target; dashboard reports estimated net grid electricity.
-    if(S.mode!=='sandbox'&&!chg&&powerOK&&thermalOK&&driftOK)S.hold++;else S.hold=0;
+    const thermalOK=S.T<=(D.thermalHigh||350)&&S.T>=280&&S.P>=(D.pressureLow||13)&&S.P<=(D.pressureHigh||17.5)&&satMargin>=(D.subcoolMargin||10);
+    const powerDrift=D.powerDrift||25,tempDrift=D.tempDrift||1.5;
+    const driftOK=Math.abs(S.N-prev.N)<=powerDrift&&Math.abs(S.T-prev.T)<=tempDrift&&Math.abs(S.P-prev.P)<=(D.pressureDrift||.05);
+    const powerOK=Math.abs(S.N-1000)<=D.band;
+    if(S.mode!=='sandbox'){
+      if(chg){S.hold=0;S.holdGrace=0}
+      else if(powerOK&&thermalOK&&driftOK){S.hold++;S.holdGrace=0}
+      else{S.holdGrace=(S.holdGrace||0)+1;if(S.holdGrace>3){S.hold=0;S.holdGrace=0}}
+    }
     render();bc({t:'st',ph:'run'});
-    const lv=(S.T>350||S.P<11||S.P>20||(S.P<22.064&&S.T>tsat(S.P)+15))?2:(S.T>330||S.P<13||S.P>17.5||S.valve||satMargin<(D.subcoolMargin||10))?1:0;
+    const pCritLow=D.pressureCriticalLow||10,pCritHigh=D.pressureCriticalHigh||20,tCritHigh=D.thermalCritical||350;
+    const lv=(S.T>tCritHigh||S.P<pCritLow||S.P>pCritHigh||(S.P<22.064&&S.T>tsat(S.P)+15))?2:(S.T>(D.thermalHigh||350)-20||S.P<(D.pressureLow||13)||S.P>(D.pressureHigh||17.5)||S.valve||satMargin<(D.subcoolMargin||10))?1:0;
     document.body.classList.toggle('alarm',lv===2);AU.klaxon(lv===2);
     if(lv===1)AU.tone(880,.12,'square',.07);if(S.rem<=10&&S.rem>0)AU.tone(1300,.06,'square',.07);
-    // Model-defined loss conditions; no uncalculated physical mechanism is claimed here.
-    if(S.P>=24)return end('over');
-    if(S.T>800&&S.P<10)return end('boil');
+    if(S.P>=(D.failOver||24))return end('over');
+    if(S.T>800&&S.P<(D.failDepr||10))return end('boil');
     if(S.mode==='group'&&D.k==='hard'&&S.lockoutHold>=10)return end('xenonLockout');
     if(S.T>1200){const dil=Math.max.apply(null,S.bh)-i.boron>=400;return end(i.rods<=15&&(dil||i.boron<300)?'spike':'heat')}
-    if(S.P<10)return end('depr');
+    if(S.P<(D.failDepr||10))return end('depr');
     if(S.mode!=='sandbox'&&S.hold>=WH)return end('win');
     S.prev={N:S.N,T:S.T,P:S.P};
     if(S.mode==='group'&&S.rem<=0)end('time');
   }
-  const begin=()=>{const st=D.st;Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0});WH=D.hold;
+  const begin=()=>{const st=D.st;Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0});WH=D.hold;
     S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
     S.Nf=Math.max(0,D.initialFissionPower??0);
     S.Tfuel=S.T+(S.Nf+20)/H_FUEL_COOLANT;
     S.precursors=D.k==='hard'?BETA_GROUPS.map(()=>0):equilibriumPrecursors(S.Nf);
-    {const balance=neutronBalance(S.in,S.xe,S.T,S.P,S.Tfuel);S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;S.kh=[S.k]}
-    S.N=S.Nf+20;S.dPower=0;S.prev={N:S.N,T:S.T,P:S.P,Nf:S.Nf};$('#oPump').max=100;bc({t:'cap',v:100});
+    {const balance=neutronBalance(S.in,S.xe,S.T,S.P,S.Tfuel,D.alphaDoppler);S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;S.kh=[S.k]}
+    S.N=S.Nf+20;S.dPower=0;S.prev={N:S.N,T:S.T,P:S.P,Nf:S.Nf};
+    $('#oRods').min=D.rodsMin||0;$('#oRods').max=D.rodsMax||100;
+    $('#oPump').min=D.pumpMin||0;$('#oPump').max=Math.min(S.pcap,D.pumpMax||100);
+    $('#oBor').min=D.boronMin||0;$('#oBor').max=D.boronMax||2000;
+    const lim=getLim();
+    bc({t:'cap',pcap:S.pcap,lim:lim});
     Object.keys(ROLES).forEach(r=>S.conns[r]&&S.conns[r].send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''}));
-    AU.init();document.body.classList.remove('melt','boom','alarm','cold');document.body.classList.toggle('hard',D.k==='hard');$('#ovr').className='hide';show('#fx',false);show('#lobby',false);show('#ovr',false);show('#hud',true);sync();
+    AU.init();document.body.classList.remove('melt','boom','alarm','cold');document.body.classList.toggle('hard',D.k==='hard');$('#ovr').className='hide';show('#fx',false);show('#lobby',false);show('#ovr',false);show('#hud',true);$('#log').innerHTML='';sync();
     if(S.mode==='group'){$('#bt').textContent=D.n+' · '+D.t;$('#bs').textContent=D.story;$('#bg').textContent=D.goal;show('#brf',true);bc({t:'st',ph:'brief'})}else bc({t:'st',ph:'run'})};
   $('#bgo').onclick=()=>{show('#brf',false);S.phase='run';AU.init();bc({t:'st',ph:'run'})};
   $('#bStart').onclick=begin;
@@ -858,7 +880,6 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW · COOLANT CONDITIONS UNS
   window.addEventListener('beforeunload',()=>{try{S.peer&&S.peer.destroy()}catch(e){}});
 }
 
-/* ================= ROUTER ================= */
 if(ROLE==='join')joinPage();else if(ROLE&&ROLES[ROLE])client();
 else{$('#bGroup').onclick=showDiff;$('#bSand').onclick=()=>host('sandbox');$('#bLearn').onclick=learn;if(Q.get('mode')==='group')showDiff();if(Q.get('mode')==='learn')learn()}
 })();
