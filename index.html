@@ -67,7 +67,7 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 #svgw{flex:1;min-height:0}
 #svgw svg{width:100%;height:100%}
 
-/* Timer widget: small, top-right of reactor area */
+/* Timer widget */
 #timerBox{position:absolute;top:.6vh;right:.8vw;background:#000d;border:1px solid #39ff1440;border-radius:10px;padding:.3vh .45vw;text-align:center;z-index:2;min-width:66px;max-width:150px}
 #timerBox #tv{font-size:clamp(.95rem,1.5vw,1.4rem);font-weight:700;color:var(--g);line-height:1}
 #timerBox .bar{height:1vh;margin-top:.2vh}
@@ -118,6 +118,19 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 .pn.offline .ovr-btn,.pn.overridden .ovr-btn{display:inline-block}
 .pn.overridden .ovr-btn{border-color:var(--g);color:var(--g)}
 .pn.overridden .ovr-btn:hover{background:#39ff1422}
+
+/* SANDBOX MODE: no clients, no override concept. Hide the override row and always enable controls. */
+body.sbx .pn-ovr{display:none!important}
+body.sbx .pn-ctl .pm{opacity:1;pointer-events:auto;cursor:pointer}
+body.sbx .pn-ctl .pm:hover{background:#ffd40022}
+body.sbx .pn-ctl .tb{opacity:1;pointer-events:auto;cursor:pointer;border-color:#888;color:var(--tx)}
+body.sbx .pn-ctl .tb.on{border-color:var(--y);background:var(--y);color:#000;box-shadow:0 0 10px #ffd40088}
+body.sbx .pn-ctl input[type=range]::-webkit-slider-runnable-track{opacity:1}
+body.sbx .pn-ctl input[type=range]::-moz-range-track{opacity:1}
+body.sbx .pn-ctl input[type=range]::-webkit-slider-thumb{opacity:1;pointer-events:auto}
+body.sbx .pn-ctl input[type=range]::-moz-range-thumb{opacity:1;pointer-events:auto}
+body.sbx .pn.offline{border-color:#39ff1430;opacity:1}
+
 #right .bar{height:.9vh}
 #right .bm{height:1.6vh;margin:.2vh 0}
 
@@ -147,7 +160,6 @@ body.cold #hud{filter:saturate(.2) hue-rotate(160deg) brightness(.6);transition:
 .pmtx div{border-left:4px solid var(--c);background:#101a12;padding:.8vh 1vw;border-radius:10px}
 .pmtx b{display:block}
 
-/* overlays & misc */
 #vig{position:fixed;inset:0;pointer-events:none;z-index:18;opacity:0;box-shadow:inset 0 0 16vw #ff2a2a}
 body.alarm #vig{animation:vg .7s ease-in-out infinite alternate}@keyframes vg{to{opacity:.9}}
 #fx{position:fixed;inset:0;z-index:40;pointer-events:none}
@@ -772,14 +784,16 @@ function host(mode,diff){
     const st=document.getElementById('os-'+r);
     const btn=document.getElementById('ob-'+r);
     if(!st||!btn)return;
+    const isSandbox = S.mode==='sandbox';
     const connected=!!S.conns[r];
     const overridden=!!S.override[r];
-    panel.classList.toggle('overridden',overridden);
-    panel.classList.toggle('offline',!connected&&!overridden);
-    // Enable/disable panel controls based on override
-    panel.querySelectorAll('input[type=range]').forEach(inp=>{inp.disabled=!overridden});
-    panel.querySelectorAll('button.tb').forEach(b=>{b.disabled=!overridden});
-    panel.querySelectorAll('button.pm').forEach(b=>{b.disabled=!overridden});
+    const enabled = isSandbox || overridden;
+    panel.classList.toggle('overridden',!isSandbox && overridden);
+    panel.classList.toggle('offline',!isSandbox && !connected && !overridden);
+    panel.querySelectorAll('input[type=range]').forEach(inp=>{inp.disabled=!enabled});
+    panel.querySelectorAll('button.tb').forEach(b=>{b.disabled=!enabled});
+    panel.querySelectorAll('button.pm').forEach(b=>{b.disabled=!enabled});
+    if(isSandbox){st.textContent='';btn.textContent='';return;}
     if(overridden){st.textContent='⚠ HOST OVERRIDE';btn.textContent='RELEASE';}
     else if(!connected){st.textContent='○ OFFLINE';btn.textContent='OVERRIDE';}
     else{st.textContent='● LINK OK';btn.textContent='OVERRIDE';}
@@ -834,7 +848,6 @@ function host(mode,diff){
   $('#hid').textContent=id.slice(-4);$('#jurl').textContent=base+'?role=join';
   {const q=qrMake(base+'?role=join');$('#qr').innerHTML=q||'<div style="color:#000;padding:2vh">QR too long.</div>'}
   $('#pmsvg').innerHTML=pmSVG('pm',1);
-  // Vertical k_eff graph initialization
   {$('#kg').innerHTML='<rect width="40" height="300" fill="#0a0f0b"/><rect width="20" height="300" fill="#35c8ff10"/><rect x="20" width="20" height="300" fill="#ff7a2a10"/><path d="M20 0V300" stroke="#39ff14" stroke-dasharray="4 4" stroke-width=".8"/><polyline id="kl" fill="none" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke" points=""/>'}
   const pmt=o=>show('#pm',o===undefined?$('#pm').classList.contains('hide'):o);
   $('#bpm').onclick=()=>pmt();$('#pmx').onclick=()=>pmt(false);$('#phase').onclick=()=>pmt(true);
@@ -857,7 +870,6 @@ function host(mode,diff){
     if(oHold)oHold.classList.toggle('on',!i.heat&&!i.spray);
     render()};
 
-  // Wire slider oninput handlers
   const oRodsEl=$('#oRods');if(oRodsEl)oRodsEl.oninput=e=>{S.in.rods=+e.target.value;sync();if(S.override.rods)sendTo('rods',{t:'ack',v:pick('rods'),cd:D.cd,br:D.short,hint:D.ph?D.ph.rods:''})};
   const oPumpEl=$('#oPump');if(oPumpEl)oPumpEl.oninput=e=>{S.in.pump=+e.target.value;sync();if(S.override.coolant)sendTo('coolant',{t:'ack',v:pick('coolant'),cd:D.cd,br:D.short,hint:D.ph?D.ph.coolant:''})};
   const oBorEl=$('#oBor');if(oBorEl)oBorEl.oninput=e=>{S.in.boron=+e.target.value;sync();if(S.override.xenon)sendTo('xenon',{t:'ack',v:pick('xenon'),cd:D.cd,br:D.short,hint:D.ph?D.ph.xenon:''})};
@@ -865,7 +877,6 @@ function host(mode,diff){
   const oSprEl=$('#oSpr');if(oSprEl)oSprEl.onclick=()=>{S.in.spray=1;S.in.heat=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
   const oHoldEl=$('#oHold');if(oHoldEl)oHoldEl.onclick=()=>{S.in.heat=0;S.in.spray=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
 
-  // Wire +/- circle buttons next to sliders
   document.querySelectorAll('.pn-ctl[data-key]').forEach(ctl=>{
     const input=ctl.querySelector('input[type=range]');
     if(!input)return;
@@ -973,7 +984,6 @@ function host(mode,diff){
       const krateEl=$('#krate');if(krateEl)krateEl.textContent='dP '+((rate>=0?'+':'')+rate.toFixed(1))+' · ρ '+((rho>=0?'+':'')+rho.toFixed(4));
       const clip=k<.98?'▼':k>1.02?'▲':'';
       const kclipEl=$('#kclip');if(kclipEl){kclipEl.textContent=clip;kclipEl.classList.toggle('hide',!(k<.98||k>1.02))}
-      // Vertical k_eff graph: kx maps 0.98..1.02 → 5..35; ky maps j (0=oldest) → bottom, j=n-1=newest → top
       const kx=v=>5+(clamp(v,.98,1.02)-.98)/.04*30;
       const arr=S.kh||[];const n=arr.length;
       const ky=j=>n<=1?150:295-(j/(n-1))*290;
