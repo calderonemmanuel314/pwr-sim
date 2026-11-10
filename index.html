@@ -23,91 +23,103 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 .slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4vh 2vw;width:min(1100px,92vw);text-align:left}
 .slot{border:1px solid var(--ln);padding:1vh 1vw;background:var(--pn);font-size:clamp(.8rem,1.1vw,1.1rem)}
 .slot b{display:block;color:var(--dim);font-weight:400}.slot.on{border-color:var(--g)}.slot.on .st{color:var(--g)}.st{color:var(--r)}
-.slot a{color:var(--c);word-break:break-all;font-size:.8em}
 
-/* 75 / 25 HOST LAYOUT */
+/* HOST LAYOUT */
 #hud{position:fixed;inset:0;bottom:4.8vh;display:grid;grid-template-columns:1fr minmax(240px,25vw);gap:1vh 1vw;padding:1vh 1vw}
-#left{display:flex;flex-direction:column;gap:1vh;min-height:0;min-width:0}
-#right{display:flex;flex-direction:column;gap:.8vh;min-height:0;overflow-y:auto;overflow-x:hidden}
+#left{display:flex;flex-direction:column;gap:.6vh;min-height:0;min-width:0}
+#right{display:flex;flex-direction:column;gap:.7vh;min-height:0;overflow-y:auto;overflow-x:hidden}
 
-#top{display:grid;grid-template-columns:repeat(3,1fr);gap:1vw;flex-shrink:0}
-#top .pn{flex-direction:row;align-items:center;justify-content:space-between;padding:1vh 1vw}
-
-#ctr{flex:1;display:flex;flex-direction:column;min-height:0;border:1px solid #39ff1430;border-radius:18px;background:radial-gradient(circle at 30% 60%,#102018,#070b08);overflow:hidden;position:relative}
+#top{display:grid;grid-template-columns:repeat(3,1fr);gap:.8vw;flex-shrink:0}
+#top .pn{flex-direction:row;align-items:center;justify-content:space-between;padding:.8vh .8vw}
 
 .pn{background:var(--pn);border:1px solid var(--ln);padding:1.2vh 1vw;display:flex;flex-direction:column;justify-content:space-between;min-height:0;border-radius:16px;background:linear-gradient(160deg,#131c15cc,#0b100cee);border:1px solid #39ff1430;box-shadow:inset 0 1px #ffffff0d,0 10px 30px #0009}
 .pn h3{font-weight:400;font-size:clamp(.8rem,1.2vw,1.2rem);color:var(--dim)}
 .big{font-size:clamp(1.6rem,3.6vw,3.8rem);line-height:1}
 .unit{font-size:.4em;color:var(--dim);margin-left:.3em}
-#top .big{font-size:clamp(2rem,4.6vw,5rem)}
+#top .big{font-size:clamp(2rem,4.4vw,4.4rem)}
 .ok{color:var(--g);text-shadow:0 0 12px #39ff1455}.wn{color:var(--y);text-shadow:0 0 12px #ffd40055}.cr{color:var(--r);text-shadow:0 0 14px #ff2a2a88;animation:blink .6s steps(2) infinite}
 @keyframes blink{50%{opacity:.45}}
 .bar{height:1.2vh;background:#1a241a;border:1px solid var(--ln);border-radius:99px;overflow:hidden;border:0}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#1fae0a,var(--g));border-radius:99px;transition:width .4s;box-shadow:0 0 10px #39ff1488}
-#svgw{flex:1;min-height:0}
-#svgw svg{width:100%;height:100%}
-#tm{text-align:center;padding:.4vh 0 .6vh}
-#tm .big{font-size:clamp(2rem,4.2vw,4.4rem)}
 .lnk{font-size:clamp(.7rem,.9vw,.95rem)}
 
-/* RIGHT PANELS */
-#right .pn{flex:1 1 0;min-height:0;padding:.8vh .8vw;gap:.4vh;display:flex;flex-direction:column;justify-content:space-between}
-#right .pn.overridden{border-color:#ff2a2a88;background:linear-gradient(160deg,#2a1a1acc,#1a0b0bee);box-shadow:inset 0 1px #ffffff0d,0 0 20px #ff2a2a44}
-#right .pn.offline:not(.overridden){border-color:#ff2a2a44;opacity:.75}
+/* MAIN ROW: k-eff vertical | reactor display */
+#mainRow{flex:1;display:flex;gap:.6vw;min-height:0;min-width:0}
 
-.pn-hd{display:flex;justify-content:space-between;align-items:baseline;gap:.3vw}
+/* k_eff vertical column */
+#kcol{flex:0 0 56px;display:flex;flex-direction:column;gap:.3vh;padding:.5vh .25vw;min-height:0;background:var(--pn);border:1px solid var(--ln);border-radius:14px;align-items:stretch}
+.kvert-hd{font-size:.55rem;color:var(--dim);text-align:center;line-height:1.1;flex-shrink:0}
+.kvert-label{font-size:.6rem;color:var(--dim);text-align:center;line-height:1;flex-shrink:0}
+#kw{flex:1;min-height:0;width:100%;position:relative;background:#050805;border-radius:8px;overflow:hidden}
+#kw svg{width:100%;height:100%;display:block}
+#kv{font-size:.75rem;font-weight:700;text-align:center;color:var(--g);line-height:1.1;flex-shrink:0}
+#kst{font-size:.5rem;text-align:center;color:var(--dim);line-height:1.1;flex-shrink:0}
+
+/* reactor display */
+#ctr{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0;border:1px solid #39ff1430;border-radius:18px;background:radial-gradient(circle at 30% 60%,#102018,#070b08);overflow:hidden;position:relative}
+#statusStrip{flex:0 0 auto;padding:.3vh .6vw;border-bottom:1px solid #39ff1430;background:#050b06;display:flex;flex-direction:column;gap:.1vh;text-align:center;justify-content:center}
+.student-status{font-weight:800;font-size:clamp(.68rem,.85vw,.9rem);color:#39ff14;white-space:normal;line-height:1.2;min-height:1.9em;display:flex;align-items:center;justify-content:center}
+.student-status.warn{color:#ffd400}
+.student-status.danger{color:#ff7777}
+#coach{font-size:clamp(.58rem,.75vw,.78rem);color:#35c8ff;white-space:normal;line-height:1.15;min-height:1.1em}
+#coach.hide{visibility:hidden;display:block}
+#phase{font-size:clamp(.52rem,.65vw,.68rem);color:var(--dim);cursor:pointer;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:.9em}
+#svgw{flex:1;min-height:0}
+#svgw svg{width:100%;height:100%}
+
+/* Timer widget: small, top-right of reactor area */
+#timerBox{position:absolute;top:.6vh;right:.8vw;background:#000d;border:1px solid #39ff1440;border-radius:10px;padding:.3vh .45vw;text-align:center;z-index:2;min-width:66px;max-width:150px}
+#timerBox #tv{font-size:clamp(.95rem,1.5vw,1.4rem);font-weight:700;color:var(--g);line-height:1}
+#timerBox .bar{height:1vh;margin-top:.2vh}
+#hl{font-size:.55rem;margin-top:.2vh;color:var(--dim);text-align:center;line-height:1.15;white-space:normal}
+
+/* log */
+#log{display:flex;flex-direction:row;gap:6px;overflow:hidden;padding:2px 8px;min-height:20px;max-height:20px;align-items:center;border-radius:10px;background:#050805;flex-shrink:0}
+#log:empty{display:none;min-height:0;max-height:0;padding:0}
+#log div{flex:0 0 auto;white-space:nowrap;font-size:.66rem;padding:2px 8px;background:#000b;border-left:3px solid var(--y);border-radius:4px;animation:li .3s}
+@keyframes li{from{opacity:0;transform:translateX(-8px)}}
+#log div.x{border-color:#b36bff}#log div.r{border-color:var(--r)}
+
+/* RIGHT PANELS */
+#right .pn{flex:1 1 0;min-height:0;padding:.6vh .7vw;gap:.3vh;display:flex;flex-direction:column;justify-content:space-between}
+#right .pn.overridden{border-color:#ff2a2a88;background:linear-gradient(160deg,#2a1a1acc,#1a0b0bee);box-shadow:inset 0 1px #ffffff0d,0 0 20px #ff2a2a44}
+#right .pn.offline:not(.overridden){border-color:#ff2a2a44;opacity:.8}
+.pn-hd{display:flex;justify-content:space-between;align-items:baseline;gap:.2vw}
 .pn-hd h3{font-size:clamp(.6rem,.75vw,.85rem);margin:0;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pn-val{font-size:clamp(.95rem,1.4vw,1.4rem);font-weight:700;color:var(--tx);white-space:nowrap}
+.pn-val{font-size:clamp(.9rem,1.3vw,1.3rem);font-weight:700;color:var(--tx);white-space:nowrap}
 .pn.overridden .pn-val{color:var(--y)}
 
-.pn-ctl{display:flex;align-items:center;gap:.3vw}
-.pn-ctl input[type=range]{height:26px;flex:1;opacity:.4;pointer-events:none}
-.pn.overridden .pn-ctl input[type=range]{opacity:1;pointer-events:auto}
-.pn-ctl .tb{flex:1;font-size:clamp(.65rem,.85vw,.9rem);padding:.4vh 0;border-width:1px;opacity:.4;pointer-events:none}
-.pn.overridden .pn-ctl .tb{opacity:1;pointer-events:auto}
+.pn-ctl{display:flex;align-items:center;gap:.25vw}
+.pn-ctl input[type=range]{height:26px;flex:1;min-width:0}
+.pn-ctl .pm{width:26px;height:26px;border-radius:50%;border:2px solid var(--y);background:transparent;color:var(--y);font-size:1.1rem;padding:0;line-height:1;flex:none;opacity:.35;pointer-events:none;transition:opacity .2s}
+.pn.overridden .pn-ctl .pm{opacity:1;pointer-events:auto;cursor:pointer}
+.pn.overridden .pn-ctl .pm:hover{background:#ffd40022}
+.pn-ctl .tb{flex:1;font-size:clamp(.6rem,.8vw,.85rem);padding:.3vh 0;border-width:1px;border-radius:8px;background:transparent;color:#888;border:1px solid #555;opacity:.35;pointer-events:none}
+.pn.overridden .pn-ctl .tb{opacity:1;pointer-events:auto;cursor:pointer;border-color:#888;color:var(--tx)}
+.pn.overridden .pn-ctl .tb.on{border-color:var(--y);background:var(--y);color:#000;box-shadow:0 0 10px #ffd40088}
 
-.pn-ovr{display:flex;justify-content:space-between;align-items:center;gap:.3vw;min-height:1.4em}
-.pn-status{font-size:clamp(.55rem,.68vw,.72rem);color:var(--dim);flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+/* circular slider thumbs globally for panel sliders */
+.pn-ctl input[type=range]{-webkit-appearance:none;appearance:none;background:transparent}
+.pn-ctl input[type=range]::-webkit-slider-runnable-track{height:8px;background:#1a241a;border-radius:99px;border:1px solid var(--y);opacity:.4}
+.pn-ctl input[type=range]::-moz-range-track{height:8px;background:#1a241a;border-radius:99px;border:1px solid var(--y);opacity:.4}
+.pn-ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-7px;border-radius:50%;background:var(--y);border:0;box-shadow:0 0 8px #ffd40088;opacity:.4;pointer-events:none}
+.pn-ctl input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--y);border:0;box-shadow:0 0 8px #ffd40088;opacity:.4;pointer-events:none}
+.pn.overridden .pn-ctl input[type=range]::-webkit-slider-runnable-track{opacity:1}
+.pn.overridden .pn-ctl input[type=range]::-moz-range-track{opacity:1}
+.pn.overridden .pn-ctl input[type=range]::-webkit-slider-thumb{opacity:1;pointer-events:auto}
+.pn.overridden .pn-ctl input[type=range]::-moz-range-thumb{opacity:1;pointer-events:auto}
+
+.pn-ovr{display:flex;justify-content:space-between;align-items:center;gap:.2vw;min-height:1.3em}
+.pn-status{font-size:clamp(.52rem,.65vw,.7rem);color:var(--dim);flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
 .pn.overridden .pn-status{color:var(--y);font-weight:700}
 .pn.offline:not(.overridden) .pn-status{color:#ff7777}
-
-.ovr-btn{display:none;padding:2px 8px;border:1px solid var(--y);color:var(--y);background:transparent;border-radius:6px;font-size:clamp(.55rem,.68vw,.72rem);cursor:pointer;flex-shrink:0;font-weight:700;letter-spacing:.04em}
+.ovr-btn{display:none;padding:2px 6px;border:1px solid var(--y);color:var(--y);background:transparent;border-radius:6px;font-size:clamp(.52rem,.65vw,.7rem);cursor:pointer;flex-shrink:0;font-weight:700}
 .ovr-btn:hover{background:#ffd40022}
 .pn.offline .ovr-btn,.pn.overridden .ovr-btn{display:inline-block}
 .pn.overridden .ovr-btn{border-color:var(--g);color:var(--g)}
 .pn.overridden .ovr-btn:hover{background:#39ff1422}
-
-/* client */
-#cl{position:fixed;inset:0;display:flex;flex-direction:column;gap:1.6dvh;padding:2dvh 5vw;height:100dvh;background:radial-gradient(800px 600px at 50% 20%,#10260f,#070a08)}
-#cl header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ln);padding-bottom:1dvh}
-#cl h2{font-weight:400;color:var(--g);font-size:1.25rem}
-#lk{font-size:.9rem}
-#cv{text-align:center;font-size:min(22vw,14dvh);line-height:1;padding:1dvh 0}#cv span{font-size:.3em;color:var(--dim)}
-#cc{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2.4dvh;min-height:0}
-#cc p{color:var(--dim);text-align:center;font-size:1rem}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:64px;background:transparent;touch-action:none}
-input[type=range]::-webkit-slider-runnable-track{height:18px;background:#1a241a;border:1px solid var(--g)}
-input[type=range]::-moz-range-track{height:18px;background:#1a241a;border:1px solid var(--g)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:56px;height:56px;margin-top:-20px;background:var(--g);border:0;border-radius:0}
-input[type=range]::-moz-range-thumb{width:56px;height:56px;background:var(--g);border:0;border-radius:0}
-.tg{width:100%;min-height:15dvh;font-size:1.5rem;border:3px solid var(--dim);color:var(--dim);background:transparent;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.tg small{font-size:.7rem;opacity:.85}
-.tg.on{border-color:var(--y);color:#000;background:var(--y);box-shadow:0 0 22px #ffd40077}
-.tg.up.on{background:#ff7a2a;border-color:#ff7a2a;color:#000;box-shadow:0 0 22px #ff7a2a88}
-.tg.dn.on{background:#35c8ff;border-color:#35c8ff;color:#000;box-shadow:0 0 22px #35c8ff88}
-#ex{width:100%;min-height:11dvh;font-size:1.5rem;border-width:3px;border-radius:20px;background:linear-gradient(180deg,#39ff1422,#39ff1408);transition:box-shadow .3s}
-#ex:not(:disabled){box-shadow:0 0 22px #39ff1488}
-#cd{height:11dvh;border:2px solid var(--y);position:relative;display:none;border-radius:20px;overflow:hidden}
-#cd i{position:absolute;inset:0 auto 0 0;width:0;background:#ffd40033}
-#cd span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--y);font-size:1.05rem;text-align:center;padding:0 3vw}
-#cl.lock input,#cl.lock .tg{opacity:.45;pointer-events:none}
-.srow{display:flex;gap:2vw;align-items:center}.srow input{flex:1}
-.pm{width:16vw;height:16vw;max-width:76px;max-height:76px;border-radius:50%;border:3px solid var(--g);background:transparent;color:var(--g);font-size:2rem;flex:none}
-.ends{display:flex;justify-content:space-between;color:var(--dim);font-size:.75rem}
-#cb{color:var(--dim);font-size:.8rem;text-align:center;line-height:1.3}
-#cl.lock .pm{opacity:.45;pointer-events:none}
-.flowbar{height:16px;border-radius:99px;background:#12303a;overflow:hidden}.flowbar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#35c8ff 0 14px,transparent 14px 28px);animation:fb 1s linear infinite}@keyframes fb{to{background-position:28px 0}}
-.src{color:var(--dim);font-size:.75rem;text-align:center}
+#right .bar{height:.9vh}
+#right .bm{height:1.6vh;margin:.2vh 0}
 
 /* SVG animations */
 .flow{stroke-dasharray:8 8;animation:dash var(--fs,1s) linear infinite}
@@ -115,6 +127,8 @@ input[type=range]::-moz-range-thumb{width:56px;height:56px;background:var(--g);b
 .spin{transform-box:fill-box;transform-origin:center;animation:spin var(--ts,3s) linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .drop{animation:fall .7s linear infinite}@keyframes fall{from{transform:translateY(0);opacity:1}to{transform:translateY(34px);opacity:0}}
+.bd{animation:bf 3s ease-in-out infinite;transition:opacity .6s;filter:drop-shadow(0 0 3px #b36bff)}@keyframes bf{0%,100%{transform:translate(0,0)}50%{transform:translate(6px,-9px)}}
+.nu{animation:nx 1.2s linear infinite;transition:opacity .4s;filter:drop-shadow(0 0 3px #fff59a)}@keyframes nx{from{transform:translateX(0)}to{transform:translateX(112px)}}
 
 /* overlays */
 #ovr{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;background:#000d;text-align:center}
@@ -126,53 +140,14 @@ input[type=range]::-moz-range-thumb{width:56px;height:56px;background:var(--g);b
 #ovr.es-time{background:repeating-linear-gradient(45deg,#000 0 30px,#ffd400 30px 60px)}#ovr.es-time h1,#ovr.es-time .sub{background:#000;padding:.4em .8em;color:var(--y)}
 #ovr.es-win{background:#021a04ee}#ovr.es-win h1{color:var(--g);text-shadow:0 0 30px #39ff14}
 body.cold #hud{filter:saturate(.2) hue-rotate(160deg) brightness(.6);transition:filter 1.4s}
-.bd{animation:bf 3s ease-in-out infinite;transition:opacity .6s;filter:drop-shadow(0 0 3px #b36bff)}@keyframes bf{0%,100%{transform:translate(0,0)}50%{transform:translate(6px,-9px)}}
-.nu{animation:nx 1.2s linear infinite;transition:opacity .4s;filter:drop-shadow(0 0 3px #fff59a)}@keyframes nx{from{transform:translateX(0)}to{transform:translateX(112px)}}
-.bm{position:relative;height:2.2vh;border:1px solid #b36bff66;border-radius:10px;overflow:hidden;background:#b36bff14;margin:.3vh 0}
-.bm i{position:absolute;width:.8vh;height:.8vh;border-radius:50%;background:#b36bff;box-shadow:0 0 6px #b36bff;animation:bf 3s ease-in-out infinite;opacity:0;transition:opacity .5s}
-.bm u{position:absolute;inset:auto 0 0 0;height:0;background:#b36bff33;transition:height .6s}
+#pm{position:fixed;inset:0;z-index:25;background:#000e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;padding:2vh 3vw;overflow:auto}
+.pmbox{display:flex;gap:2vw;width:min(1500px,96vw);align-items:stretch}
+.pmbox svg{flex:1.3;min-width:0;background:#0b100c;border:1px solid var(--ln);border-radius:16px}
+.pmtx{flex:1;display:flex;flex-direction:column;gap:1.1vh;font-size:clamp(.72rem,1vw,1.02rem)}
+.pmtx div{border-left:4px solid var(--c);background:#101a12;padding:.8vh 1vw;border-radius:10px}
+.pmtx b{display:block}
 
-/* status strip */
-#statusStrip{flex:0 0 auto;padding:.35vh .8vw;border-bottom:1px solid #39ff1430;background:#050b06;display:flex;flex-direction:column;gap:.1vh;text-align:center;justify-content:center}
-.student-status{font-weight:800;font-size:clamp(.68rem,.9vw,.9rem);color:#39ff14;white-space:normal;line-height:1.25;min-height:2em;display:flex;align-items:center;justify-content:center}
-.student-status.warn{color:#ffd400}
-.student-status.danger{color:#ff7777}
-#coach{font-size:clamp(.62rem,.8vw,.8rem);color:#35c8ff;white-space:normal;line-height:1.2;min-height:1.2em}
-#coach.hide{visibility:hidden;display:block}
-#phase{font-size:clamp(.55rem,.7vw,.7rem);color:var(--dim);cursor:pointer;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1em}
-
-/* k-eff */
-#kbox{padding:0 1vw .3vh;display:flex;flex-direction:column;gap:.3vh}
-.kh{display:flex;gap:.65vw;align-items:baseline;flex-wrap:wrap;font-size:clamp(.65rem,.9vw,.95rem);color:var(--dim)}
-.kh b{font-size:1.55em;font-weight:700}
-#krate{font-size:clamp(.58rem,.72vw,.75rem);color:var(--tx);margin-left:auto}
-#kw{position:relative}
-#kg{display:block;width:100%;height:8vh;background:#0a0f0b;border-radius:10px}
-#kw span{position:absolute;font-size:clamp(.58rem,.75vw,.78rem);pointer-events:none}
-.kt1{left:8px;top:4px;color:#ff9a5a}.kt2{left:8px;bottom:4px;color:#7fd8ff}.kt3{right:8px;top:calc(50% - 1.3em);color:#39ff14}
-.ktlo{right:8px;bottom:3px;color:#6b8f6b}.kthi{right:8px;top:3px;color:#6b8f6b}
-.kclip{position:absolute!important;left:50%!important;top:calc(50% - .7em)!important;right:auto!important;bottom:auto!important;transform:translateX(-50%);z-index:4;background:#000e;border:1px solid var(--y);border-radius:6px;padding:.12em .5em;color:var(--y);white-space:nowrap;font-size:clamp(.58rem,.75vw,.78rem)}
-.kclip.hide{display:none!important}
-
-/* log */
-#log{display:flex;flex-direction:row;gap:6px;overflow:hidden;padding:2px 8px;min-height:20px;max-height:20px;align-items:center;border-top:1px solid #1f3a1f40;border-bottom:1px solid #1f3a1f40;background:#050805}
-#log:empty{display:none}
-#log div{flex:0 0 auto;white-space:nowrap;font-size:.68rem;padding:2px 8px;background:#000b;border-left:3px solid var(--y);border-radius:4px;animation:li .3s}
-@keyframes li{from{opacity:0;transform:translateX(-8px)}}
-#log div.x{border-color:#b36bff}#log div.r{border-color:var(--r)}
-
-/* bar */
-#bar{position:fixed;left:0;right:0;bottom:0;height:4.8vh;z-index:30;display:flex;align-items:center;gap:.8vw;padding:0 1vw;background:#050805;border-top:1px solid var(--ln)}
-#bar button{background:#0b100c;color:var(--tx);border:1px solid var(--ln);border-radius:99px;padding:.3em 1.1em;font-size:.8rem}
-#bar #bhome{color:var(--g);border-color:var(--g)}
-#bar #bback{color:var(--y);border-color:var(--y)}
-#bar #bpm{color:var(--c);border-color:var(--c)}
-#bar #modelbadge{margin-left:auto;color:var(--y);font-size:.68rem;letter-spacing:.04em}
-#bar button:hover{filter:brightness(1.4)}
-#snd{color:var(--dim)}
-
-/* overlays */
-#ovp{position:fixed;left:50%;bottom:.8vh;transform:translateX(-50%);width:auto;padding:.4vh 1.2vw;border-radius:99px;font-size:.85rem;color:var(--y);background:#000e;border:2px solid var(--y);display:flex;flex-direction:row;gap:1.2vh;z-index:15}
+/* overlays & misc */
 #vig{position:fixed;inset:0;pointer-events:none;z-index:18;opacity:0;box-shadow:inset 0 0 16vw #ff2a2a}
 body.alarm #vig{animation:vg .7s ease-in-out infinite alternate}@keyframes vg{to{opacity:.9}}
 #fx{position:fixed;inset:0;z-index:40;pointer-events:none}
@@ -186,36 +161,30 @@ body.melt #vessel{animation:vh 3s forwards}@keyframes vh{to{stroke:#ff3a1a}}
 #crack{opacity:0}body.melt #crack{animation:crk 1s 1.6s forwards}@keyframes crk{to{opacity:1}}
 #molten{transform-box:fill-box;transform-origin:50% 100%;transform:scale(0)}body.melt #molten{animation:ooze 3.4s ease-in forwards}@keyframes ooze{to{transform:scale(1)}}
 body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2a2a;fill:#2a0a0a}}
+#bpm{background:#0b100c;color:var(--c);border:1px solid var(--c);border-radius:99px;padding:.3em 1.1em;font-size:.8rem}
+#bar{position:fixed;left:0;right:0;bottom:0;height:4.8vh;z-index:30;display:flex;align-items:center;gap:.8vw;padding:0 1vw;background:#050805;border-top:1px solid var(--ln)}
+#bar button{background:#0b100c;color:var(--tx);border:1px solid var(--ln);border-radius:99px;padding:.3em 1.1em;font-size:.8rem}
+#bar #bhome{color:var(--g);border-color:var(--g)}
+#bar #bback{color:var(--y);border-color:var(--y)}
+#bar #modelbadge{margin-left:auto;color:var(--y);font-size:.68rem;letter-spacing:.04em}
+#bar button:hover{filter:brightness(1.4)}
+#snd{color:var(--dim)}
 
-/* phase map */
-#pm{position:fixed;inset:0;z-index:25;background:#000e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;padding:2vh 3vw;overflow:auto}
-.pmbox{display:flex;gap:2vw;width:min(1500px,96vw);align-items:stretch}
-.pmbox svg{flex:1.3;min-width:0;background:#0b100c;border:1px solid var(--ln);border-radius:16px}
-.pmtx{flex:1;display:flex;flex-direction:column;gap:1.1vh;font-size:clamp(.72rem,1vw,1.02rem)}
-.pmtx div{border-left:4px solid var(--c);background:#101a12;padding:.8vh 1vw;border-radius:10px}
-.pmtx b{display:block}
-
-/* join page */
+#brf{position:fixed;inset:0;z-index:55;background:#000d;display:flex;align-items:center;justify-content:center}
+.cfb{background:var(--pn);border:2px solid var(--y);border-radius:18px;padding:3vh 3vw;max-width:min(90vw,520px);text-align:center;display:flex;flex-direction:column;gap:2.4vh;font-size:1.15rem}
+#cf{position:fixed;inset:0;z-index:60;background:#000c;display:flex;align-items:center;justify-content:center}
 #jc{width:min(80vw,420px);font:inherit;font-size:min(18vw,4.6rem);text-align:center;letter-spacing:.2em;background:#0b100c;color:var(--g);border:2px solid var(--g);border-radius:18px;padding:.15em .1em;outline:none}
 #jd{display:flex;flex-direction:column;gap:1.2dvh;width:min(90vw,420px)}
 .dv{padding:1.5dvh 1em;border-radius:16px;border:2px solid var(--ln);background:#0b100c;font-size:1.05rem;text-align:left}
 .dv.on{border-color:var(--g);background:#39ff1422;color:var(--g)}
 #jb{width:min(90vw,420px);border-radius:16px}
 #je{min-height:1.2em;font-size:.95rem}
-
-/* lobby */
 .lobrow{display:flex;gap:4vw;align-items:center;justify-content:center;width:96vw}
 .qrcol{display:flex;flex-direction:column;align-items:center;gap:1vh}
 .qrbox{background:#fff;padding:1.4vh;border-radius:20px;box-shadow:0 0 50px #39ff1455}
 .qrbox svg{display:block;width:min(66vh,44vw);height:min(66vh,44vw)}
 .lobside{display:flex;flex-direction:column;gap:1.4vh;align-items:center;width:min(40vw,520px)}
 .lobside .slots{grid-template-columns:1fr;width:100%}
-
-/* briefing */
-#brf{position:fixed;inset:0;z-index:55;background:#000d;display:flex;align-items:center;justify-content:center}
-.cfb{background:var(--pn);border:2px solid var(--y);border-radius:18px;padding:3vh 3vw;max-width:min(90vw,520px);text-align:center;display:flex;flex-direction:column;gap:2.4vh;font-size:1.15rem}
-
-/* scenario cards */
 .dcards{display:flex;gap:2vw;width:96vw;justify-content:center}
 .dcard{flex:1;max-width:30vw;text-align:left;background:var(--pn);border:2px solid var(--ln);border-radius:20px;padding:2.4vh 1.6vw;display:flex;flex-direction:column;gap:1.2vh;font-size:clamp(.8rem,1.05vw,1.1rem)}
 .dcard b{font-size:1.6em}.dcard i{color:var(--tx)}.dcard p{color:var(--dim)}.dcard small{color:var(--c)}
@@ -224,10 +193,38 @@ body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2
 .dcard.moderate{border-color:var(--y)}.dcard.moderate b{color:var(--y)}
 .dcard.hard{border-color:var(--r)}.dcard.hard b{color:var(--r)}
 
-/* confirm dialog */
-#cf{position:fixed;inset:0;z-index:60;background:#000c;display:flex;align-items:center;justify-content:center}
+#cl{position:fixed;inset:0;display:flex;flex-direction:column;gap:1.6dvh;padding:2dvh 5vw;height:100dvh;background:radial-gradient(800px 600px at 50% 20%,#10260f,#070a08)}
+#cl header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ln);padding-bottom:1dvh}
+#cl h2{font-weight:400;color:var(--g);font-size:1.25rem}
+#lk{font-size:.9rem}
+#cv{text-align:center;font-size:min(22vw,14dvh);line-height:1;padding:1dvh 0}#cv span{font-size:.3em;color:var(--dim)}
+#cc{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2.4dvh;min-height:0}
+#cc p{color:var(--dim);text-align:center;font-size:1rem}
+#cl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:64px;background:transparent;touch-action:none}
+#cl input[type=range]::-webkit-slider-runnable-track{height:18px;background:#1a241a;border:1px solid var(--g);border-radius:99px}
+#cl input[type=range]::-moz-range-track{height:18px;background:#1a241a;border:1px solid var(--g);border-radius:99px}
+#cl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:56px;height:56px;margin-top:-20px;background:var(--g);border:0;border-radius:50%;box-shadow:0 0 18px #39ff1488}
+#cl input[type=range]::-moz-range-thumb{width:56px;height:56px;background:var(--g);border:0;border-radius:50%}
+.srow{display:flex;gap:2vw;align-items:center}.srow input{flex:1}
+.pm{width:16vw;height:16vw;max-width:76px;max-height:76px;border-radius:50%;border:3px solid var(--g);background:transparent;color:var(--g);font-size:2rem;flex:none}
+.ends{display:flex;justify-content:space-between;color:var(--dim);font-size:.75rem}
+#cb{color:var(--dim);font-size:.8rem;text-align:center;line-height:1.3}
+#cl.lock input,#cl.lock .tg,#cl.lock .pm{opacity:.45;pointer-events:none}
+.tg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:13dvh;font-size:1.25rem;border-radius:20px;border:3px solid var(--dim);background:transparent;color:var(--dim);width:100%}
+.tg small{font-size:.7rem;opacity:.85}
+.tg.on{border-color:var(--y);color:#000;background:var(--y);box-shadow:0 0 22px #ffd40077}
+.tg.up.on{background:#ff7a2a;border-color:#ff7a2a;color:#000;box-shadow:0 0 22px #ff7a2a88}
+.tg.dn.on{background:#35c8ff;border-color:#35c8ff;color:#000;box-shadow:0 0 22px #35c8ff88}
+#ex{width:100%;min-height:11dvh;font-size:1.5rem;border-width:3px;border-radius:20px;background:linear-gradient(180deg,#39ff1422,#39ff1408);transition:box-shadow .3s}
+#ex:not(:disabled){box-shadow:0 0 22px #39ff1488}
+#cd{height:11dvh;border:2px solid var(--y);position:relative;display:none;border-radius:20px;overflow:hidden}
+#cd i{position:absolute;inset:0 auto 0 0;width:0;background:#ffd40033}
+#cd span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--y);font-size:1.05rem;text-align:center;padding:0 3vw}
+.flowbar{height:16px;border-radius:99px;background:#12303a;overflow:hidden}
+.flowbar i{display:block;height:100%;background:repeating-linear-gradient(90deg,#35c8ff 0 14px,transparent 14px 28px);animation:fb 1s linear infinite}
+@keyframes fb{to{background-position:28px 0}}
+.src{color:var(--dim);font-size:.75rem;text-align:center}
 
-/* learning mode */
 #learn{overflow:auto;justify-content:flex-start}
 .lhead{display:flex;gap:2vw;align-items:center}
 .lhead h1{font-size:clamp(1.6rem,3.4vw,3rem)}
@@ -239,9 +236,7 @@ body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2
 #lchips{display:flex;flex-wrap:wrap;gap:.8vh .8vw;justify-content:center;width:96vw}
 .chip{border:1px solid var(--ln);background:#0b100c;border-radius:99px;padding:.35em 1em;font-size:.85rem}
 .chip.on{border-color:var(--g);color:var(--g);background:#39ff1422}
-.hp{cursor:pointer}
-.hp:hover,.hp.sel{filter:drop-shadow(0 0 7px #fff)}
-
+.hp{cursor:pointer}.hp:hover,.hp.sel{filter:drop-shadow(0 0 7px #fff)}
 #chome{border:1px solid var(--g);background:transparent;color:var(--g);border-radius:12px;padding:.35em .8em;font-size:1rem}
 body.sbx #tl,body.sbx #tv{display:none!important}
 
@@ -251,18 +246,20 @@ body.sbx #tl,body.sbx #tv{display:none!important}
   #top{grid-template-columns:repeat(3,1fr);gap:4px}
   #top .pn{flex-direction:column;align-items:flex-start;gap:2px;padding:6px}
   #top .big{font-size:clamp(1.1rem,6vw,1.8rem)}
+  #mainRow{flex-direction:column;gap:4px}
+  #kcol{flex:0 0 40px;flex-direction:row;padding:.3vh;gap:.3vw;min-height:0}
+  #kcol .kvert-hd,#kcol .kvert-label{display:none}
+  #kw{flex:1;min-height:36px;max-height:36px}
   #ctr{min-height:260px}
   #svgw{min-height:220px}
-  #kg{height:60px}
   #right{flex-direction:row;overflow-x:auto;overflow-y:hidden;gap:6px;padding-bottom:6px}
-  #right .pn{flex:0 0 200px;min-height:120px}
+  #right .pn{flex:0 0 200px;min-height:130px}
   #bar{height:auto;flex-wrap:wrap;gap:6px;padding:6px 8px}
   #bar button{font-size:.72rem;padding:.4em .8em}
   #bar #modelbadge{white-space:normal;max-width:100%;font-size:.62rem}
   .lrow,.dcards{flex-direction:column}
   .dcard{max-width:none}
   #statusStrip{padding:.3vh .5vw}
-  .ovr-btn{font-size:.58rem;padding:1px 6px}
   .pmbox{flex-direction:column}
   .pmtx{font-size:.8rem}
 }
@@ -278,7 +275,7 @@ body.sbx #tl,body.sbx #tv{display:none!important}
     <button class="btn y" id="bSand">SANDBOX MODE</button>
     <button class="btn" id="bLearn" style="border-color:var(--c);color:var(--c)">LEARNING MODE</button>
   </div>
-  <p class="sub">Group Mode: this screen is the projector. Four phones join as Rods, Coolant, Pressure and Boron.<br>Sandbox Mode: one screen, all controls, no automatic win timer.<br>Learning Mode: explore reactor systems and model limitations.<br><b style="color:var(--y)">Classroom model · estimated electricity sent to grid · not for real plant operation.</b></p>
+  <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
 </div>
 
 <div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
@@ -306,7 +303,7 @@ body.sbx #tl,body.sbx #tv{display:none!important}
       <div id="hid">----</div>
       <div class="slots" id="slots"></div>
       <button class="btn" id="bStart" disabled>START SIMULATION</button>
-      <p class="sub">Start unlocks at 4 of 4 connections. Shift + O enables local manual override.</p>
+      <p class="sub">Start unlocks at 4 of 4 connections. Shift + O enables manual override.</p>
     </div>
   </div>
 </div>
@@ -318,13 +315,24 @@ body.sbx #tl,body.sbx #tv{display:none!important}
       <div class="pn"><h3>SYSTEM PRESSURE</h3><div class="big" id="vP">--<span class="unit">MPa</span></div></div>
       <div class="pn"><h3>POWER TO THE GRID</h3><div class="big" id="vN">--<span class="unit">MWe</span></div><div class="lnk" id="thermalReadout">--</div></div>
     </div>
-    <div id="ctr">
-      <div id="statusStrip">
-        <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
-        <div id="coach" class="hide"></div>
-        <div id="phase">--</div>
+    <div id="mainRow">
+      <div id="kcol">
+        <div class="kvert-hd">k<sub>eff</sub></div>
+        <div class="kvert-label">1.02</div>
+        <div id="kw"><svg id="kg" viewBox="0 0 40 300" preserveAspectRatio="none"></svg></div>
+        <div class="kvert-label">0.98</div>
+        <b id="kv">1.0000</b>
+        <span id="kst">CRITICAL</span>
+        <small id="krate" style="font-size:.42rem;color:var(--dim);text-align:center;line-height:1.1;display:none"></small>
+        <span id="kclip" class="hide" style="font-size:.5rem;color:var(--y);text-align:center"></span>
       </div>
-      <div id="svgw">
+      <div id="ctr">
+        <div id="statusStrip">
+          <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
+          <div id="coach" class="hide"></div>
+          <div id="phase">--</div>
+        </div>
+        <div id="svgw">
 <svg viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg" font-family="monospace" fill="none" stroke-width="2.5" stroke-linecap="round">
  <defs>
   <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#1e2b21"/><stop offset=".5" stop-color="#5f7763"/><stop offset="1" stop-color="#1b261e"/></linearGradient>
@@ -371,31 +379,35 @@ body.sbx #tl,body.sbx #tv{display:none!important}
  <path id="crack" d="M120 200L110 240L130 275L108 320L132 365L116 430" stroke="#fff" stroke-width="3"/>
  <ellipse id="molten" cx="120" cy="450" rx="110" ry="30" fill="#ff5a00" stroke="none" opacity=".9"/>
 </svg>
+        </div>
+        <div id="timerBox">
+          <div id="tv">10:00</div>
+          <div class="bar"><i id="hold"></i></div>
+          <div id="hl">0/10s</div>
+        </div>
       </div>
-      <div id="kbox"><div class="kh"><span>CHAIN REACTION · k<sub>eff</sub></span><b id="kv">1.0000</b><span id="kst">CRITICAL</span><small id="krate">Power change +0.0 MWth/s · ρ +0.0000</small></div><div id="kw"><svg id="kg" viewBox="0 0 300 60" preserveAspectRatio="none"></svg><span class="kt1">▲ k<sub>eff</sub> &gt; 1 · GROWS</span><span class="kt2">▼ k<sub>eff</sub> &lt; 1 · FADES</span><span class="kt3">k<sub>eff</sub> = 1 · STEADY</span><span class="ktlo">0.98</span><span class="kthi">1.02</span><span id="kclip" class="kclip hide"></span></div></div>
-      <div id="log"></div>
-      <div id="tm"><h3 style="font-weight:400;color:var(--dim)" id="tl">SCENARIO TIMER</h3><div class="big ok" id="tv">10:00</div><div class="bar" style="margin:.4vh 2vw 0;height:1.6vh"><i id="hold"></i></div><div class="lnk" id="hl" style="color:var(--dim);margin-top:.3vh">HOLD · grid ≈315 MWe · 0 / 10 s</div></div>
     </div>
+    <div id="log"></div>
   </div>
   <div id="right">
     <div class="pn" data-role="rods">
       <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
       <div class="bar"><i id="bRods"></i></div>
-      <div class="lnk" id="lRods" style="font-size:.7rem;color:var(--dim)"></div>
-      <div class="pn-ctl"><input type="range" id="oRods" min="0" max="100" disabled><b id="tRods" style="display:none"></b></div>
+      <div class="lnk" id="lRods" style="font-size:.68rem;color:var(--dim)"></div>
+      <div class="pn-ctl" data-key="rods"><button class="pm" data-d="-1" data-step="5">−</button><input type="range" id="oRods" min="0" max="100" disabled><button class="pm" data-d="1" data-step="5">+</button></div>
       <div class="pn-ovr"><span class="pn-status" id="os-rods">● LINK OK</span><button class="ovr-btn" id="ob-rods" data-r="rods">OVERRIDE</button></div>
     </div>
     <div class="pn" data-role="coolant">
       <div class="pn-hd"><h3>DIV 2 · PUMP</h3><span class="pn-val" id="rPump">--</span></div>
       <div class="bar"><i id="bPump"></i></div>
-      <div class="lnk" id="lPump" style="font-size:.7rem;color:var(--dim)">--</div>
-      <div class="pn-ctl"><input type="range" id="oPump" min="0" max="100" disabled><b id="tPump" style="display:none"></b></div>
+      <div class="lnk" id="lPump" style="font-size:.68rem;color:var(--dim)">--</div>
+      <div class="pn-ctl" data-key="pump"><button class="pm" data-d="-1" data-step="5">−</button><input type="range" id="oPump" min="0" max="100" disabled><button class="pm" data-d="1" data-step="5">+</button></div>
       <div class="pn-ovr"><span class="pn-status" id="os-coolant">● LINK OK</span><button class="ovr-btn" id="ob-coolant" data-r="coolant">OVERRIDE</button></div>
     </div>
     <div class="pn" data-role="pressure">
       <div class="pn-hd"><h3>DIV 3 · PRESS.</h3><span class="pn-val" id="rPres">--</span></div>
       <div class="bar"><i id="bPres"></i></div>
-      <div class="lnk" id="lPres" style="font-size:.7rem;color:var(--dim)">--</div>
+      <div class="lnk" id="lPres" style="font-size:.68rem;color:var(--dim)">--</div>
       <div class="pn-ctl"><button class="tb" id="oSpr" disabled>▼</button><button class="tb" id="oHold" disabled>■</button><button class="tb" id="oHeat" disabled>▲</button></div>
       <div class="pn-ovr"><span class="pn-status" id="os-pressure">● LINK OK</span><button class="ovr-btn" id="ob-pressure" data-r="pressure">OVERRIDE</button></div>
     </div>
@@ -403,7 +415,7 @@ body.sbx #tl,body.sbx #tv{display:none!important}
       <div class="pn-hd"><h3>DIV 4 · BORON</h3><span class="pn-val" id="rBor">--</span></div>
       <div class="bar"><i id="bBor"></i></div>
       <div class="bm" id="bmini"></div>
-      <div class="pn-ctl"><input type="range" id="oBor" min="0" max="2000" step="10" disabled><b id="tBor" style="display:none"></b></div>
+      <div class="pn-ctl" data-key="boron"><button class="pm" data-d="-1" data-step="50">−</button><input type="range" id="oBor" min="0" max="2000" step="10" disabled><button class="pm" data-d="1" data-step="50">+</button></div>
       <div class="pn-ovr"><span class="pn-status" id="os-xenon">● LINK OK</span><button class="ovr-btn" id="ob-xenon" data-r="xenon">OVERRIDE</button></div>
     </div>
   </div>
@@ -413,19 +425,19 @@ body.sbx #tl,body.sbx #tv{display:none!important}
 <div id="bar" class="hide"><button id="bhome">⌂ HOME</button><button id="bback">◄ BACK</button><button id="snd">SOUND ON</button><button id="bpm">PHASE MAP (P)</button><span id="modelbadge">CLASSROOM MODEL · NOT FOR OPERATION</span></div>
 
 <div id="pm" class="hide"><div class="pmbox"><svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg><div class="pmtx">
-<div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>The PRIMARY COOLANT. Yellow: hot-leg coolant leaving the core; cyan: cold-leg coolant returning from the steam generator (about 280 °C in this model). The primary and secondary loops are separate. The saturation boundary uses the Wagner–Pruss water-vapor-pressure correlation; saturation temperature is obtained by numerical inversion. This is a saturation-line calculation, not a full water-property solver or plant operating chart.</div>
+<div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
 <div id="pmlive" style="border-color:var(--c)"></div>
-<div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at the current pressure, the primary coolant remains liquid. The illustrative reference point is about 315 °C and 15.5 MPa. The subcooling margin is T<sub>sat</sub>(P) − T.</div>
-<div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>At about 373.946 °C and 22.064 MPa, water reaches its critical point. Above both coordinates there is no distinct liquid–vapor phase boundary. This does not by itself mean a reactor has failed.</div>
-<div style="border-color:#ffd400"><b>MODEL LIMITS</b>This phase map tracks bulk primary coolant only. It does not calculate fuel temperature, cladding temperature, local boiling crisis, DNBR, or vessel stress. The relief-valve and pressure-limit values are game parameters, not universal PWR setpoints.</div>
-<div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma and not a fusion condition. Nuclear fusion is a separate topic and is not represented by this reactor model.</div></div></div>
+<div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
+<div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
+<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. No fuel temperature, cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
+<div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div></div></div>
 <button class="btn" id="pmx">CLOSE (Esc)</button></div>
 
 <div id="ovr" class="hide"><h1 id="ot"></h1><p class="sub" id="om"></p><button class="btn" id="bAgain">RESTART</button></div>
 
 <div id="cl" class="hide">
   <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
-  <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY · NOT FOR REACTOR OPERATION</p><div id="cb"></div><div id="cv"></div>
+  <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p><div id="cb"></div><div id="cv"></div>
   <div id="cc"></div>
   <div id="cd"><i id="cdi"></i><span>Transmitting command to core…</span></div>
   <button class="btn" id="ex" disabled>CONNECTING…</button>
@@ -447,6 +459,9 @@ const ROLE_KEYS=['rods','coolant','pressure','xenon'];
 const DEF=()=>({rods:70,pump:50,heat:0,spray:0,boron:500});
 const show=(id,on)=>$(id).classList.toggle('hide',!on);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const setText=(sel,txt)=>{const el=document.querySelector(sel);if(el)el.textContent=txt;};
+const setHTML=(sel,html)=>{const el=document.querySelector(sel);if(el)el.innerHTML=html;};
+const setAttr=(sel,attr,val)=>{const el=document.querySelector(sel);if(el)el.setAttribute(attr,val);};
 
 const qrMake=text=>{
   const u=Array.from(new TextEncoder().encode(text)),ECC=[0,10,16,26,18,24,16,18,22,22],NB=[0,1,1,1,2,2,4,4,4,5];
@@ -499,10 +514,10 @@ easy:{k:'easy',n:'EASY',t:'Morning Ramp-Up',rem:600,band:300,hold:10,cd:5,subcoo
   rodsMin:5,rodsMax:95,pumpMin:25,pumpMax:100,boronMin:100,boronMax:1500,
   initialFissionPower:275,hints:1,
  story:'Overnight demand was light, so the reactor has been at about 30% power for 8 hours. Factories open at 7:00 and the city needs full output.',
- goal:'Supply about 315 MWe to the grid. The accepted fluctuation range is approximately 220–410 MWe. Keep the reactor conditions safe and hold steady for 10 seconds. Coach hints are on. Control ranges are gently limited so a single slider move cannot crash the reactor.',
- short:'Bring grid power into ~220–410 MWe and hold steady for 10 seconds. Controls gently limited for safety.',
+ goal:'Supply about 315 MWe to the grid. Accepted fluctuation ~220–410 MWe. Keep conditions safe and hold steady for 10 seconds. Coach hints are on. Control ranges are gently limited.',
+ short:'Bring grid power to ~220–410 MWe, hold 10 seconds.',
  st:{rods:70,pump:50,boron:500,T:298,P:15.5,xe:.45,xi:.11},
- ph:{rods:'Withdraw rods in steps to add power.',coolant:'Raise the pump as power rises.',pressure:'Heaters when pressure sags, spray when it climbs.',xenon:'Keep boron near 500 ppm unless told otherwise.'}},
+ ph:{rods:'Withdraw rods in steps to add power.',coolant:'Raise the pump as power rises.',pressure:'Heaters when pressure sags, spray when it climbs.',xenon:'Keep boron near 500 ppm unless needed.'}},
 moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:150,hold:8,cd:10,subcoolMargin:8,
   pressureDrift:.08,tempDrift:2.5,powerDrift:40,
   thermalTau:175,pressureRate:0.75,alphaDoppler:0.00008,
@@ -510,9 +525,9 @@ moderate:{k:'moderate',n:'MODERATE',t:'The Evening Surge',rem:600,band:150,hold:
   failOver:25,failDepr:9.5,
   rodsMin:0,rodsMax:100,pumpMin:15,pumpMax:100,boronMin:50,boronMax:2000,
   initialFissionPower:105,hints:0,
- story:'The reactor has run at low power for 15 hours. A heatwave drives up demand, and the grid requests about 315 MWe of electrical power. After a power increase, xenon may initially burn away faster; delayed iodine decay can later replenish it and add negative reactivity.',
- goal:'Supply about 315 MWe to the grid. The accepted fluctuation range is approximately 265–360 MWe. Watch the delayed xenon effect, keep conditions safe, and hold steady for 8 seconds.',
- short:'Heatwave surge: bring grid power into ~265–360 MWe and stabilize for 8 seconds.',
+ story:'The reactor has run at low power for 15 hours. Heatwave drives up demand; grid requests ~315 MWe. After a power increase, xenon may burn away faster; delayed iodine decay can later add negative reactivity.',
+ goal:'Supply about 315 MWe. Accepted fluctuation ~265–360 MWe. Watch the xenon effect, keep conditions safe, hold steady for 8 seconds.',
+ short:'Bring grid power to ~265–360 MWe, stabilize 8 seconds.',
  st:{rods:58,pump:30,boron:900,T:293,P:14.8,xe:.3319,xi:.06}},
 hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:90,hold:15,cd:15,subcoolMargin:6,
   pressureDrift:.06,tempDrift:2.0,powerDrift:32,
@@ -521,32 +536,32 @@ hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:90,hold:15,cd:
   failOver:24,failDepr:10,
   rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000,
   initialFissionPower:.05,hints:0,
- story:'Another plant tripped offline. Your reactor shut down several hours ago and the crew is attempting a restart near the modeled xenon peak. Xenon-135 suppresses the initial power response; as neutron flux returns, xenon burns out while delayed iodine production can later change the trend. The city needs about 315 MWe of electricity within 8 minutes.',
- goal:'Supply about 315 MWe. The accepted fluctuation range is approximately 285–340 MWe. Manage xenon and equipment problems, keep conditions safe, and hold steady for 15 seconds.',
- short:'Restart the chain reaction and supply ~285–340 MWe within 8 minutes. Expect equipment problems.',
+ story:'Another plant tripped. Your reactor shut down hours ago, attempting restart near the modeled xenon peak. Xenon-135 suppresses the initial response; as flux returns, xenon burns out while delayed iodine production can later change the trend. City needs ~315 MWe within 8 minutes.',
+ goal:'Supply about 315 MWe. Accepted fluctuation ~285–340 MWe. Manage xenon and equipment problems, keep conditions safe, hold steady for 15 seconds.',
+ short:'Restart in xenon pit, reach ~285–340 MWe within 8 min.',
  xeLockout:1.05,st:{rods:100,pump:40,boron:1200,T:285,P:14.2,xe:1.4,xi:.168}}};
 DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
 const LEARN={
 core:['Reactor vessel and coolant','The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.','The top temperature gauge is the modeled hot-leg coolant temperature, not fuel or cladding temperature.'],
 fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction. Fuel, cladding, and coolant have different temperatures.','The simulation does not calculate separate fuel or cladding temperatures. Its thermal-power value is normalized MW-equivalent and includes a fixed 20 MW-equivalent residual-heat allowance.'],
-rods:['Control rods','Control rods contain neutron-absorbing materials. Inserting them increases neutron absorption and adds negative reactivity; withdrawing them reduces absorption. The reactivity effect is not linear with insertion depth: the middle of the core has the highest neutron flux, so the integral rod worth curve is S-shaped, with the steepest differential worth near the middle of the core.','Division 1. 0% fully withdrawn; 100% fully inserted. S-curve: differential worth peaks near 50% insertion. On Easy, rod range is limited to 5–95%.'],
-boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber. Increasing boron concentration adds negative reactivity; dilution removes some absorber and adds positive reactivity.','Division 4 sets simplified boron concentration in ppm. On Easy the range is limited to 100–1500 ppm.'],
-pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator. Heat transfers through the steam-generator tubes to a separate secondary loop.','Division 2 adjusts a normalized pump setting as a heat-removal factor. On Easy minimum flow is 25% so the core always has some cooling.'],
-press:['Pressurizer','The pressurizer helps control primary-system pressure. Heaters raise pressure; spray lowers it. Pressure sets the saturation temperature of the coolant.','Division 3 selects heaters, spray, or hold. The response is an illustrative game equation.'],
-valve:['Pressurizer relief valve','A relief valve opens when set pressure is exceeded. Discharging fluid also changes coolant inventory in a real plant.','This model opens at 17.2 MPa and reseats near 16.4 MPa. Pressure decrement only.'],
-keff:['Chain reaction: is it growing, shrinking, or steady?','Imagine one generation of neutrons causing fissions that release the next generation. k_eff compares the two: k_eff = neutrons in the next generation ÷ neutrons in the current generation. If k_eff < 1, each generation is smaller and the chain reaction weakens (subcritical). If k_eff = 1, each generation exactly replaces itself and the chain reaction stays steady (critical). If k_eff > 1, each generation is larger and the chain reaction grows (supercritical). Control rods and boron absorb neutrons, so inserting rods or adding boron lowers k_eff. k_eff describes how the chain reaction is behaving — it is not the same as reactor power.','k_eff comes from a simplified one-group neutron balance. Competing channels: fission, non-fission capture in fuel and structures, control rods, soluble boron, xenon, plus leakage and negative feedbacks. The model uses ν̄ = 2.43, β ≈ 0.0065, six delayed-neutron groups, and Λ = 0.10 s (stretched; real ~10⁻⁴ s) for pacing. A constant neutron source lets a deeply subcritical reactor restart. Delayed supercriticality (0 < ρ < β) is gentle; prompt supercriticality (ρ ≥ β) is extreme. The model also includes fuel-temperature/Doppler feedback — negative reactivity proportional to (T_fuel − T_coolant), the prompt self-limiting mechanism. These are calibrated classroom parameters, not validated plant values.'],
+rods:['Control rods','Control rods contain neutron-absorbing materials. Inserting them increases neutron absorption and adds negative reactivity; withdrawing them reduces absorption. The reactivity effect is not linear with insertion depth: the middle of the core has the highest neutron flux, so the integral rod worth curve is S-shaped.','Division 1. 0% fully withdrawn; 100% fully inserted. S-curve: differential worth peaks near 50% insertion. On Easy, rod range is limited to 5–95%.'],
+boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber. Increasing boron adds negative reactivity; dilution removes absorber and adds positive reactivity.','Division 4 sets simplified boron concentration in ppm. On Easy, range is limited to 100–1500 ppm.'],
+pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator. Heat transfers through the steam-generator tubes to a separate secondary loop.','Division 2 adjusts a normalized pump setting as a heat-removal factor. On Easy, minimum flow is 25% so the core always has some cooling.'],
+press:['Pressurizer','The pressurizer helps control primary-system pressure. Heaters raise pressure; spray lowers it. Pressure sets the saturation temperature of the coolant.','Division 3 selects heaters, spray, or hold.'],
+valve:['Pressurizer relief valve','A relief valve opens when set pressure is exceeded.','This model opens at 17.2 MPa and reseats near 16.4 MPa. Pressure decrement only.'],
+keff:['Chain reaction: growing, shrinking, or steady?','Imagine one generation of neutrons causing fissions that release the next generation. k_eff compares the two: k_eff = neutrons in the next generation ÷ neutrons in the current generation. If k_eff < 1, each generation is smaller and the chain reaction weakens (subcritical). If k_eff = 1, each generation exactly replaces itself and the chain reaction stays steady (critical). If k_eff > 1, each generation is larger and the chain reaction grows (supercritical). Control rods and boron absorb neutrons, so inserting rods or adding boron lowers k_eff. k_eff describes how the chain reaction is behaving — it is not the same as reactor power.','k_eff comes from a simplified one-group neutron balance. The model uses ν̄ = 2.43, β ≈ 0.0065, six delayed-neutron groups, and Λ = 0.10 s (stretched for pacing). A constant neutron source lets a deeply subcritical reactor restart. Delayed supercriticality is gentle; prompt supercriticality (ρ ≥ β) is extreme. The model also includes fuel-temperature/Doppler feedback — negative reactivity proportional to (T_fuel − T_coolant) — the prompt self-limiting mechanism. Calibrated classroom parameters, not validated plant values.'],
 xenon:['Iodine-135 and xenon-135','Fission produces iodine-135, which decays into xenon-135, a strong absorber. Xenon is also removed by radioactive decay and neutron absorption (burnout). After shutdown, iodine keeps feeding xenon; after a power increase, burnout can initially increase.','Normalized iodine/xenon with compressed time constants — teaching device, not real elapsed hours.'],
-phase:['Phase map: primary coolant','Plots modeled hot-leg and cold-leg primary coolant against pressure. Below saturation, liquid coolant is subcooled. Green reference point ≈ 315 °C / 15.5 MPa. Saturation boundary from the Wagner–Pruss correlation, saturation temperature by numerical inversion.','Saturation-boundary only. No density, enthalpy, vapor quality, or full steam-table properties. Not a plant operating diagram.','chart'],
-sg:['Steam generator','Hot primary coolant transfers heat across tube walls to secondary water. Secondary boils to steam, drives the turbine. The two loops are separate.','The model shows the energy-conversion path but does not solve steam-generator heat transfer.'],
-turb:['Turbine','Steam expands through the turbine and transfers energy to a rotating shaft.','Turbine speed is an animation driven by the model power value.'],
-gen:['Generator and the path to the grid','(1) Fission releases energy. (2) Reactor carries it away as heat. (3) Heat produces steam. (4) Steam spins the turbine. (5) Shaft spins the generator. (6) Some electricity runs plant equipment. (7) Rest goes to the grid.','Reactor heat × 33% = generator gross. × 5% = plant use. Gross − plant use = net grid. At 1000 MWth: 330 MWe gross, 16.5 MWe plant, ~313.5 MWe net (≈315 MWe). 33% and 5% are simplified classroom estimates.'],
-cond:['Condenser','Removes heat from turbine exhaust so it can return as liquid feedwater.','Illustrative animation; heat rejection not calculated.'],
-hot:['Hot leg','Carries primary coolant from the reactor to the steam generator.','Yellow phase-map marker tracks modeled hot-leg coolant temperature.'],
+phase:['Phase map: primary coolant','Plots hot-leg and cold-leg primary coolant against pressure. Below saturation, liquid coolant is subcooled. Green reference point ≈ 315 °C / 15.5 MPa. Saturation boundary from Wagner–Pruss.','Saturation-boundary only. Not a plant operating diagram.','chart'],
+sg:['Steam generator','Hot primary coolant transfers heat across tube walls to secondary water. Secondary boils to steam, drives the turbine.','The model shows the energy-conversion path but does not solve steam-generator heat transfer.'],
+turb:['Turbine','Steam expands through the turbine and transfers energy to a rotating shaft.','Animation driven by the model power value.'],
+gen:['Generator and the path to the grid','(1) Fission releases energy. (2) Reactor carries it as heat. (3) Heat produces steam. (4) Steam spins turbine. (5) Shaft spins generator. (6) Some electricity runs plant equipment. (7) Rest goes to the grid.','Reactor heat × 33% = generator gross. × 5% = plant use. Gross − plant use = net grid. At 1000 MWth: 330 MWe gross, 16.5 MWe plant, ~313.5 MWe net (≈315 MWe). Simplified classroom estimates.'],
+cond:['Condenser','Removes heat from turbine exhaust so it can return as liquid feedwater.','Illustrative animation.'],
+hot:['Hot leg','Carries primary coolant from reactor to steam generator.','Yellow phase-map marker tracks hot-leg coolant temperature.'],
 cold:['Cold leg','Returns primary coolant from the steam generator through the pump.','Cold-leg reference fixed near 280 °C.'],
 steam:['Secondary loop','Receives heat through the steam-generator tubes, produces steam, drives the turbine, returns condensate.','Primary and secondary water are separate circuits.'],
-dome:['Containment building','A major barrier designed to limit radioactive releases during accidents. Not an absolute guarantee.','Teaching aid, not a containment-performance simulation.'],
-dnb:['Boiling crisis and DNB','Departure from nucleate boiling (DNB) is a local heat-transfer crisis at a heated surface.','This game does NOT calculate DNB, critical heat flux, or DNBR. Loss triggers are simplified game limits.'],
-model:['What this model does and does not calculate','Classroom model of how chain reaction, cooling, pressure, steam, turbine, and generator affect one another.','Grid-power estimate: 33% heat-to-electric minus 5% plant use. Real plants have varying efficiency, losses, transformer losses, and many more systems. k_eff uses normalized teaching weights, not a detailed core calculation. All warning and failure limits are game settings.']};
+dome:['Containment building','A major barrier designed to limit radioactive releases during accidents. Not an absolute guarantee.','Teaching aid.'],
+dnb:['Boiling crisis and DNB','Departure from nucleate boiling is a local heat-transfer crisis at a heated surface.','This game does NOT calculate DNB, critical heat flux, or DNBR.'],
+model:['What this model does and does not calculate','Classroom model of how chain reaction, cooling, pressure, steam, turbine, and generator affect one another.','Grid-power estimate: 33% heat-to-electric minus 5% plant use. Real plants have varying efficiency, losses, transformer losses, and many more systems. All warning and failure limits are game settings.']};
 const showDiff=()=>{show('#menu',false);show('#diff',true);
   $('#dcards').innerHTML=['easy','moderate','hard'].map(k=>{const d=DIFF[k];return '<button class="dcard '+k+'" data-d="'+k+'"><b>'+d.n+'</b><i>'+d.t+'</i><p>'+d.story+'</p><small>Hold '+d.hold+' s · '+'about 315 MWe to grid · '+Math.round(d.rem/60)+' min</small></button>'}).join('');
   document.querySelectorAll('.dcard').forEach(b=>b.onclick=()=>{show('#diff',false);host('group',b.dataset.d)});
@@ -669,7 +684,7 @@ function client(){
   const role=ROLE, R=ROLES[role], cur=DEF(); let conn,peer,locked=false,retry,CD=10,rejected=false,clientPhase='lobby';
   const SESSION_ID='s'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
   show('#menu',false);show('#cl',true);$('#cn').textContent=R.n;
-  $('#chome').onclick=async()=>{if(await ask('Leave this panel and go back to the join page?'))goto(location.pathname+'?role=join')};
+  $('#chome').onclick=async()=>{if(await ask('Leave this panel?'))goto(location.pathname+'?role=join')};
   const cc=$('#cc'), cv=$('#cv');
   const draw=()=>{
     if(role==='rods')cv.innerHTML=cur.rods+'<span>% INSERTED</span>';
@@ -680,7 +695,7 @@ function client(){
   const slider=(k,max,step,txt,lo,hi)=>{cc.innerHTML='<p>'+txt+'</p><div class="srow"><button class="pm" data-d="-1">−</button><input type="range" id="sl" min="0" max="'+max+'" step="'+step+'" value="'+cur[k]+'"><button class="pm" data-d="1">+</button></div><div class="ends"><span>'+lo+'</span><span>'+hi+'</span></div>';
     $('#sl').oninput=e=>{cur[k]=+e.target.value;draw()};cc.querySelectorAll('.pm').forEach(b=>b.onclick=()=>{const q=$('#sl'),v=clamp(+q.value+(+b.dataset.d)*(k==='boron'?50:5),+q.min,+q.max);q.value=v;cur[k]=v;draw()})};
   if(role==='rods')slider('rods',100,1,'Insert rods to slow the reaction. Withdraw them for more power.','◄ WITHDRAW · more power','INSERT · less power ►');
-  if(role==='coolant'){slider('pump',100,1,'A faster pump removes more heat from the core.','◄ SLOWER · less cooling','FASTER · more cooling ►');cc.insertAdjacentHTML('beforeend','<div class="flowbar"><i id="fbi"></i></div><p class="src">Closed loop: cooled water returns from the steam generator (about 280 °C) and the pump drives it through the core.</p>');draw()}
+  if(role==='coolant'){slider('pump',100,1,'A faster pump removes more heat from the core.','◄ SLOWER · less cooling','FASTER · more cooling ►');cc.insertAdjacentHTML('beforeend','<div class="flowbar"><i id="fbi"></i></div><p class="src">Closed loop: cooled water returns from the steam generator (about 280 °C).</p>');draw()}
   if(role==='xenon')slider('boron',2000,10,'Boron absorbs neutrons. Dilute it for more power, add it for less.','◄ DILUTE · more power','ADD BORON · less power ►');
   if(role==='pressure'){cc.innerHTML='<p>Pick what the pressurizer does.</p><button class="tg up" data-m="1">▲ INCREASE PRESSURE<small>heaters ON</small></button><button class="tg" data-m="0">■ HOLD<small>heaters and spray off</small></button><button class="tg dn" data-m="-1">▼ DECREASE PRESSURE<small>spray ON</small></button>';
     cc.querySelectorAll('.tg').forEach(b=>b.onclick=()=>{const m=+b.dataset.m;cur.heat=m===1?1:0;cur.spray=m===-1?1:0;sync();draw()});}
@@ -693,12 +708,12 @@ function client(){
     if(locked)return;
     if(clientPhase==='overridden'){
       if(!conn||!conn.open){link('OFFLINE · RECLAIM FAILED',false);$('#cb').textContent='Reconnect first.';return;}
-      try{conn.send({t:'reclaim',role});$('#cb').textContent='Reclaim request sent. Waiting for host…';}catch(err){$('#cb').textContent='Reclaim failed. Try again.';}
+      try{conn.send({t:'reclaim',role});$('#cb').textContent='Reclaim request sent.';}catch(err){$('#cb').textContent='Reclaim failed. Try again.';}
       return;
     }
     const v={};R.k.forEach(k=>v[k]=cur[k]);
     if(!conn||!conn.open){link('OFFLINE · NOT SENT',false);$('#cb').textContent='Reconnect to the host first.';return;}
-    try{conn.send({t:'cmd',role,v});}catch(err){link('SEND FAILED',false);$('#cb').textContent='Not transmitted. Check connection.';return;}
+    try{conn.send({t:'cmd',role,v});}catch(err){link('SEND FAILED',false);$('#cb').textContent='Not transmitted.';return;}
     AU.init();AU.tone(300,.25,'sawtooth',.1,0,900);navigator.vibrate&&navigator.vibrate(40);cool();
   };
   const go=()=>{
@@ -716,13 +731,7 @@ function client(){
           draw()}}
         if(d.t==='ack'){if(d.cd)CD=d.cd;if(d.br!==undefined)$('#cb').textContent=d.br+(d.hint?' · '+d.hint:'');Object.assign(cur,d.v);draw();sync();const s=$('#sl');if(s)s.value=cur[R.k[0]]}
         if(d.t==='st'){
-          if(d.ph==='rejected'){
-            rejected=true;
-            link('DIVISION TAKEN',false,'DIVISION TAKEN');
-            $('#cb').textContent='This division already has a controller. Returning to join page…';
-            setTimeout(()=>goto(location.pathname+'?role=join'),3000);
-            return;
-          }
+          if(d.ph==='rejected'){rejected=true;link('DIVISION TAKEN',false,'DIVISION TAKEN');$('#cb').textContent='Returning to join page…';setTimeout(()=>goto(location.pathname+'?role=join'),3000);return;}
           clientPhase=d.ph;
           const eMap={run:'ONLINE',overridden:'HOST HAS CONTROL',win:'MISSION COMPLETE',lose:'MISSION FAILED',lobby:'WAITING FOR START',brief:'BRIEFING ON SCREEN'};
           const bMap={run:'SEND ORDER',overridden:'RECLAIM CONTROL',win:'COMPLETE ✓',lose:'ENDED',lobby:'WAITING FOR HOST',brief:'BRIEFING…'};
@@ -767,6 +776,10 @@ function host(mode,diff){
     const overridden=!!S.override[r];
     panel.classList.toggle('overridden',overridden);
     panel.classList.toggle('offline',!connected&&!overridden);
+    // Enable/disable panel controls based on override
+    panel.querySelectorAll('input[type=range]').forEach(inp=>{inp.disabled=!overridden});
+    panel.querySelectorAll('button.tb').forEach(b=>{b.disabled=!overridden});
+    panel.querySelectorAll('button.pm').forEach(b=>{b.disabled=!overridden});
     if(overridden){st.textContent='⚠ HOST OVERRIDE';btn.textContent='RELEASE';}
     else if(!connected){st.textContent='○ OFFLINE';btn.textContent='OVERRIDE';}
     else{st.textContent='● LINK OK';btn.textContent='OVERRIDE';}
@@ -777,22 +790,20 @@ function host(mode,diff){
     $('#bStart').disabled=!(nconn()===4||S.ov);
     ROLE_KEYS.forEach(updatePanelStatus);
   };
-  const startPeer=()=>{$('#lmsg').textContent='Loading PeerJS…';loadPeer().then(startPeer2).catch(()=>{$('#lmsg').textContent='PeerJS could not load (CDN blocked). Use Shift + O override.'})};
-  const startPeer2=()=>{try{S.peer=new Peer(id)}catch(e){$('#lmsg').textContent='PeerJS failed. Use Shift + O override.';return}
-    S.peer.on('open',()=>{$('#lmsg').textContent='Waiting for phones. Scan, type the code, pick a division.'});
-    S.peer.on('error',e=>{if(e.type==='unavailable-id'){location.reload()}else $('#lmsg').textContent='Signalling error ('+e.type+'). Use Shift + O override.'});
+  const startPeer=()=>{$('#lmsg').textContent='Loading PeerJS…';loadPeer().then(startPeer2).catch(()=>{$('#lmsg').textContent='PeerJS could not load. Use Shift + O override.'})};
+  const startPeer2=()=>{try{S.peer=new Peer(id)}catch(e){$('#lmsg').textContent='PeerJS failed.';return}
+    S.peer.on('open',()=>{$('#lmsg').textContent='Waiting for phones. Scan, type code, pick a division.'});
+    S.peer.on('error',e=>{if(e.type==='unavailable-id'){location.reload()}else $('#lmsg').textContent='Signalling error ('+e.type+').'});
     S.peer.on('connection',c=>{
       c.on('data',d=>{if(!d||typeof d!=='object'||!ROLES[d.role])return;const r=d.role;
         if(d.t==='hello'){
           const existing=S.conns[r];
           const sameSession = existing && existing._session === d.sessionId;
           if(existing && existing !== c && !sameSession){
-            // Different device trying to take the slot - reject
             try{c.send({t:'st',ph:'rejected'});}catch(e){}
             setTimeout(()=>{try{c.close()}catch(e){}},500);
             return;
           }
-          // Accept (same session reconnect, or no existing)
           if(existing && existing !== c)try{existing.close()}catch(e){}
           S.conns[r]=c;c._r=r;c._session=d.sessionId||('x'+Math.random().toString(36).slice(2,10));
           c.send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''});
@@ -823,7 +834,8 @@ function host(mode,diff){
   $('#hid').textContent=id.slice(-4);$('#jurl').textContent=base+'?role=join';
   {const q=qrMake(base+'?role=join');$('#qr').innerHTML=q||'<div style="color:#000;padding:2vh">QR too long.</div>'}
   $('#pmsvg').innerHTML=pmSVG('pm',1);
-  {$('#kg').innerHTML='<rect width="300" height="27" fill="#ff7a2a1a"/><rect y="33" width="300" height="27" fill="#35c8ff1a"/><rect y="27" width="300" height="6" fill="#39ff1455"/><path d="M0 30H300" stroke="#39ff14" stroke-dasharray="4 4" stroke-width=".8"/><polyline id="kl" fill="none" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke" points=""/>'}
+  // Vertical k_eff graph initialization
+  {$('#kg').innerHTML='<rect width="40" height="300" fill="#0a0f0b"/><rect width="20" height="300" fill="#35c8ff10"/><rect x="20" width="20" height="300" fill="#ff7a2a10"/><path d="M20 0V300" stroke="#39ff14" stroke-dasharray="4 4" stroke-width=".8"/><polyline id="kl" fill="none" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke" points=""/>'}
   const pmt=o=>show('#pm',o===undefined?$('#pm').classList.contains('hide'):o);
   $('#bpm').onclick=()=>pmt();$('#pmx').onclick=()=>pmt(false);$('#phase').onclick=()=>pmt(true);
   addEventListener('keydown',e=>{if(e.key==='Escape')pmt(false);else if(!e.shiftKey&&!e.ctrlKey&&(e.key==='p'||e.key==='P')&&S.phase==='run')pmt()});
@@ -836,30 +848,51 @@ function host(mode,diff){
   for(let k=0;k<10;k++){const c=document.createElementNS(NS,'circle');c.setAttribute('cx',64);c.setAttribute('cy',225+Math.random()*180);c.setAttribute('r',1.8);c.setAttribute('fill','#fff59a');c.setAttribute('class','nu');c.style.animationDelay=(-Math.random()*1.4)+'s';nf.appendChild(c)}
 
   const sync=()=>{const i=S.in;
-    $('#oRods').value=i.rods;$('#oPump').value=i.pump;$('#oBor').value=i.boron;
-    $('#tRods').textContent=i.rods+'%';$('#tPump').textContent=i.pump+'%';$('#tBor').textContent=i.boron;
-    $('#oHeat').classList.toggle('on',!!i.heat);$('#oSpr').classList.toggle('on',!!i.spray);$('#oHold').classList.toggle('on',!i.heat&&!i.spray);
+    const oR=document.getElementById('oRods'),oP=document.getElementById('oPump'),oB=document.getElementById('oBor');
+    if(oR)oR.value=i.rods;if(oP)oP.value=i.pump;if(oB)oB.value=i.boron;
+    setText('#tRods',i.rods+'%');setText('#tPump',i.pump+'%');setText('#tBor',i.boron);
+    const oH=document.getElementById('oHeat'),oS=document.getElementById('oSpr'),oHold=document.getElementById('oHold');
+    if(oH)oH.classList.toggle('on',!!i.heat);
+    if(oS)oS.classList.toggle('on',!!i.spray);
+    if(oHold)oHold.classList.toggle('on',!i.heat&&!i.spray);
     render()};
 
-  $('#oRods').oninput=e=>{S.in.rods=+e.target.value;sync();if(S.override.rods)sendTo('rods',{t:'ack',v:pick('rods'),cd:D.cd,br:D.short,hint:D.ph?D.ph.rods:''})};
-  $('#oPump').oninput=e=>{S.in.pump=+e.target.value;sync();if(S.override.coolant)sendTo('coolant',{t:'ack',v:pick('coolant'),cd:D.cd,br:D.short,hint:D.ph?D.ph.coolant:''})};
-  $('#oBor').oninput=e=>{S.in.boron=+e.target.value;sync();if(S.override.xenon)sendTo('xenon',{t:'ack',v:pick('xenon'),cd:D.cd,br:D.short,hint:D.ph?D.ph.xenon:''})};
-  $('#oHeat').onclick=()=>{S.in.heat=1;S.in.spray=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
-  $('#oSpr').onclick=()=>{S.in.spray=1;S.in.heat=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
-  $('#oHold').onclick=()=>{S.in.heat=0;S.in.spray=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
+  // Wire slider oninput handlers
+  const oRodsEl=$('#oRods');if(oRodsEl)oRodsEl.oninput=e=>{S.in.rods=+e.target.value;sync();if(S.override.rods)sendTo('rods',{t:'ack',v:pick('rods'),cd:D.cd,br:D.short,hint:D.ph?D.ph.rods:''})};
+  const oPumpEl=$('#oPump');if(oPumpEl)oPumpEl.oninput=e=>{S.in.pump=+e.target.value;sync();if(S.override.coolant)sendTo('coolant',{t:'ack',v:pick('coolant'),cd:D.cd,br:D.short,hint:D.ph?D.ph.coolant:''})};
+  const oBorEl=$('#oBor');if(oBorEl)oBorEl.oninput=e=>{S.in.boron=+e.target.value;sync();if(S.override.xenon)sendTo('xenon',{t:'ack',v:pick('xenon'),cd:D.cd,br:D.short,hint:D.ph?D.ph.xenon:''})};
+  const oHeatEl=$('#oHeat');if(oHeatEl)oHeatEl.onclick=()=>{S.in.heat=1;S.in.spray=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
+  const oSprEl=$('#oSpr');if(oSprEl)oSprEl.onclick=()=>{S.in.spray=1;S.in.heat=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
+  const oHoldEl=$('#oHold');if(oHoldEl)oHoldEl.onclick=()=>{S.in.heat=0;S.in.spray=0;sync();if(S.override.pressure)sendTo('pressure',{t:'ack',v:pick('pressure'),cd:D.cd,br:D.short,hint:D.ph?D.ph.pressure:''})};
+
+  // Wire +/- circle buttons next to sliders
+  document.querySelectorAll('.pn-ctl[data-key]').forEach(ctl=>{
+    const input=ctl.querySelector('input[type=range]');
+    if(!input)return;
+    ctl.querySelectorAll('.pm').forEach(btn=>{
+      btn.onclick=()=>{
+        if(input.disabled)return;
+        const dir=+btn.dataset.d;
+        const step=+btn.dataset.step||5;
+        const cur=+input.value;
+        const mn=+input.min,mx=+input.max;
+        input.value=clamp(cur+dir*step,mn,mx);
+        input.dispatchEvent(new Event('input',{bubbles:true}));
+      };
+    });
+  });
+
   addEventListener('keydown',e=>{if(e.shiftKey&&(e.key==='O'||e.key==='o')){e.preventDefault();S.ov=!S.ov;document.body.classList.toggle('ov',S.ov);if(S.phase==='lobby')lobby();}});
 
   document.querySelectorAll('.ovr-btn').forEach(btn=>{
     btn.onclick=()=>{
       const r=btn.dataset.r;
       if(S.override[r]){
-        // Release - client auto-reclaims on next message
         S.override[r]=false;
         updatePanelStatus(r);
         sendTo(r,{t:'st',ph:S.phase});
         AU.tone(440,.15,'triangle',.15,0,880);
       } else {
-        // Take control
         S.override[r]=true;
         updatePanelStatus(r);
         sendTo(r,{t:'st',ph:'overridden'});
@@ -868,41 +901,44 @@ function host(mode,diff){
     };
   });
 
-  const cls=(el,c)=>{el.className='big '+c};
+  const cls=(el,c)=>{if(el)el.className='big '+c};
   const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
   function render(){
     const T=S.T,P=S.P,N=S.N,i=S.in;
     const grossP=N*THERMAL_TO_ELECTRIC,plantUseP=grossP*STATION_SERVICE_FRACTION,netGrid=gridPowerMWe(N);
-    $('#vT').firstChild.nodeValue=T.toFixed(0);$('#vP').firstChild.nodeValue=P.toFixed(2);$('#vN').firstChild.nodeValue=netGrid.toFixed(0);
-    $('#thermalReadout').innerHTML='Heat '+N.toFixed(0)+' MWth · Gen '+grossP.toFixed(0)+' MWe gross<br>Plant '+plantUseP.toFixed(1)+' MWe · Grid <b>'+netGrid.toFixed(0)+' MWe</b> net';
-    cls($('#vT'),(P<22.064&&T>=tsat(P))?'cr':T>(D.thermalHigh||350)?'wn':'ok');
-    cls($('#vP'),(P<(D.pressureCriticalLow||10)||P>(D.pressureCriticalHigh||20))?'cr':(P<(D.pressureLow||13)||P>(D.pressureHigh||17.5))?'wn':'ok');
-    cls($('#vN'),Math.abs(N-1000)<=D.band?'ok':'wn');
-    $('#rRods').innerHTML=i.rods+'<span style="font-size:.6em;color:var(--dim);margin-left:2px">%</span>';
-    $('#bRods').style.width=i.rods+'%';
-    $('#rPump').textContent=i.pump+'%';$('#bPump').style.width=i.pump+'%';
-    $('#rPres').textContent=i.heat?'▲ HEAT':(i.spray||S.stuck>0)?'▼ SPRAY':'■ HOLD';
-    $('#bPres').style.width=(i.heat?50:0)+((i.spray||S.stuck>0)?50:0)+'%';
-    $('#rBor').textContent=i.boron+' ppm';$('#bBor').style.width=i.boron/20+'%';
+    const vT=$('#vT'),vP=$('#vP'),vN=$('#vN');
+    if(vT&&vT.firstChild)vT.firstChild.nodeValue=T.toFixed(0);
+    if(vP&&vP.firstChild)vP.firstChild.nodeValue=P.toFixed(2);
+    if(vN&&vN.firstChild)vN.firstChild.nodeValue=netGrid.toFixed(0);
+    setHTML('#thermalReadout','Heat '+N.toFixed(0)+' MWth · Gen '+grossP.toFixed(0)+' MWe gross<br>Plant '+plantUseP.toFixed(1)+' MWe · Grid <b>'+netGrid.toFixed(0)+' MWe</b> net');
+    cls(vT,(P<22.064&&T>=tsat(P))?'cr':T>(D.thermalHigh||350)?'wn':'ok');
+    cls(vP,(P<(D.pressureCriticalLow||10)||P>(D.pressureCriticalHigh||20))?'cr':(P<(D.pressureLow||13)||P>(D.pressureHigh||17.5))?'wn':'ok');
+    cls(vN,Math.abs(N-1000)<=D.band?'ok':'wn');
+    setHTML('#rRods',i.rods+'<span style="font-size:.6em;color:var(--dim);margin-left:2px">%</span>');
+    setAttr('#bRods','style','width:'+i.rods+'%');
+    setText('#rPump',i.pump+'%');setAttr('#bPump','style','width:'+i.pump+'%');
+    setText('#rPres',i.heat?'▲ HEAT':(i.spray||S.stuck>0)?'▼ SPRAY':'■ HOLD');
+    setAttr('#bPres','style','width:'+((i.heat?50:0)+((i.spray||S.stuck>0)?50:0))+'%');
+    setText('#rBor',i.boron+' ppm');setAttr('#bBor','style','width:'+(i.boron/20)+'%');
     const bf=i.boron/2000,nb=Math.round(bf*28),nn=Math.round(clamp(N/1500,0,1)*10);
-    [...$('#bdots').children].forEach((c,k)=>c.style.opacity=k<nb?.9:0);
-    [...$('#bmini').children].forEach((c,k)=>{if(c.tagName==='I')c.style.opacity=k<nb?1:0});
-    $('#bmini u').style.height=bf*100+'%';
-    $('#blev').setAttribute('height',64*bf);$('#blev').setAttribute('y',339-64*bf);$('#bpipe').setAttribute('opacity',bf>0?.35+bf*.65:0);
-    [...$('#nflux').children].forEach((c,k)=>{c.style.opacity=k<nn?1:0;c.style.animationDuration=(1.6-clamp(N/1500,0,1)*.9)+'s'});
-    const t=clamp((T-280)/720,0,1);$('#water').setAttribute('fill','rgb('+lerp(30,255,t)+','+lerp(107,40,t)+','+lerp(255,20,t)+')');
-    $('#rods').style.transform='translateY('+(-(100-i.rods)*1.2)+'px)';
-    $('#fuel').style.filter='drop-shadow(0 0 '+(2+t*14).toFixed(1)+'px rgba(255,'+lerp(190,40,t)+',40,.9))';
-    $('#hot').setAttribute('stroke','rgb(255,'+lerp(160,30,t)+',40)');
+    const bdEl=$('#bdots');if(bdEl)[...bdEl.children].forEach((c,k)=>c.style.opacity=k<nb?.9:0);
+    const bmEl=$('#bmini');if(bmEl){[...bmEl.children].forEach((c,k)=>{if(c.tagName==='I')c.style.opacity=k<nb?1:0});const u=bmEl.querySelector('u');if(u)u.style.height=bf*100+'%';}
+    setAttr('#blev','height',64*bf);setAttr('#blev','y',339-64*bf);setAttr('#bpipe','opacity',bf>0?.35+bf*.65:0);
+    const nfEl=$('#nflux');if(nfEl)[...nfEl.children].forEach((c,k)=>{c.style.opacity=k<nn?1:0;c.style.animationDuration=(1.6-clamp(N/1500,0,1)*.9)+'s'});
+    const t=clamp((T-280)/720,0,1);
+    setAttr('#water','fill','rgb('+lerp(30,255,t)+','+lerp(107,40,t)+','+lerp(255,20,t)+')');
+    const rodsEl=$('#rods');if(rodsEl)rodsEl.style.transform='translateY('+(-(100-i.rods)*1.2)+'px)';
+    const fuelEl=$('#fuel');if(fuelEl)fuelEl.style.filter='drop-shadow(0 0 '+(2+t*14).toFixed(1)+'px rgba(255,'+lerp(190,40,t)+',40,.9))';
+    setAttr('#hot','stroke','rgb(255,'+lerp(160,30,t)+',40)');
     const fs=i.pump?(2.1-i.pump/100*1.8).toFixed(2)+'s':'0s';
-    ['hot','cold','pump'].forEach(k=>{const e=$('#'+k);e.style.setProperty('--fs',fs);e.style.setProperty('--ts',fs);e.style.animationPlayState=i.pump?'running':'paused'});
+    ['hot','cold','pump'].forEach(k=>{const e=document.getElementById(k);if(e){e.style.setProperty('--fs',fs);e.style.setProperty('--ts',fs);e.style.animationPlayState=i.pump?'running':'paused'}});
     const ts=N>20?(4-N/1500*3.6).toFixed(2)+'s':'0s';
-    ['turb','steam','feed'].forEach(k=>{const e=$('#'+k);e.style.setProperty('--ts',ts);e.style.setProperty('--fs',ts);e.style.animationPlayState=N>20?'running':'paused'});
-    $('#gl').setAttribute('opacity',clamp(N/1100,.1,1));$('#gl').setAttribute('stroke',Math.abs(N-1000)<=50?'#39ff14':'#ffd400');
-    $('#heat').setAttribute('opacity',i.heat?1:0);$('#spray').setAttribute('opacity',(i.spray||S.stuck>0)?1:0);
-    const pl=clamp((P-8)/12,0,1);$('#plev').setAttribute('y',110-pl*18);$('#plev').setAttribute('height',57+pl*18);
-    $('#tv').textContent=fmt(Math.max(0,S.rem));cls($('#tv'),S.rem<=60?'cr':S.rem<=180?'wn':'ok');
-    $('#hold').style.width=(S.mode==='sandbox'?0:S.hold/WH*100)+'%';
+    ['turb','steam','feed'].forEach(k=>{const e=document.getElementById(k);if(e){e.style.setProperty('--ts',ts);e.style.setProperty('--fs',ts);e.style.animationPlayState=N>20?'running':'paused'}});
+    setAttr('#gl','opacity',clamp(N/1100,.1,1));setAttr('#gl','stroke',Math.abs(N-1000)<=50?'#39ff14':'#ffd400');
+    setAttr('#heat','opacity',i.heat?1:0);setAttr('#spray','opacity',(i.spray||S.stuck>0)?1:0);
+    const pl=clamp((P-8)/12,0,1);setAttr('#plev','y',110-pl*18);setAttr('#plev','height',57+pl*18);
+    const tvEl=$('#tv');if(tvEl){tvEl.textContent=fmt(Math.max(0,S.rem));tvEl.style.color=S.rem<=60?'#ff7777':S.rem<=180?'#ffd400':'#39ff14';}
+    setAttr('#hold','style','width:'+(S.mode==='sandbox'?0:S.hold/WH*100)+'%');
     {const tsNow=P<22.064?tsat(P):Infinity,sub=tsNow-T;let msg='LOOKING GOOD — reactor conditions are within the model’s safe range',level=0;
       const pCritLow=D.pressureCriticalLow||10,pCritHigh=D.pressureCriticalHigh||20,tCritHigh=D.thermalCritical||350,pLowWarn=D.pressureLow||13,pHighWarn=D.pressureHigh||17.5,tWarm=(D.thermalHigh||350)-20;
       if(P<pCritLow){msg='PRESSURE TOO LOW — coolant may boil soon. Check the pressurizer.';level=2}
@@ -914,37 +950,47 @@ function host(mode,diff){
       else if(T>tWarm){msg='COOLANT WARM — heat removal may lag. Check pump speed.';level=1}
       else if(S.k>1.01){msg='CHAIN REACTION GROWING — more neutrons each generation. Watch power.';level=1}
       else if(S.k<.99&&S.Nf>10){msg='CHAIN REACTION WEAKENING — too few neutrons to sustain it.';level=1}
-      $('#studentStatus').textContent=msg;$('#studentStatus').className='student-status'+(level===2?' danger':level===1?' warn':'');
+      const ssEl=$('#studentStatus');if(ssEl){ssEl.textContent=msg;ssEl.className='student-status'+(level===2?' danger':level===1?' warn':'');}
     }
     {const ph=phaseOf(T,P),ts=tsat(P);
       let ptxt='';if(ph[0].indexOf('SUPERCRITICAL')>=0)ptxt='SUPERCRITICAL';else if(ph[0].indexOf('SUBCOOLED')>=0)ptxt='SUBCOOLED';else if(ph[0].indexOf('SATURATION')>=0)ptxt='SATURATION';else if(ph[0].indexOf('SUPERHEATED')>=0)ptxt='SUPERHEATED';else if(ph[0].indexOf('VAPOR')>=0)ptxt='VAPOR';else ptxt=ph[0];
-      $('#phase').textContent=ptxt+(P<22.064?' · '+(ts-T).toFixed(0)+'°C margin':'');
-      $('#phase').style.color=ph[1];
+      const phEl=$('#phase');if(phEl){phEl.textContent=ptxt+(P<22.064?' · '+(ts-T).toFixed(0)+'°C margin':'');phEl.style.color=ph[1];}
       const d=$('#pmdot'),d2=$('#pmdot2'),y=380-Math.min(P,30)*12;
       if(d){d.setAttribute('cx',50+Math.min(T,500)*.98);d.setAttribute('cy',y)}
       if(d2){d2.setAttribute('cy',y)}
-      $('#pmlive').innerHTML='<b>LIVE · '+ph[0]+'</b>Pressure '+P.toFixed(2)+' MPa; the illustrative saturation temperature is '+ts.toFixed(0)+' °C. Hot-leg coolant is '+T.toFixed(0)+' °C. '+(P<22.064?(T<ts?'Subcooling margin '+(ts-T).toFixed(0)+' °C.':'At or above saturation; the model applies a simplified void-region heat-removal penalty.'):T>=373.946?'Above the water critical point.':'Compressed liquid below the critical temperature.')}
+      setHTML('#pmlive','<b>LIVE · '+ph[0]+'</b>Pressure '+P.toFixed(2)+' MPa; illustrative saturation temperature is '+ts.toFixed(0)+' °C. Hot-leg coolant '+T.toFixed(0)+' °C.');
+    }
     {const k=S.k??1,rho=S.rho??0,promptCritical=k>1&&rho>=BETA_EFF;
       let label,color;
-      if(S.Nf<1&&k<1){label='VERY WEAK · little fission';color='#35c8ff'}
-      else if(Math.abs(k-1)<.0001){label='STEADY · balanced generations';color='#39ff14'}
-      else if(k<1){label='SHRINKING · k-eff below 1';color='#35c8ff'}
-      else if(promptCritical){if(k>=1.01){label='VERY RAPID GROWTH';color='#ff2a2a'}else{label='RAPID GROWTH';color='#ffd400'}}
-      else{label='GROWING · delayed neutrons help';color='#ffd400'}
-      $('#kv').textContent=k.toFixed(4);$('#kv').style.color=color;$('#kst').textContent=label;$('#kst').style.color=color;
-      const rate=S.dPower||0;$('#krate').textContent='Power change '+(rate>=0?'+':'')+rate.toFixed(1)+' MWth/s · ρ '+(rho>=0?'+':'')+rho.toFixed(4);
-      const clip=k<.98?'k BELOW RANGE ↓':k>1.02?'k ABOVE RANGE ↑':'';$('#kclip').textContent=clip;$('#kclip').classList.toggle('hide',!clip);
-      const ky=v=>60-(clamp(v,.98,1.02)-.98)/.04*60;$('#kl').setAttribute('points',(S.kh||[]).map((v,j)=>(j*300/89).toFixed(1)+','+ky(v).toFixed(1)).join(' '))}
-    $('#cflow') && ($('#cflow').textContent='');
-    $('#lPump').textContent=i.pump+'% · hot leg '+T.toFixed(0)+' °C';
-    $('#lRods').textContent=i.rods<40?'withdrawn':i.rods>70?'inserted':'mid-core';
-    $('#lPres').textContent=i.heat?'▲ HEATING':(i.spray||S.stuck>0)?'▼ SPRAY':'■ HOLD';
-    $('#lBor').textContent=i.boron+' ppm · '+(bf>0.5?'high':bf<0.15?'low':'mid');
-    $('#prv') && $('#prv').setAttribute('opacity',S.valve?1:0);
+      if(S.Nf<1&&k<1){label='WEAK';color='#35c8ff'}
+      else if(Math.abs(k-1)<.0001){label='STEADY';color='#39ff14'}
+      else if(k<1){label='SHRINKING';color='#35c8ff'}
+      else if(promptCritical){if(k>=1.01){label='RUNAWAY';color='#ff2a2a'}else{label='RAPID';color='#ffd400'}}
+      else{label='GROWING';color='#ffd400'}
+      const kvEl=$('#kv');if(kvEl){kvEl.textContent=k.toFixed(4);kvEl.style.color=color;}
+      const kstEl=$('#kst');if(kstEl){kstEl.textContent=label;kstEl.style.color=color;}
+      const rate=S.dPower||0;
+      const krateEl=$('#krate');if(krateEl)krateEl.textContent='dP '+((rate>=0?'+':'')+rate.toFixed(1))+' · ρ '+((rho>=0?'+':'')+rho.toFixed(4));
+      const clip=k<.98?'▼':k>1.02?'▲':'';
+      const kclipEl=$('#kclip');if(kclipEl){kclipEl.textContent=clip;kclipEl.classList.toggle('hide',!(k<.98||k>1.02))}
+      // Vertical k_eff graph: kx maps 0.98..1.02 → 5..35; ky maps j (0=oldest) → bottom, j=n-1=newest → top
+      const kx=v=>5+(clamp(v,.98,1.02)-.98)/.04*30;
+      const arr=S.kh||[];const n=arr.length;
+      const ky=j=>n<=1?150:295-(j/(n-1))*290;
+      const klEl=$('#kl');
+      if(klEl)klEl.setAttribute('points',arr.map((v,j)=>kx(v).toFixed(1)+','+ky(j).toFixed(1)).join(' '));
+    }
+    setText('#lPump',i.pump+'% · hot leg '+T.toFixed(0)+' °C');
+    setText('#lRods',i.rods<40?'withdrawn':i.rods>70?'inserted':'mid-core');
+    setText('#lPres',i.heat?'▲ HEATING':(i.spray||S.stuck>0)?'▼ SPRAY':'■ HOLD');
+    setText('#lBor',i.boron+' ppm · '+(bf>0.5?'high':bf<0.15?'low':'mid'));
+    setAttr('#prv','opacity',S.valve?1:0);
     const holdActive=S.hold>0;
-    $('#hl').style.color=holdActive?'#39ff14':'var(--dim)';
-    $('#hl').textContent=S.mode==='sandbox'?'SANDBOX · no auto win timer':(holdActive?'● HOLDING · ':'HOLD · ')+'grid ≈315 MWe · margin ≥'+(D.subcoolMargin||10)+'°C · '+S.hold+'/'+WH+'s';
-    {const ct=D.hints&&S.phase==='run'?coach():'';$('#coach').textContent=ct;$('#coach').classList.toggle('hide',!ct)}
+    const hlEl=$('#hl');if(hlEl){
+      hlEl.style.color=holdActive?'#39ff14':'var(--dim)';
+      hlEl.textContent=S.mode==='sandbox'?'SANDBOX':(holdActive?'● '+S.hold+'/'+WH+'s':S.hold+'/'+WH+'s');
+    }
+    {const ct=D.hints&&S.phase==='run'?coach():'';const coachEl=$('#coach');if(coachEl){coachEl.textContent=ct;coachEl.classList.toggle('hide',!ct)}}
   }
   function burst(){const cv=$('#fx'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;show('#fx',true);
     const q=$('#svgw svg').getBoundingClientRect(),sc=Math.min(q.width/640,q.height/500),cx=q.left+(q.width-640*sc)/2+120*sc,cy=q.top+(q.height-500*sc)/2+315*sc,ps=[];
@@ -952,14 +998,14 @@ function host(mode,diff){
     (function f(){x.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.vx*=.985;p.l-=.008;if(p.l>0){x.fillStyle='hsla('+p.h+',100%,'+(50+p.l*30)+'%,'+p.l+')';x.beginPath();x.arc(p.x,p.y,2+p.l*6,0,6.3);x.fill()}});
       if(ps.some(p=>p.l>0))requestAnimationFrame(f);else show('#fx',false)})();}
   const ES={
-boil:{res:'lose',m:0,cls:'es-boil',t:'COOLANT CAN NO LONGER BE COOLED SAFELY',x:'The model detected very hot coolant together with low pressure. In real reactors, boiling and heat-transfer problems depend on local conditions too. This game does not calculate fuel damage or departure from nucleate boiling.'},
-xenonLockout:{res:'lose',m:0,cls:'es-panic',t:'THE REACTOR COULD NOT RESTART',x:'The team tried to restart, then returned to the shutdown settings. In this model, xenon absorbed too many neutrons for power to build. This is a game rule, not a real-world restart-time prediction.'},
-spike:{res:'lose',m:0,cls:'es-spike',t:'POWER RAN AWAY · EMERGENCY STOP',x:'The model detected extremely hot coolant, nearly withdrawn control rods, and very little neutron-absorbing boron. The chain reaction added heat faster than the model could remove it. This is a simplified game ending; fuel melting is not calculated.'},
-time:{res:'lose',m:0,cls:'es-time',t:'TIME IS UP · GRID TARGET NOT REACHED',x:'The team did not reach the requested electricity supply and keep the reactor conditions steady before time ran out. The game timer ended the challenge.'},
-win:{res:'win',m:0,cls:'es-win',t:'SUCCESS · STEADY ELECTRICITY TO THE GRID',x:'The team supplied about 315 MWe to the grid and kept reactor conditions steady. Great teamwork! This is an educational estimate, not a real plant output.'},
+boil:{res:'lose',m:0,cls:'es-boil',t:'COOLANT CAN NO LONGER BE COOLED SAFELY',x:'The model detected very hot coolant together with low pressure. This game does not calculate fuel damage or departure from nucleate boiling.'},
+xenonLockout:{res:'lose',m:0,cls:'es-panic',t:'THE REACTOR COULD NOT RESTART',x:'The team tried to restart, then returned to the shutdown settings. In this model, xenon absorbed too many neutrons for power to build. This is a game rule.'},
+spike:{res:'lose',m:0,cls:'es-spike',t:'POWER RAN AWAY · EMERGENCY STOP',x:'The model detected extremely hot coolant, nearly withdrawn control rods, and very little neutron-absorbing boron. This is a simplified game ending.'},
+time:{res:'lose',m:0,cls:'es-time',t:'TIME IS UP · GRID TARGET NOT REACHED',x:'The team did not reach the requested electricity supply and keep the reactor conditions steady before time ran out.'},
+win:{res:'win',m:0,cls:'es-win',t:'SUCCESS · STEADY ELECTRICITY TO THE GRID',x:'The team supplied about 315 MWe to the grid and kept reactor conditions steady. Great teamwork! This is an educational estimate.'},
 heat:{res:'lose',m:0,cls:'es-boil',t:'COOLANT TEMPERATURE TOO HIGH',x:'The modeled hot-leg coolant became much hotter than the game’s allowed limit. The simulation does not calculate fuel or cladding temperature.'},
 over:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO HIGH',x:'Pressure went beyond the game’s pressure limit. Reaching the water critical point is a separate science idea and does not automatically mean a real reactor vessel breaks.'},
-depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below the game’s limit. Whether water starts to boil also depends on its temperature. Simplified game rule.'}};
+depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below the game’s limit. Whether water starts to boil also depends on its temperature.'}};
   function evt(m){const d=document.createElement('div');d.textContent=m;d.className='r';$('#log').prepend(d);setTimeout(()=>d.remove(),20000);AU.tone(500,.4,'square',.15,0,250);while($('#log').children.length>3)$('#log').lastChild.remove()}
   function coach(){const i=S.in,N=S.N,T=S.T,P=S.P;
     if(P<(D.pressureLow||13)+0.5)return'Div 3: pressure low — use ▲ HEAT.';if(P>(D.pressureHigh||17.5)-0.5)return'Div 3: pressure high — use ▼ SPRAY.';
@@ -1040,34 +1086,46 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
     if(S.mode==='group'&&S.rem<=0)end('time');
   }
   const begin=()=>{const st=D.st;
-    Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
+    try{Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
     S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
     S.Nf=Math.max(0,D.initialFissionPower??0);
     S.Tfuel=S.T+(S.Nf+20)/H_FUEL_COOLANT;
     S.precursors=D.k==='hard'?BETA_GROUPS.map(()=>0):equilibriumPrecursors(S.Nf);
     {const balance=neutronBalance(S.in,S.xe,S.T,S.P,S.Tfuel,D.alphaDoppler);S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;S.kh=[S.k]}
     S.N=S.Nf+20;S.dPower=0;S.prev={N:S.N,T:S.T,P:S.P,Nf:S.Nf};
-    $('#oRods').min=D.rodsMin||0;$('#oRods').max=D.rodsMax||100;
-    $('#oPump').min=D.pumpMin||0;$('#oPump').max=Math.min(S.pcap,D.pumpMax||100);
-    $('#oBor').min=D.boronMin||0;$('#oBor').max=D.boronMax||2000;
+    const oR=document.getElementById('oRods');if(oR){oR.min=D.rodsMin||0;oR.max=D.rodsMax||100}
+    const oP=document.getElementById('oPump');if(oP){oP.min=D.pumpMin||0;oP.max=Math.min(S.pcap,D.pumpMax||100)}
+    const oB=document.getElementById('oBor');if(oB){oB.min=D.boronMin||0;oB.max=D.boronMax||2000}
     bc({t:'cap',pcap:S.pcap,lim:getLim()});
-    Object.keys(ROLES).forEach(r=>S.conns[r]&&S.conns[r].send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''}));
+    Object.keys(ROLES).forEach(r=>{const c=S.conns[r];if(c&&c.open){try{c.send({t:'ack',v:pick(r),cd:D.cd,br:D.short,hint:D.ph?D.ph[r]:''})}catch(e){}}});
     ROLE_KEYS.forEach(updatePanelStatus);
     AU.init();document.body.classList.remove('melt','boom','alarm','cold');
     document.body.classList.toggle('hard',D.k==='hard');
-    $('#ovr').className='hide';show('#fx',false);show('#lobby',false);show('#ovr',false);show('#hud',true);$('#log').innerHTML='';sync();
-    if(S.mode==='group'){$('#bt').textContent=D.n+' · '+D.t;$('#bs').textContent=D.story;$('#bg').textContent=D.goal;show('#brf',true);bc({t:'st',ph:'brief'})}else bc({t:'st',ph:'run'})};
+    const ovrEl=$('#ovr');if(ovrEl)ovrEl.className='hide';
+    show('#fx',false);show('#lobby',false);show('#ovr',false);show('#hud',true);
+    const logEl=$('#log');if(logEl)logEl.innerHTML='';
+    try{sync()}catch(e){console.error('sync() failed in begin():',e)}
+    }catch(outerErr){console.error('begin() setup failed:',outerErr)}
+    if(S.mode==='group'){
+      try{setText('#bt',D.n+' · '+D.t);setText('#bs',D.story);setText('#bg',D.goal)}catch(e){console.error('briefing text failed:',e)}
+      show('#brf',true);
+      try{bc({t:'st',ph:'brief'})}catch(e){console.error('bc brief failed:',e)}
+    } else {
+      try{bc({t:'st',ph:'run'})}catch(e){console.error('bc run failed:',e)}
+    }
+  };
   $('#bgo').onclick=()=>{show('#brf',false);S.phase='run';AU.init();bc({t:'st',ph:'run'})};
   $('#bStart').onclick=begin;
   const goHome=async()=>{if(S.mode==='group'&&(nconn()||S.phase==='run')&&!await ask('Leave and disconnect all phones?'))return;goto(location.pathname)};
   $('#bhome').onclick=goHome;
   $('#bback').onclick=async()=>{if(S.mode==='sandbox')return goHome();
-    if(S.phase==='lobby'){if(nconn()&&!await ask('Back to scenario select? Phones will disconnect.'))return;return goto(location.pathname+'?mode=group')}
-    if(S.phase==='run'&&!await ask('Stop this run and return to the lobby?'))return;
+    if(S.phase==='lobby'){if(nconn()&&!await ask('Back to scenario select?'))return;return goto(location.pathname+'?mode=group')}
+    if(S.phase==='run'&&!await ask('Stop this run?'))return;
     AU.klaxon(false);document.body.classList.remove('melt','boom','alarm','cold');
     ['#fx','#pm','#ovr','#hud','#brf'].forEach(x=>show(x,false));
     S.phase='lobby';bc({t:'st',ph:'lobby'});show('#lobby',true);lobby()};
-  show('#bar',true);$('#snd').onclick=()=>{AU.init();AU.on=!AU.on;if(!AU.on)AU.klaxon(false);$('#snd').textContent=AU.on?'SOUND ON':'SOUND OFF'};
+  show('#bar',true);
+  $('#snd').onclick=()=>{AU.init();AU.on=!AU.on;if(!AU.on)AU.klaxon(false);$('#snd').textContent=AU.on?'SOUND ON':'SOUND OFF'};
   $('#bAgain').onclick=begin;
   setInterval(tick,1000);
 
