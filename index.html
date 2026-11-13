@@ -24,7 +24,7 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 .slot{border:1px solid var(--ln);padding:1vh 1vw;background:var(--pn);font-size:clamp(.8rem,1.1vw,1.1rem)}
 .slot b{display:block;color:var(--dim);font-weight:400}.slot.on{border-color:var(--g)}.slot.on .st{color:var(--g)}.st{color:var(--r)}
 
-#hud{position:fixed;inset:0;bottom:4.8vh;display:grid;grid-template-columns:1fr minmax(240px,25vw);gap:1vh 1vw;padding:1vh 1vw}
+#hud{position:fixed;inset:0;bottom:4.8vh;display:grid;grid-template-columns:1fr minmax(240px,25vw);grid-template-rows:14vh 1fr 1fr;gap:1vh 1vw;padding:1vh 1vw}
 #left{display:flex;flex-direction:column;gap:.6vh;min-height:0;min-width:0}
 #right{display:flex;flex-direction:column;gap:.7vh;min-height:0;overflow-y:auto;overflow-x:hidden}
 
@@ -241,6 +241,9 @@ body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2
 #chome{border:1px solid var(--g);background:transparent;color:var(--g);border-radius:12px;padding:.35em .8em;font-size:1rem}
 body.sbx #tl,body.sbx #tv{display:none!important}
 
+/* Sandbox tab bar hidden by default (desktop, group-mode mobile) */
+.sbx-tabs{display:none}
+
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
@@ -263,6 +266,89 @@ body.sbx #tl,body.sbx #tv{display:none!important}
   #statusStrip{padding:.3vh .5vw}
   .pmbox{flex-direction:column}
   .pmtx{font-size:.8rem}
+
+  /* ── SANDBOX MOBILE REDESIGN ────────────────────────────────── */
+  /* Fixed 2-row HUD: reactor area grows, drawer is capped at 25vh */
+  body.sbx #hud{grid-template-rows:1fr clamp(160px,25vh,240px);overflow:hidden}
+
+  /* Compact metric strip */
+  body.sbx #top{gap:3px}
+  body.sbx #top .pn{padding:3px 6px;flex-direction:row;align-items:baseline;gap:4px}
+  body.sbx #top h3{font-size:.5rem}
+  body.sbx #top .big{font-size:clamp(.9rem,3.5vw,1.2rem)}
+  body.sbx #top .lnk{display:none}
+
+  /* k_eff restored to vertical column on the left of the reactor */
+  body.sbx #mainRow{flex-direction:row;gap:4px;min-height:0}
+  body.sbx #kcol{
+    flex:0 0 40px;flex-direction:column;
+    padding:2px;gap:1px;min-height:0;max-height:none;
+  }
+  body.sbx #kcol .kvert-hd,
+  body.sbx #kcol .kvert-label{display:block;font-size:.42rem}
+  body.sbx #kw{flex:1;min-height:0;max-height:none;width:100%}
+  body.sbx #kcol #kv{font-size:.55rem}
+  body.sbx #kcol #kst{font-size:.42rem}
+
+  /* Reactor & timer */
+  body.sbx #ctr{min-height:0}
+  body.sbx #svgw{min-height:0}
+  body.sbx #timerBox{display:none}
+
+  /* Drawer container */
+  body.sbx #right{
+    flex-direction:column;overflow:hidden;gap:0;
+    padding-bottom:0;min-height:0;
+  }
+
+  /* Tab bar */
+  body.sbx .sbx-tabs{
+    display:flex;gap:3px;padding:3px;
+    background:#050805;border-radius:8px 8px 0 0;flex-shrink:0;
+  }
+  body.sbx .sbx-tabs button{
+    flex:1;padding:6px 3px;font-size:.6rem;font-family:var(--f);
+    border:1px solid var(--ln);background:#0b100c;color:var(--dim);
+    border-radius:5px;line-height:1.15;letter-spacing:.03em;
+  }
+  body.sbx .sbx-tabs button.on{
+    border-color:var(--y);color:var(--y);background:#ffd40022;
+  }
+
+  /* Only the active panel is shown */
+  body.sbx #right .pn{
+    display:none;flex:1;min-height:0;
+    padding:6px 10px 8px;flex-direction:column;justify-content:flex-start;
+    gap:6px;border-radius:0 0 8px 8px;overflow:hidden;
+  }
+  body.sbx #right .pn.sbx-active{display:flex}
+  body.sbx #right .lnk{display:none}
+  body.sbx #right .bm{display:none}
+  body.sbx #right .bar{height:6px;flex-shrink:0}
+  body.sbx #right .pn-val{font-size:1rem}
+
+  /* Touch-friendly controls inside the active panel */
+  body.sbx #right .pn-ctl{
+    flex:1;align-items:center;gap:8px;min-height:0;
+  }
+  body.sbx #right .pn-ctl input[type=range]{height:44px}
+  body.sbx #right .pn-ctl input[type=range]::-webkit-slider-thumb{
+    width:32px;height:32px;margin-top:-13px;
+  }
+  body.sbx #right .pn-ctl input[type=range]::-moz-range-thumb{
+    width:32px;height:32px;
+  }
+  body.sbx #right .pn-ctl .pm{
+    width:44px;height:44px;font-size:1.3rem;
+    opacity:1;pointer-events:auto;
+  }
+  body.sbx #right .pn-ctl .tb{
+    flex:1;padding:14px 0;font-size:.9rem;
+    opacity:1;pointer-events:auto;
+  }
+
+  /* Slim the bottom toolbar in sandbox */
+  body.sbx #bback{display:none}
 }
 </style>
 </head>
@@ -391,6 +477,12 @@ body.sbx #tl,body.sbx #tv{display:none!important}
     <div id="log"></div>
   </div>
   <div id="right">
+    <div class="sbx-tabs" id="sbxTabs">
+      <button data-sbx="rods">RODS</button>
+      <button data-sbx="coolant">PUMP</button>
+      <button data-sbx="pressure">PRESS</button>
+      <button data-sbx="xenon">BORON</button>
+    </div>
     <div class="pn" data-role="rods">
       <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
       <div class="bar"><i id="bRods"></i></div>
@@ -928,6 +1020,19 @@ function host(mode,diff){
 
   const cls=(el,c)=>{if(el)el.className='big '+c};
   const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+
+  /* Sandbox-only: toggle .on tab + .sbx-active panel based on S.sbxTab.
+     No-op in group mode. Runs inside render()'s try block. */
+  function renderSbxTabs(){
+    if(S.mode!=='sandbox')return;
+    document.querySelectorAll('#sbxTabs button').forEach(btn=>{
+      btn.classList.toggle('on',S.sbxTab===btn.dataset.sbx);
+    });
+    document.querySelectorAll('#right .pn').forEach(panel=>{
+      panel.classList.toggle('sbx-active',panel.dataset.role===S.sbxTab);
+    });
+  }
+
   function render(){
     try{
       const T=S.T,P=S.P,N=S.N,i=S.in;
@@ -1016,6 +1121,7 @@ function host(mode,diff){
         hlEl.textContent=S.mode==='sandbox'?'SANDBOX':(holdActive?'● '+S.hold+'/'+WH+'s':S.hold+'/'+WH+'s');
       }
       {const ct=D.hints&&S.phase==='run'?coach():'';const coachEl=$('#coach');if(coachEl){coachEl.textContent=ct;coachEl.classList.toggle('hide',!ct)}}
+      if(S.mode==='sandbox')renderSbxTabs();
     }catch(err){console.error('render failed:',err);}
   }
   function burst(){const cv=$('#fx'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;show('#fx',true);
@@ -1116,7 +1222,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const begin=()=>{
     const st=D.st;
     try{
-      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
+      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
       S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
       S.Nf=Math.max(0,D.initialFissionPower??0);
       S.Tfuel=S.T+(S.Nf+20)/H_FUEL_COOLANT;
@@ -1136,6 +1242,18 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       const logEl=$('#log');if(logEl)logEl.innerHTML='';
       try{sync()}catch(e){console.error('sync() failed in begin():',e)}
     }catch(outerErr){console.error('begin() setup failed:',outerErr)}
+
+    /* Sandbox-only: wire tab buttons once per begin() (onclick overwrites any
+       prior handler, so RESTART does not stack listeners). */
+    if(S.mode==='sandbox'){
+      const tabsEl=document.getElementById('sbxTabs');
+      if(tabsEl){
+        tabsEl.querySelectorAll('button').forEach(btn=>{
+          btn.onclick=()=>{S.sbxTab=btn.dataset.sbx;renderSbxTabs();};
+        });
+      }
+    }
+
     if(S.mode==='group'){
       try{setText('#bt',D.n+' · '+D.t);setText('#bs',D.story);setText('#bg',D.goal)}catch(e){console.error('briefing text failed:',e)}
       show('#brf',true);
