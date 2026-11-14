@@ -29,6 +29,9 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 #right{display:flex;flex-direction:column;gap:.7vh;min-height:0;overflow-y:auto;overflow-x:hidden}
 
 #top{display:grid;grid-template-columns:repeat(3,1fr);gap:.8vw;flex-shrink:0}
+#modeBadge{display:none}
+body.adv #top{grid-template-columns:repeat(3,1fr) auto}
+body.adv #modeBadge{display:flex;align-items:center;justify-content:center;padding:0 .6vw;color:var(--c);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;opacity:.85}
 #top .pn{flex-direction:row;align-items:center;justify-content:space-between;padding:.8vh .8vw}
 
 .pn{background:var(--pn);border:1px solid var(--ln);padding:1.2vh 1vw;display:flex;flex-direction:column;justify-content:space-between;min-height:0;border-radius:16px;background:linear-gradient(160deg,#131c15cc,#0b100cee);border:1px solid #39ff1430;box-shadow:inset 0 1px #ffffff0d,0 10px 30px #0009}
@@ -259,7 +262,10 @@ body.adv #instrRow{display:grid;grid-template-columns:repeat(4,1fr);gap:.5vw}
 body.adv .instr-cell{display:flex;flex-direction:column;gap:2px;padding:.2vh .4vw;border-left:1px solid var(--ln)}
 body.adv .instr-cell:first-child{border-left:0}
 body.adv .instr-label{font-size:.55rem;color:var(--dim);letter-spacing:.04em}
-body.adv .instr-value{font-size:clamp(.85rem,1.3vw,1.15rem);font-weight:700;color:var(--c)}
+body.adv .instr-value.ok{color:var(--g);text-shadow:0 0 10px #39ff1455}
+body.adv .instr-value.wn{color:var(--y);text-shadow:0 0 10px #ffd40055}
+body.adv .instr-value.cr{color:var(--r);text-shadow:0 0 12px #ff2a2a88;animation:blink .6s steps(2) infinite}
+body.adv .instr-value.off{color:var(--dim)}
 body.adv .instr-sub{font-size:.52rem;color:var(--dim);opacity:.7}
 
 /* Flat layout: single-column HUD with the panel row at bottom */
@@ -277,7 +283,7 @@ body.adv #recPanel{
   flex-shrink:0;font-size:.7rem;
 }
 body.adv .rec-dot{width:10px;height:10px;border-radius:50%;background:#555;flex-shrink:0}
-body.adv .rec-dot-on{background:var(--r);animation:recPulse 1s ease-in-out infinite}
+body.adv .rec-dot-on{background:var(--g);animation:recPulse 1s ease-in-out infinite}
 @keyframes recPulse{50%{opacity:.35}}
 body.adv #recTime{color:var(--y);font-weight:700;font-family:var(--f);min-width:45px}
 body.adv #recRows{color:var(--dim);font-size:.65rem;flex:1}
@@ -302,7 +308,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   letter-spacing:.04em;cursor:pointer;
   transition:color .15s, border-color .15s;
 }
-#bAbout:hover{color:var(--g);border-color:var(--g)}
+#hud:not(.hide) ~ #bAbout{display:none}
 #aboutScreen{
   position:fixed;inset:0;z-index:65;
   background:#000e;
@@ -343,6 +349,8 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
   #top{grid-template-columns:repeat(3,1fr);gap:4px}
+  body.adv #top{grid-template-columns:repeat(3,1fr)}
+  body.adv #modeBadge{display:none}
   #top .pn{flex-direction:column;align-items:flex-start;gap:2px;padding:6px}
   #top .big{font-size:clamp(1.1rem,6vw,1.8rem)}
   #mainRow{flex-direction:column;gap:4px}
@@ -517,6 +525,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
       <div class="pn"><h3>HOT-LEG COOLANT TEMP</h3><div class="big" id="vT">--<span class="unit">°C</span></div></div>
       <div class="pn"><h3>SYSTEM PRESSURE</h3><div class="big" id="vP">--<span class="unit">MPa</span></div></div>
       <div class="pn"><h3>POWER TO THE GRID</h3><div class="big" id="vN">--<span class="unit">MWe</span></div><div class="lnk" id="thermalReadout">--</div></div>
+      <div id="modeBadge">ADVANCED MODE</div>
     </div>
     
     <div id="instrStrip">
@@ -1028,6 +1037,8 @@ document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,
   });
   const vEl = document.getElementById('aboutVersion');
   if(vEl) vEl.textContent = 'v' + APP_VERSION;
+  const dlLink = document.getElementById('aboutDownload');
+  if(dlLink) dlLink.href = 'about.pdf?v=' + APP_VERSION;
   fetch('about.pdf', {method:'HEAD', cache:'no-store'}).then(r => {
     if(!r.ok){
       const dl = document.getElementById('aboutDownload');
@@ -1460,11 +1471,13 @@ function host(mode,diff){
         const period = stable ? Infinity : S.Nf / avgDP;
         const doubling = stable ? Infinity : Math.LN2 * period;
         const rhoPcm = (S.k - 1) / S.k * 1e5;
-        setText('#vCps', nearNoise ? '—' : formatCps(cps));
-        setText('#vDose', formatDose(dose));
-        setText('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable));
+        const setInstr=(sel,txt,cls)=>{const el=document.querySelector(sel);if(el){el.textContent=txt;el.className='instr-value '+cls;}};
+        setInstr('#vCps', nearNoise ? '—' : formatCps(cps), nearNoise ? 'off' : 'ok');
+        setInstr('#vDose', formatDose(dose), dose>10000 ? 'cr' : dose>1000 ? 'wn' : 'ok');
+        const perCls = nearNoise||stable ? 'ok' : Math.abs(period) < 60 ? 'cr' : Math.abs(period) < 300 ? 'wn' : 'ok';
+        setInstr('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable), perCls);
+        setInstr('#vRho', formatRho(rhoPcm), Math.abs(rhoPcm) < 1000 ? 'ok' : Math.abs(rhoPcm) < 3000 ? 'wn' : 'cr');
         setText('#vDoubling', nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling '+doubling.toFixed(0)+'s'));
-        setText('#vRho', formatRho(rhoPcm));
         setText('#vFlux2', 'n/cm²·s ' + flux.toExponential(2));
         renderRecorder();
       }
