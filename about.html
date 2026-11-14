@@ -276,29 +276,30 @@ pre{font-family:'SF Mono','Menlo','Consolas',monospace;font-size:9pt;line-height
 <div class="page">
   <h1><span class="num">§9</span>AI Assistance Disclosure</h1>
   <p class="section-intro">Honest accounting of how AI was used in this project.</p>
-  <p>The PWR Simulation codebase, physics calibration, documentation, and design proposals were developed with <strong>substantial assistance from AI language models</strong> — primarily <strong>DeepSeek</strong> and <strong>Claude</strong>. AI was used for:</p>
+  <p><strong>PWR Simulation is conceived and authored by Emmanuel Calderon.</strong> AI language models — primarily DeepSeek and Claude — were used as development tools throughout the build. This section describes the division of labor so the project can be evaluated on its own terms.</p>
+  <h2>9.1 The author's role</h2>
+  <p>The author is responsible for every foundational decision in this project:</p>
   <ul>
-    <li><strong>Code implementation and refactoring</strong> — writing the physics helpers, the render pipeline, the recorder state machine, and the About screen wiring.</li>
-    <li><strong>Physics parameter calibration</strong> — proposing initial values for the neutron channel weights, the N-16 and fission-product pool coefficients, and the dose contribution coefficients, and suggesting adjustments during playability tuning.</li>
-    <li><strong>Code review and debugging</strong> — reading through the codebase for edge cases, layout bugs, and mode-transition issues; diagnosing reported symptoms against the source.</li>
-    <li><strong>Documentation drafting</strong> — this document, the Limitations list, the proposal, and the inline About screen content.</li>
-    <li><strong>Design proposals</strong> — the phasing roadmap, the instrumentation strip layout, and the CSV column specification.</li>
+    <li><strong>Project conception</strong> — the idea of a Grade 10 classroom PWR simulator, the choice of physics depth, the four-division control split, the projector-plus-phones classroom model.</li>
+    <li><strong>Pedagogical architecture</strong> — the learning objectives, the three-mode structure (Group / Sandbox / Learning), the scenario narratives (<em>Morning Ramp-Up</em>, <em>The Evening Surge</em>, <em>Restart in the Xenon Pit</em>), and the balance between challenge and accessibility for the target age group.</li>
+    <li><strong>Physics scope definition</strong> — deciding what to model (one-group k<sub>eff</sub>, point kinetics, xenon/iodine, thermal-hydraulic), what to simplify, and what to exclude entirely. Every calibration target started as a human judgement about what the classroom needed.</li>
+    <li><strong>Physics validation</strong> — checking AI-proposed values against published reference literature (IAPWS-95, Keepin's six-group data, standard one-group diffusion theory). Rejecting or revising any value that failed the physical check.</li>
+    <li><strong>Every ship decision</strong> — reviewing each AI-suggested change, and choosing what to adopt, what to defer, what to reject, and what to redesign.</li>
+    <li><strong>User testing</strong> — running the app in browsers, on student devices, and in the classroom, and redefining scope based on what actually happened.</li>
+    <li><strong>Editorial voice</strong> — including the limitations list, the disclaimers, and this disclosure section.</li>
   </ul>
-  <h2>9.1 What remains with the human author</h2>
+  <h2>9.2 How AI contributed</h2>
+  <p>AI was a productive collaborator on the following tasks:</p>
   <ul>
-    <li><strong>Pedagogical design</strong> — the classroom context (Grade 10, four divisions, projector + phones), the learning objectives, the scenario narratives, the balance between challenge and accessibility.</li>
-    <li><strong>Physics validation</strong> — checking AI-proposed values against published reference literature (IAPWS-95 for steam tables, Keepin's six-group data, standard one-group diffusion theory).</li>
-    <li><strong>Editorial judgment</strong> — deciding which AI-suggested features to keep, which to defer, and which to reject outright.</li>
-    <li><strong>Testing</strong> — running the app in a browser, in the classroom, and on student devices; observing what actually happens.</li>
-    <li><strong>Final decisions</strong> — every change adopted into the shipped code was reviewed by the author before being committed.</li>
+    <li><strong>Code implementation</strong> — drafting physics helpers, the render pipeline, the recorder state machine, and the About screen wiring, from author-authored specifications.</li>
+    <li><strong>Code review and debugging</strong> — reading through the codebase for edge cases and mode-transition bugs at the author's request, and diagnosing symptoms reported by the author.</li>
+    <li><strong>Initial parameter proposals</strong> — suggesting starting values for the neutron channel weights, N-16 and fission-product pool coefficients, and dose contribution coefficients. Every suggestion was then validated, tested, and either kept, adjusted, or rejected.</li>
+    <li><strong>Documentation drafting</strong> — first-pass structure and prose for this document, the proposal, and the inline About screen content, revised by the author.</li>
+    <li><strong>Design proposals</strong> — proposing phasing roadmaps, layout alternatives, and CSV column structures; the author chose which to adopt.</li>
   </ul>
-  <h2>9.2 How to interpret this</h2>
-  <p>AI-assisted development does not mean "unreviewed output." Every AI-suggested change was checked against the physics literature and against the classroom context. Where the AI proposed something that did not fit — a physically unrealistic simplification, an interaction pattern that would confuse students, a feature that would break an existing mode — the proposal was rejected or revised.</p>
-  <p>The intent of this disclosure is not to diminish the result but to describe it accurately. AI tools make a solo project like this possible on a classroom budget; they do not replace the judgment about what to build, why, and for whom.</p>
-  <div class="callout">
-    <strong>If you are evaluating this project</strong>
-    The right question is not "was AI used?" but "was the AI's output validated?" The Limitations section (§5) and the Disclaimers (§6) document the validation boundary of the physics model. This section documents the validation boundary of the development process. Both are honest about what lies beyond.
-  </div>
+  <h2>9.3 Bottom line</h2>
+  <p>AI-assisted does not mean AI-authored. Every architectural decision, every physics validation, every pedagogical choice, and every ship decision in this project is the author's. AI accelerated implementation and provided a design collaborator's second opinion; it did not decide what to build, why, or for whom.</p>
+  <p>The right question for evaluating this project is not "was AI used?" but "was the AI's output validated?" The Limitations (§5) and Disclaimers (§6) document the validation boundary of the physics model. This section documents the development process. Both are honest about what lies beyond.</p>
 </div>
 
 <div class="page" style="min-height:auto;padding:10mm 18mm">
