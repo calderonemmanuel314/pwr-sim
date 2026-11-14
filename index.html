@@ -29,6 +29,9 @@ h1{font-size:clamp(1.8rem,5vw,3.6rem);color:var(--g);font-weight:400;text-shadow
 #right{display:flex;flex-direction:column;gap:.7vh;min-height:0;overflow-y:auto;overflow-x:hidden}
 
 #top{display:grid;grid-template-columns:repeat(3,1fr);gap:.8vw;flex-shrink:0}
+#modeBadge{display:none}
+body.adv #top{grid-template-columns:repeat(3,1fr) auto}
+body.adv #modeBadge{display:flex;align-items:center;justify-content:center;padding:0 .6vw;color:var(--c);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;opacity:.85}
 #top .pn{flex-direction:row;align-items:center;justify-content:space-between;padding:.8vh .8vw}
 
 .pn{background:var(--pn);border:1px solid var(--ln);padding:1.2vh 1vw;display:flex;flex-direction:column;justify-content:space-between;min-height:0;border-radius:16px;background:linear-gradient(160deg,#131c15cc,#0b100cee);border:1px solid #39ff1430;box-shadow:inset 0 1px #ffffff0d,0 10px 30px #0009}
@@ -241,10 +244,113 @@ body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2
 #chome{border:1px solid var(--g);background:transparent;color:var(--g);border-radius:12px;padding:.35em .8em;font-size:1rem}
 body.sbx #tl,body.sbx #tv{display:none!important}
 
+/* Sandbox tab bar hidden by default (desktop, group-mode mobile) */
+.sbx-tabs{display:none}
+
+/* ── ADVANCED MODE (Phase 1) ───────────────────────────── */
+#instrStrip{display:none}
+body.adv #instrStrip{
+  display:flex;flex-direction:column;gap:.3vh;
+  padding:.5vh .7vw;background:var(--pn);
+  border:1px solid var(--ln);border-radius:12px;flex-shrink:0;
+}
+body.adv #instrHeader{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.62rem;color:var(--dim);letter-spacing:.04em;
+}
+body.adv #instrRow{display:grid;grid-template-columns:repeat(4,1fr);gap:.5vw}
+body.adv .instr-cell{display:flex;flex-direction:column;gap:2px;padding:.2vh .4vw;border-left:1px solid var(--ln)}
+body.adv .instr-cell:first-child{border-left:0}
+body.adv .instr-label{font-size:.55rem;color:var(--dim);letter-spacing:.04em}
+body.adv .instr-value.ok{color:var(--g);text-shadow:0 0 10px #39ff1455}
+body.adv .instr-value.wn{color:var(--y);text-shadow:0 0 10px #ffd40055}
+body.adv .instr-value.cr{color:var(--r);text-shadow:0 0 12px #ff2a2a88;animation:blink .6s steps(2) infinite}
+body.adv .instr-value.off{color:var(--dim)}
+body.adv .instr-sub{font-size:.52rem;color:var(--dim);opacity:.7}
+
+/* Flat layout: single-column HUD with the panel row at bottom */
+body.adv #hud{grid-template-columns:1fr;grid-template-rows:1fr auto}
+body.adv #right{flex-direction:row;overflow-x:hidden;gap:.6vw}
+body.adv #right .pn{flex:1 1 0;min-height:0;min-width:0;padding:.8vh .7vw}
+body.adv #timerBox{display:none}
+
+/* ── PHASE 2: Recorder panel ──────────────────────────────── */
+#recPanel{display:none}
+body.adv #recPanel{
+  display:flex;align-items:center;gap:.8vw;
+  padding:.4vh .8vw;
+  background:#050805;border:1px solid var(--ln);border-radius:10px;
+  flex-shrink:0;font-size:.7rem;
+}
+body.adv .rec-dot{width:10px;height:10px;border-radius:50%;background:#555;flex-shrink:0}
+body.adv .rec-dot-on{background:var(--g);animation:recPulse 1s ease-in-out infinite}
+@keyframes recPulse{50%{opacity:.35}}
+body.adv #recTime{color:var(--y);font-weight:700;font-family:var(--f);min-width:45px}
+body.adv #recRows{color:var(--dim);font-size:.65rem;flex:1}
+body.adv .rec-actions{display:flex;gap:.4vw}
+body.adv .btn-rec{
+  background:transparent;color:var(--tx);border:1px solid var(--ln);
+  border-radius:6px;padding:.2em .7em;font-size:.65rem;font-family:var(--f);
+  cursor:pointer;letter-spacing:.03em;
+}
+body.adv .btn-rec:hover:not(:disabled){border-color:var(--g);color:var(--g)}
+body.adv .btn-rec:disabled{opacity:.35;cursor:not-allowed}
+body.adv #recStart{color:var(--g);border-color:var(--g)}
+body.adv #recStop{color:var(--r);border-color:var(--r)}
+body.adv #recCSV{color:var(--c);border-color:var(--c)}
+
+/* ── PHASE 3: About screen + corner link ──────────────────── */
+#bAbout{
+  position:fixed;bottom:calc(4.8vh + 8px);right:8px;z-index:50;
+  padding:4px 10px;
+  background:#000a;border:1px solid var(--ln);border-radius:6px;
+  color:var(--dim);font-family:var(--f);font-size:.7rem;
+  letter-spacing:.04em;cursor:pointer;
+  transition:color .15s, border-color .15s;
+}
+#hud:not(.hide) ~ #bAbout{display:none}
+#aboutScreen{
+  position:fixed;inset:0;z-index:65;
+  background:#000e;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:4vh 4vw;overflow-y:auto;
+}
+.about-content{
+  background:var(--pn);border:1px solid var(--ln);border-radius:18px;
+  padding:4vh 4vw;max-width:800px;width:100%;
+  color:var(--tx);font-size:.95rem;line-height:1.55;
+  display:flex;flex-direction:column;gap:1.5vh;
+}
+.about-content h1{font-size:1.6rem;color:var(--g);margin:0}
+.about-header{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.about-version{color:var(--y);font-size:.85rem;font-family:var(--f);letter-spacing:.04em}
+.about-warn{
+  background:#2a0a0a;border-left:3px solid var(--r);
+  padding:.8em 1em;color:#ff9a9a;font-weight:600;border-radius:6px;
+}
+.about-content details{
+  background:#0b100c;border:1px solid var(--ln);
+  border-radius:8px;padding:.6em .8em;
+}
+.about-content details summary{
+  cursor:pointer;color:var(--y);font-weight:600;
+  letter-spacing:.03em;padding:.2em 0;
+}
+.about-content details[open] summary{margin-bottom:.5em}
+.about-content details ul,.about-content details ol{padding-left:1.4em}
+.about-content details li{margin-bottom:.3em}
+.about-content details p{color:var(--tx)}
+.about-content code{background:#000;padding:1px 4px;border-radius:3px;font-size:.85em}
+.about-footer{margin-top:1em;display:flex;flex-direction:column;gap:.5em;align-items:center}
+.about-footer a{text-decoration:none;display:inline-block}
+.about-footer .sub{font-size:.8rem;color:var(--dim);text-align:center}
+.about-footer a.btn{font-size:.9rem;padding:.6em 1.2em;color:var(--g);border-color:var(--g)}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
   #top{grid-template-columns:repeat(3,1fr);gap:4px}
+  body.adv #top{grid-template-columns:repeat(3,1fr)}
+  body.adv #modeBadge{display:none}
   #top .pn{flex-direction:column;align-items:flex-start;gap:2px;padding:6px}
   #top .big{font-size:clamp(1.1rem,6vw,1.8rem)}
   #mainRow{flex-direction:column;gap:4px}
@@ -263,6 +369,100 @@ body.sbx #tl,body.sbx #tv{display:none!important}
   #statusStrip{padding:.3vh .5vw}
   .pmbox{flex-direction:column}
   .pmtx{font-size:.8rem}
+
+  /* ── SANDBOX MOBILE REDESIGN ────────────────────────────────── */
+  /* Fixed 2-row HUD: reactor area grows, drawer is capped at 25vh */
+  body.sbx #hud{grid-template-rows:1fr clamp(160px,25vh,240px);overflow:hidden}
+
+  /* Compact metric strip */
+  body.sbx #top{gap:3px}
+  body.sbx #top .pn{padding:3px 6px;flex-direction:row;align-items:baseline;gap:4px}
+  body.sbx #top h3{font-size:.5rem}
+  body.sbx #top .big{font-size:clamp(.9rem,3.5vw,1.2rem)}
+  body.sbx #top .lnk{display:none}
+
+  /* k_eff restored to vertical column on the left of the reactor */
+  body.sbx #mainRow{flex-direction:row;gap:4px;min-height:0}
+  body.sbx #kcol{
+    flex:0 0 40px;flex-direction:column;
+    padding:2px;gap:1px;min-height:0;max-height:none;
+  }
+  body.sbx #kcol .kvert-hd,
+  body.sbx #kcol .kvert-label{display:block;font-size:.42rem}
+  body.sbx #kw{flex:1;min-height:0;max-height:none;width:100%}
+  body.sbx #kcol #kv{font-size:.55rem}
+  body.sbx #kcol #kst{font-size:.42rem}
+
+  /* Reactor & timer */
+  body.sbx #ctr{min-height:0}
+  body.sbx #svgw{min-height:0}
+  body.sbx #timerBox{display:none}
+
+  /* Drawer container */
+  body.sbx #right{
+    flex-direction:column;overflow:hidden;gap:0;
+    padding-bottom:0;min-height:0;
+  }
+
+  /* Tab bar */
+  body.sbx .sbx-tabs{
+    display:flex;gap:3px;padding:3px;
+    background:#050805;border-radius:8px 8px 0 0;flex-shrink:0;
+  }
+  body.sbx .sbx-tabs button{
+    flex:1;padding:6px 3px;font-size:.6rem;font-family:var(--f);
+    border:1px solid var(--ln);background:#0b100c;color:var(--dim);
+    border-radius:5px;line-height:1.15;letter-spacing:.03em;
+  }
+  body.sbx .sbx-tabs button.on{
+    border-color:var(--y);color:var(--y);background:#ffd40022;
+  }
+
+  /* Only the active panel is shown */
+  body.sbx #right .pn{
+    display:none;flex:1;min-height:0;
+    padding:6px 10px 8px;flex-direction:column;justify-content:flex-start;
+    gap:6px;border-radius:0 0 8px 8px;overflow:hidden;
+  }
+  body.sbx #right .pn.sbx-active{display:flex}
+  body.sbx #right .lnk{display:none}
+  body.sbx #right .bm{display:none}
+  body.sbx #right .bar{height:6px;flex-shrink:0}
+  body.sbx #right .pn-val{font-size:1rem}
+
+  /* Touch-friendly controls inside the active panel */
+  body.sbx #right .pn-ctl{
+    flex:1;align-items:center;gap:8px;min-height:0;
+  }
+  body.sbx #right .pn-ctl input[type=range]{height:44px}
+  body.sbx #right .pn-ctl input[type=range]::-webkit-slider-thumb{
+    width:32px;height:32px;margin-top:-13px;
+  }
+  body.sbx #right .pn-ctl input[type=range]::-moz-range-thumb{
+    width:32px;height:32px;
+  }
+  body.sbx #right .pn-ctl .pm{
+    width:44px;height:44px;font-size:1.3rem;
+    opacity:1;pointer-events:auto;
+  }
+  body.sbx #right .pn-ctl .tb{
+    flex:1;padding:14px 0;font-size:.9rem;
+    opacity:1;pointer-events:auto;
+  }
+
+  /* Slim the bottom toolbar in sandbox */
+  body.sbx #bback{display:none}
+
+  /* Advanced Mode mobile: instrument strip 2×2, smaller text */
+  body.adv #instrRow{grid-template-columns:repeat(2,1fr);gap:3px}
+  body.adv .instr-value{font-size:.8rem}
+  body.adv #instrStrip{padding:4px 6px}
+  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.5rem}
+  body.adv #recTime{font-size:.55rem;min-width:35px}
+  body.adv #recRows{font-size:.5rem}
+  body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
+  body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
+  body.adv .about-content h1{font-size:1.2rem}
 }
 </style>
 </head>
@@ -275,10 +475,20 @@ body.sbx #tl,body.sbx #tv{display:none!important}
     <button class="btn" id="bGroup">GROUP MODE (HOST)</button>
     <button class="btn y" id="bSand">SANDBOX MODE</button>
     <button class="btn" id="bLearn" style="border-color:var(--c);color:var(--c)">LEARNING MODE</button>
+    <button class="btn" id="bAdv" style="border-color:var(--c);color:var(--c)">ADVANCED MODE</button>
   </div>
-  <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
+    <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br>Advanced Mode: instrumentation and experiments.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
 </div>
 
+<div id="advLanding" class="screen hide">
+  <h1>ADVANCED MODE</h1>
+  <p class="sub">Nuclear instrumentation and guided experiments.</p>
+  <div class="row">
+    <button class="btn" id="advFreeBtn">FREE EXPLORATION</button>
+    <button class="btn" id="advLibBtn" disabled>EXPERIMENT LIBRARY</button>
+  </div>
+  <button class="btn y" id="advBack">◄ BACK</button>
+</div>
 <div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
 <div id="learn" class="screen hide"><div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div><p class="sub">Tap any part of the reactor, or pick one from the list.</p>
 <div class="lrow"><div id="lsvg"></div><div id="linfo"><h3 id="lt"></h3><p id="lr"></p><p id="lg"></p><div id="lx"></div></div></div><div id="lchips"></div></div>
@@ -315,6 +525,36 @@ body.sbx #tl,body.sbx #tv{display:none!important}
       <div class="pn"><h3>HOT-LEG COOLANT TEMP</h3><div class="big" id="vT">--<span class="unit">°C</span></div></div>
       <div class="pn"><h3>SYSTEM PRESSURE</h3><div class="big" id="vP">--<span class="unit">MPa</span></div></div>
       <div class="pn"><h3>POWER TO THE GRID</h3><div class="big" id="vN">--<span class="unit">MWe</span></div><div class="lnk" id="thermalReadout">--</div></div>
+      <div id="modeBadge">ADVANCED MODE</div>
+    </div>
+    
+    <div id="instrStrip">
+      <div id="instrHeader">
+        <span>NUCLEAR INSTRUMENTATION</span>
+        <span id="vFlux2">n/cm²·s —</span>
+      </div>
+      <div id="instrRow">
+        <div class="instr-cell">
+          <div class="instr-label">NEUTRON COUNT RATE</div>
+          <div class="instr-value" id="vCps">—</div>
+          <div class="instr-sub">10⁹ cps = full</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">DOSE</div>
+          <div class="instr-value" id="vDose">—</div>
+          <div class="instr-sub">near primary</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">PERIOD</div>
+          <div class="instr-value" id="vPeriod">—</div>
+          <div class="instr-sub" id="vDoubling">—</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">ρ · REACTIVITY</div>
+          <div class="instr-value" id="vRho">—</div>
+          <div class="instr-sub">pcm</div>
+        </div>
+      </div>
     </div>
     <div id="mainRow">
       <div id="kcol">
@@ -388,9 +628,26 @@ body.sbx #tl,body.sbx #tv{display:none!important}
         </div>
       </div>
     </div>
+    <div id="recPanel">
+      <span id="recDot" class="rec-dot"></span>
+      <span id="recTime">00:00</span>
+      <span id="recRows">Rows: 0 / 5000</span>
+      <div class="rec-actions">
+        <button id="recStart" class="btn-rec" type="button">▶ START</button>
+        <button id="recStop" class="btn-rec" type="button" style="display:none">■ STOP</button>
+        <button id="recCSV" class="btn-rec" type="button" disabled>💾 CSV</button>
+        <button id="recClear" class="btn-rec" type="button" disabled>🗑 CLEAR</button>
+      </div>
+    </div>
     <div id="log"></div>
   </div>
   <div id="right">
+    <div class="sbx-tabs" id="sbxTabs">
+      <button data-sbx="rods">RODS</button>
+      <button data-sbx="coolant">PUMP</button>
+      <button data-sbx="pressure">PRESS</button>
+      <button data-sbx="xenon">BORON</button>
+    </div>
     <div class="pn" data-role="rods">
       <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
       <div class="bar"><i id="bRods"></i></div>
@@ -424,18 +681,89 @@ body.sbx #tl,body.sbx #tv{display:none!important}
 
 <div id="vig"></div><canvas id="fx" class="hide"></canvas><div id="fl"></div>
 <div id="bar" class="hide"><button id="bhome">⌂ HOME</button><button id="bback">◄ BACK</button><button id="snd">SOUND ON</button><button id="bpm">PHASE MAP (P)</button><span id="modelbadge">CLASSROOM MODEL · NOT FOR OPERATION</span></div>
+<button id="bAbout" type="button" title="About PWR Simulation">ⓘ ABOUT</button>
 
 <div id="pm" class="hide"><div class="pmbox"><svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg><div class="pmtx">
 <div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
 <div id="pmlive" style="border-color:var(--c)"></div>
 <div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
 <div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
-<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. No fuel temperature, cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
+<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. Fuel temperature is computed internally for Doppler feedback but is not shown as a separate readout. No cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
 <div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div></div></div>
 <button class="btn" id="pmx">CLOSE (Esc)</button></div>
 
 <div id="ovr" class="hide"><h1 id="ot"></h1><p class="sub" id="om"></p><button class="btn" id="bAgain">RESTART</button></div>
 
+<div id="aboutScreen" class="hide">
+  <div class="about-content">
+    <div class="about-header">
+      <h1>ABOUT PWR SIMULATION</h1>
+      <span class="about-version" id="aboutVersion">v2.2.1</span>
+      <button class="btn y" id="aboutClose">◄ BACK</button>
+    </div>
+    <div class="about-warn">
+      ⚠ NOT FOR REAL PLANT OPERATION — All numbers are classroom parameters. Not validated against any real reactor. Educational use only.
+    </div>
+    <details open>
+      <summary>OVERVIEW</summary>
+      <p>A simplified, pressurized-water-reactor teaching model. Four crews, one reactor. It teaches reactor dynamics through four control divisions (rods, coolant pump, pressurizer, boron) and, in Advanced Mode, five additional nuclear instrumentation readouts (neutron count rate, dose rate, reactor period, reactivity, thermal flux).</p>
+    </details>
+    <details>
+      <summary>QUICK START</summary>
+      <ul>
+        <li><strong>Group Mode</strong> — projector + up to four phones. Host runs the reactor, students control divisions.</li>
+        <li><strong>Sandbox Mode</strong> — single screen, all controls. No timer, no win condition.</li>
+        <li><strong>Learning Mode</strong> — clickable reactor schematic. Explore components and physics.</li>
+        <li><strong>Advanced Mode</strong> — nuclear instrumentation, CSV data recorder, and (planned) guided experiments.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>OBJECTIVES</summary>
+      <ul>
+        <li>Understand how the four control divisions affect reactor power.</li>
+        <li>Read and interpret hot-leg temperature, system pressure, and grid power.</li>
+        <li>Recognize criticality, subcriticality, and supercriticality via k_eff.</li>
+        <li>Coordinate across divisions to reach and hold a target power level.</li>
+        <li>Practice operating within safe limits and recognize failure modes.</li>
+        <li>(Advanced) Read nuclear instrumentation: count rate, dose, period, reactivity.</li>
+        <li>(Advanced, planned) Perform guided experiments: rod calibration, delayed neutron counting, xenon observation.</li>
+      </ul>
+    </details>
+    <details open>
+      <summary>LIMITATIONS</summary>
+      <ol>
+        <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Short periods distorted.</li>
+        <li>Boron worth realistic (~−10 pcm/ppm, comparable to real PWRs). Doppler coefficients 2–6 pcm/°C depending on scenario — Easy slightly above real, Moderate/Hard in range.</li>
+        <li>Xenon model distorted: uneven compression (~570× for I-135, ~96× for Xe-135), post-SCRAM peak ~1–2 min with ~17% overshoot, absolute worth ~3–4× real. Full detail in <code>about.html</code> §4.3 and §5.</li>
+        <li>No spatial dimension. Flux, dose, and power are core-averages, not spatial distributions.</li>
+        <li>Single cps detector covers all power ranges (real reactors use SR/IR/PR instruments).</li>
+        <li>Dose assumes a fictional shielded position near primary piping; real detector positions vary by orders of magnitude.</li>
+        <li>Fission product pool is a single bucket, not an isotope-by-isotope inventory.</li>
+        <li>Activation products (Co-60, Fe-59) not modeled — real plants retain residual dose for years.</li>
+        <li>Fixed 20 MWth residual heat allowance at zero power.</li>
+        <li>33% thermal-to-electric conversion; 5% station service (real plants vary).</li>
+        <li>No departure from nucleate boiling (DNB), critical heat flux, or DNBR.</li>
+        <li>All warning, hold, and failure limits are game parameters — not real plant settings.</li>
+      </ol>
+    </details>
+    <details open>
+      <summary>DISCLAIMERS</summary>
+      <p>This is an educational model, not a validated plant simulator. It is not suitable for real-plant operation, operator training, licensing, or safety analysis. All numbers are illustrative. Dose values assume a fictional detector position and are not representative of any actual installation. The project is provided under the GNU Affero General Public License v3.0 with no warranty.</p>
+    </details>
+    <details>
+      <summary>AI ASSISTANCE DISCLOSURE</summary>
+      <p><strong>PWR Simulation is conceived and authored by Emmanuel Calderon.</strong> AI language models — primarily DeepSeek and Claude — were used as development tools for code implementation, initial physics parameter proposals, code review, and documentation drafting. Every architectural decision, pedagogical choice, physics validation against published reference literature (IAPWS-95, Keepin's six-group data, standard one-group diffusion theory), every ship decision, and all user testing remain with the author. AI-assisted does not mean AI-authored — every AI-suggested change was reviewed and either kept, adjusted, or rejected by the author before adoption. Full detail in the standalone documentation (<code>about.html</code> §9).</p>
+    </details>
+    <details>
+      <summary>PHYSICS, VERSION HISTORY &amp; CREDITS</summary>
+      <p>Full physics references, version changelog, and credits are included in the standalone documentation at <code>about.html</code>.</p>
+    </details>
+    <div class="about-footer">
+      <a href="about.html" target="_blank" rel="noopener" class="btn" id="aboutDownload">📄 OPEN FULL DOCUMENTATION</a>
+      <p class="sub">License: GNU AGPLv3 · <a href="https://github.com/calderonemmanuel314/pwr-sim" target="_blank" rel="noopener" style="color:var(--c)">github.com/calderonemmanuel314/pwr-sim</a></p>
+    </div>
+  </div>
+</div>
 <div id="cl" class="hide">
   <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
   <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p><div id="cb"></div><div id="cv"></div>
@@ -458,6 +786,8 @@ const Q=new URLSearchParams(location.search), ROLE=Q.get('role'), ROOM=Q.get('ro
 const ROLES={rods:{n:'DIV 1 · CONTROL RODS',k:['rods']},coolant:{n:'DIV 2 · THERMAL-HYDRAULICS',k:['pump']},pressure:{n:'DIV 3 · PRESSURIZER',k:['heat','spray']},xenon:{n:'DIV 4 · BORON / POISON MANAGEMENT',k:['boron']}};
 const ROLE_KEYS=['rods','coolant','pressure','xenon'];
 const DEF=()=>({rods:70,pump:50,heat:0,spray:0,boron:500});
+const APP_VERSION = '2.2.1';
+const APP_BUILD = '2026-11-14';
 const show=(id,on)=>$(id).classList.toggle('hide',!on);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 const setText=(sel,txt)=>{const el=document.querySelector(sel);if(el)el.textContent=txt;};
@@ -542,9 +872,10 @@ hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:90,hold:15,cd:
  short:'Restart in xenon pit, reach ~285–340 MWe within 8 min.',
  xeLockout:1.05,st:{rods:100,pump:40,boron:1200,T:285,P:14.2,xe:1.4,xi:.168}}};
 DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
+DIFF.advanced=Object.assign({},DIFF.easy,{k:'advanced',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
 const LEARN={
 core:['Reactor vessel and coolant','The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.','The top temperature gauge is the modeled hot-leg coolant temperature.'],
-fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.','The simulation does not calculate separate fuel or cladding temperatures.'],
+fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.','Fuel temperature is computed internally (for Doppler feedback) but is not shown as a separate readout. Cladding temperature is not modeled.'],
 rods:['Control rods','Inserting rods increases neutron absorption and adds negative reactivity. The reactivity effect is not linear: the integral rod worth curve is S-shaped.','Division 1. S-curve: differential worth peaks near 50% insertion.'],
 boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber.','Division 4 sets simplified boron concentration in ppm.'],
 pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator.','Division 2 adjusts a normalized pump setting as a heat-removal factor.'],
@@ -659,6 +990,22 @@ const coolantHeatRemovalFactor=(T,P)=>{
   if(P>=22.064&&T>=373.946)return 1-.35*smoothStep((T-373.946)/60);
   return 1-.45*smoothStep(Math.max(0,T-tsat(P))/30);
 };
+const formatCps = c => c<1e3?c.toFixed(0)+' cps'
+                     : c<1e6?(c/1e3).toFixed(2)+' kcps'
+                     : c<1e9?(c/1e6).toFixed(2)+' Mcps'
+                     :       (c/1e9).toFixed(2)+' Gcps';
+const formatDose = u => u<1000?u.toFixed(1)+' µSv/hr' : (u/1000).toFixed(2)+' mSv/hr';
+const formatPeriod = (s, stable) => stable ? '+∞ (stable)' : ((s>0?'+':'−')+Math.abs(s).toFixed(0)+'s');
+const formatRho = p => (p>=0?'+':'')+p.toFixed(0)+' pcm';
+function doseFromState(Nf, n16, precursors, fp){
+  const prompt = 5000 * (Nf/1000);
+  const n16d = 4000 * n16;
+  const sumLC = precursors.reduce((a,c,i)=>a + LAMBDA_GROUPS[i]*c, 0);
+  const sumLCeq = BETA_EFF * 1000 / LAMBDA_PROMPT_MODEL;
+  const delayed = 2600 * (sumLC / sumLCeq);
+  const fpd = 2500 * fp;
+  return prompt + n16d + delayed + fpd;
+}
 const pmSVG=(pre,dots)=>{const fx=T=>50+T*.98,fy=P=>380-P*12,lp='M'+PS.map(a=>fx(a[0])+' '+fy(a[1])).join('L'),tx=(x,y,t,c,a)=>'<text x="'+x+'" y="'+y+'" fill="'+(c||'#9ab')+'" font-size="11"'+(a?' text-anchor="'+a+'"':'')+'>'+t+'</text>';
   let h='<rect x="50" y="20" width="490" height="360" fill="#1a1d1a"/><path d="'+lp+'L'+fx(373.946)+' 20L50 20L50 380Z" fill="#1e6bff33"/><rect x="'+fx(373.946)+'" y="20" width="'+(540-fx(373.946))+'" height="'+(fy(22.064)-20)+'" fill="#b36bff55"/><path d="'+lp+'" stroke="#35c8ff" stroke-width="2.5" fill="none"/>';
   for(let t=0;t<=500;t+=100)h+=tx(fx(t),396,t,0,'middle');for(let q=0;q<=30;q+=10)h+=tx(44,fy(q)+4,q,0,'end');
@@ -680,10 +1027,42 @@ let LP='';const phaseFx=(ph,m)=>{if(ph===LP)return;LP=ph;document.body.classList
 addEventListener('pointerdown',()=>AU.init());
 document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,.05,'square',.05)});
 
+/* ================= ABOUT (global, all modes) ================= */
+{
+  const bAbout = document.getElementById('bAbout');
+  const aboutScr = document.getElementById('aboutScreen');
+  const showAbout = () => { if(aboutScr) aboutScr.classList.remove('hide'); };
+  const hideAbout = () => { if(aboutScr) aboutScr.classList.add('hide'); };
+  if(bAbout) bAbout.onclick = showAbout;
+  const closeBtn = document.getElementById('aboutClose');
+  if(closeBtn) closeBtn.onclick = hideAbout;
+  addEventListener('keydown', e => {
+    if(e.key === 'Escape' && aboutScr && !aboutScr.classList.contains('hide')) hideAbout();
+  });
+  const vEl = document.getElementById('aboutVersion');
+  if(vEl) vEl.textContent = 'v' + APP_VERSION;
+  const dlLink = document.getElementById('aboutDownload');
+  if(dlLink) dlLink.href = 'about.html?v=' + APP_VERSION;
+  fetch('about.html', {method:'HEAD', cache:'no-store'}).then(r => {
+    if(!r.ok){
+      const dl = document.getElementById('aboutDownload');
+      if(dl) dl.style.display = 'none';
+    }
+  }).catch(()=>{ /* network error — leave button visible */ });
+}
 /* ================= CLIENT ================= */
 function client(){
   const role=ROLE, R=ROLES[role], cur=DEF(); let conn,peer,locked=false,retry,CD=10,rejected=false,clientPhase='lobby';
-  const SESSION_ID='s'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  let SESSION_ID;
+  try{
+    SESSION_ID = sessionStorage.getItem('pwr_session_id');
+    if(!SESSION_ID){
+      SESSION_ID = 's'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+      sessionStorage.setItem('pwr_session_id', SESSION_ID);
+    }
+  }catch(e){
+    SESSION_ID = 's'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  }
   show('#menu',false);show('#cl',true);$('#cn').textContent=R.n;
   $('#chome').onclick=async()=>{if(await ask('Leave this panel?'))goto(location.pathname+'?role=join')};
   const cc=$('#cc'), cv=$('#cv');
@@ -753,8 +1132,8 @@ function client(){
 
 /* ================= HOST ================= */
 function host(mode,diff){
-  let WH=15,D=DIFF[mode==='group'?diff:'sandbox'];
-  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false}};
+  let WH=15,D=DIFF[mode==='group'?diff:mode]||DIFF.sandbox;
+  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[],recording:false,rows:[],maxRows:5000}};
   const id='gpwr-host-'+(1000+Math.floor(Math.random()*9000));
   const base=location.origin+location.pathname;
   const pick=r=>{const o={};ROLES[r].k.forEach(k=>o[k]=S.in[k]);return o};
@@ -775,8 +1154,8 @@ function host(mode,diff){
       const st=document.getElementById('os-'+r);
       const btn=document.getElementById('ob-'+r);
       if(!st||!btn)return;
-      if(S.mode==='sandbox'){
-        // Sandbox: no override concept, always enable controls, hide status row via CSS
+      if(S.mode!=='group'){
+        // Sandbox / Advanced: no override concept, always enable controls, hide status row via CSS
         st.textContent='';
         btn.textContent='';
         panel.classList.remove('overridden');
@@ -925,9 +1304,85 @@ function host(mode,diff){
       }
     };
   });
-
+  const recStartBtn = document.getElementById('recStart');
+  if(recStartBtn) recStartBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.rows = [];
+    S.adv.recording = true;
+    renderRecorder();
+    AU.init(); AU.tone(660,.08,'square',.1);
+  };
+  const recStopBtn = document.getElementById('recStop');
+  if(recStopBtn) recStopBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.recording = false;
+    renderRecorder();
+    AU.init(); AU.tone(330,.1,'square',.1);
+  };
+  const recCSVBtn = document.getElementById('recCSV');
+  if(recCSVBtn) recCSVBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    exportCSV();
+  };
+  const recClearBtn = document.getElementById('recClear');
+  if(recClearBtn) recClearBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.rows = [];
+    S.adv.recording = false;
+    renderRecorder();
+  };
   const cls=(el,c)=>{if(el)el.className='big '+c};
   const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+
+  /* Sandbox-only: toggle .on tab + .sbx-active panel based on S.sbxTab.
+     No-op in group mode. Runs inside render()'s try block. */
+  function renderSbxTabs(){
+    if(S.mode==='group')return;
+    document.querySelectorAll('#sbxTabs button').forEach(btn=>{
+      btn.classList.toggle('on',S.sbxTab===btn.dataset.sbx);
+    });
+    document.querySelectorAll('#right .pn').forEach(panel=>{
+      panel.classList.toggle('sbx-active',panel.dataset.role===S.sbxTab);
+    });
+  }
+
+  function renderRecorder(){
+    if(S.mode!=='advanced') return;
+    const rec = S.adv;
+    const recording = rec.recording;
+    const stopped = !recording && rec.rows.length > 0;
+    const idle = !recording && rec.rows.length === 0;
+    const dot = document.getElementById('recDot');
+    const t = document.getElementById('recTime');
+    const r = document.getElementById('recRows');
+    const btnS = document.getElementById('recStart');
+    const btnT = document.getElementById('recStop');
+    const btnCSV = document.getElementById('recCSV');
+    const btnC = document.getElementById('recClear');
+    if(!dot) return;
+    dot.className = 'rec-dot' + (recording ? ' rec-dot-on' : '');
+    const secs = rec.rows.length;
+    if(t) t.textContent = String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0');
+    if(r) r.textContent = 'Rows: ' + secs + ' / ' + rec.maxRows;
+    if(btnS){ btnS.style.display = (idle || stopped) ? '' : 'none'; btnS.disabled = stopped; }
+    if(btnT){ btnT.style.display = recording ? '' : 'none'; }
+    if(btnCSV) btnCSV.disabled = !stopped;
+    if(btnC) btnC.disabled = rec.rows.length === 0;
+  }
+  function exportCSV(){
+    if(S.mode!=='advanced' || !S.adv.rows.length) return;
+    const header = 'time_s,rod_pct,pump_pct,boron_ppm,heat,spray,countrate_cps,dose_usvh,period_s,reactivity_pcm,k_eff,flux_thermal,temp_c,pressure_mpa';
+    const csv = header + '\n' + S.adv.rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pwr-data-' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
   function render(){
     try{
       const T=S.T,P=S.P,N=S.N,i=S.in;
@@ -1016,6 +1471,29 @@ function host(mode,diff){
         hlEl.textContent=S.mode==='sandbox'?'SANDBOX':(holdActive?'● '+S.hold+'/'+WH+'s':S.hold+'/'+WH+'s');
       }
       {const ct=D.hints&&S.phase==='run'?coach():'';const coachEl=$('#coach');if(coachEl){coachEl.textContent=ct;coachEl.classList.toggle('hide',!ct)}}
+      if(S.mode!=='group')renderSbxTabs();
+      if(S.mode==='advanced'){
+        const cps = 1e9 * S.Nf / 1000;
+        const dose = doseFromState(S.Nf, S.adv.n16, S.precursors || [], S.adv.fp);
+        const flux = 3e13 * S.Nf / 1000;
+        const avgDP = S.adv.dPowerHistory.length
+          ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0) / S.adv.dPowerHistory.length
+          : 0;
+        const nearNoise = S.Nf < 1e-5;
+        const stable = nearNoise || Math.abs(avgDP) <= 0.001 * Math.abs(S.Nf || 1);
+        const period = stable ? Infinity : S.Nf / avgDP;
+        const doubling = stable ? Infinity : Math.LN2 * period;
+        const rhoPcm = (S.k - 1) / S.k * 1e5;
+        const setInstr=(sel,txt,cls)=>{const el=document.querySelector(sel);if(el){el.textContent=txt;el.className='instr-value '+cls;}};
+        setInstr('#vCps', nearNoise ? '—' : formatCps(cps), nearNoise ? 'off' : 'ok');
+        setInstr('#vDose', formatDose(dose), dose>16000 ? 'cr' : dose>1000 ? 'wn' : 'ok');
+        const perCls = nearNoise||stable ? 'ok' : Math.abs(period) < 60 ? 'cr' : Math.abs(period) < 300 ? 'wn' : 'ok';
+        setInstr('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable), perCls);
+        setInstr('#vRho', formatRho(rhoPcm), Math.abs(rhoPcm) < 1000 ? 'ok' : Math.abs(rhoPcm) < 3000 ? 'wn' : 'cr');
+        setText('#vDoubling', nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling '+doubling.toFixed(0)+'s'));
+        setText('#vFlux2', 'n/cm²·s ' + flux.toExponential(2));
+        renderRecorder();
+      }
     }catch(err){console.error('render failed:',err);}
   }
   function burst(){const cv=$('#fx'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;show('#fx',true);
@@ -1067,6 +1545,31 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       {const f=Math.min(1.2,S.Nf/1500),xi0=S.xi,xe0=S.xe;
         S.xi=Math.max(0,xi0+.0077*f-.0167*xi0);
         S.xe=Math.max(0,xe0+.0167*xi0+.0007*f-(.002+.01*f)*xe0);}
+            if(S.mode==='advanced'){
+        S.adv.n16 += 0.0975 * (S.Nf/1000 - S.adv.n16);   // N-16, 7.1 s half-life
+        S.adv.fp  += (1/3600) * (S.Nf/1000 - S.adv.fp);  // FP pool, compressed 1 hr τ
+        S.adv.dPowerHistory.push(S.dPower);
+        if(S.adv.dPowerHistory.length > 5) S.adv.dPowerHistory.shift();
+        if(S.adv.recording){
+          if(S.adv.rows.length < S.adv.maxRows){
+            const cps = 1e9 * S.Nf / 1000;
+            const dose = doseFromState(S.Nf, S.adv.n16, S.precursors || [], S.adv.fp);
+            const flux = 3e13 * S.Nf / 1000;
+            const avgDP = S.adv.dPowerHistory.length ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0)/S.adv.dPowerHistory.length : 0;
+            const nearNoise = S.Nf < 1e-5;
+            const stable = nearNoise || Math.abs(avgDP) <= 0.001 * Math.abs(S.Nf || 1);
+            const periodStr = stable ? 'inf' : (S.Nf / avgDP).toFixed(2);
+            const rhoPcm = ((S.k - 1) / S.k * 1e5).toFixed(1);
+            S.adv.rows.push([
+              S.adv.rows.length,
+              i.rods, i.pump, i.boron, i.heat, i.spray,
+              cps.toFixed(0), dose.toFixed(1), periodStr, rhoPcm,
+              S.k.toFixed(6), flux.toExponential(3), S.T.toFixed(2), S.P.toFixed(4)
+            ].join(','));
+            if(S.adv.rows.length >= S.adv.maxRows) S.adv.recording = false;
+          }
+        }
+      }
       const heatFactor=coolantHeatRemovalFactor(S.T,S.P);
       const rem=32*(Math.min(i.pump,S.pcap)/100)*(S.T-280)*heatFactor;
       const thermalTau=D.thermalTau||150;
@@ -1092,7 +1595,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       const powerDrift=D.powerDrift||25,tempDrift=D.tempDrift||1.5;
       const driftOK=Math.abs(S.N-prev.N)<=powerDrift&&Math.abs(S.T-prev.T)<=tempDrift&&Math.abs(S.P-prev.P)<=(D.pressureDrift||.05);
       const powerOK=Math.abs(S.N-1000)<=D.band;
-      if(S.mode!=='sandbox'){
+      if(S.mode==='group'){
         if(chg){S.hold=0;S.holdGrace=0}
         else if(powerOK&&thermalOK&&driftOK){S.hold++;S.holdGrace=0}
         else{S.holdGrace=(S.holdGrace||0)+1;if(S.holdGrace>3){S.hold=0;S.holdGrace=0}}
@@ -1108,7 +1611,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       if(S.mode==='group'&&D.k==='hard'&&S.lockoutHold>=10)return end('xenonLockout');
       if(S.T>1200){const dil=Math.max.apply(null,S.bh)-i.boron>=400;return end(i.rods<=15&&(dil||i.boron<300)?'spike':'heat')}
       if(S.P<(D.failDepr||10))return end('depr');
-      if(S.mode!=='sandbox'&&S.hold>=WH)return end('win');
+      if(S.mode==='group'&&S.hold>=WH)return end('win');
       S.prev={N:S.N,T:S.T,P:S.P};
       if(S.mode==='group'&&S.rem<=0)end('time');
     }catch(err){console.error('tick failed:',err);}
@@ -1116,9 +1619,13 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const begin=()=>{
     const st=D.st;
     try{
-      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
+      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[],recording:false,rows:[],maxRows:5000}});WH=D.hold;
       S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
       S.Nf=Math.max(0,D.initialFissionPower??0);
+      if(S.mode==='advanced'){
+        S.adv.n16=S.Nf/1000;
+        S.adv.fp =S.Nf/1000;
+      }
       S.Tfuel=S.T+(S.Nf+20)/H_FUEL_COOLANT;
       S.precursors=D.k==='hard'?BETA_GROUPS.map(()=>0):equilibriumPrecursors(S.Nf);
       {const balance=neutronBalance(S.in,S.xe,S.T,S.P,S.Tfuel,D.alphaDoppler);S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;S.kh=[S.k]}
@@ -1136,6 +1643,18 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       const logEl=$('#log');if(logEl)logEl.innerHTML='';
       try{sync()}catch(e){console.error('sync() failed in begin():',e)}
     }catch(outerErr){console.error('begin() setup failed:',outerErr)}
+
+    /* Sandbox / Advanced: wire tab buttons once per begin() (onclick overwrites
+       any prior handler, so RESTART does not stack listeners). */
+    if(S.mode!=='group'){
+      const tabsEl=document.getElementById('sbxTabs');
+      if(tabsEl){
+        tabsEl.querySelectorAll('button').forEach(btn=>{
+          btn.onclick=()=>{S.sbxTab=btn.dataset.sbx;renderSbxTabs();};
+        });
+      }
+    }
+
     if(S.mode==='group'){
       try{setText('#bt',D.n+' · '+D.t);setText('#bs',D.story);setText('#bg',D.goal)}catch(e){console.error('briefing text failed:',e)}
       show('#brf',true);
@@ -1149,6 +1668,12 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const goHome=async()=>{if(S.mode==='group'&&(nconn()||S.phase==='run')&&!await ask('Leave and disconnect all phones?'))return;goto(location.pathname)};
   $('#bhome').onclick=goHome;
   $('#bback').onclick=async()=>{if(S.mode==='sandbox')return goHome();
+    if(S.mode==='advanced'){
+      if(!await ask('Leave Advanced Mode?'))return;
+      AU.klaxon(false);document.body.classList.remove('melt','boom','alarm','cold');
+      goto(location.pathname+'?mode=advanced');
+      return;
+    }
     if(S.phase==='lobby'){if(nconn()&&!await ask('Back to scenario select?'))return;return goto(location.pathname+'?mode=group')}
     if(S.phase==='run'&&!await ask('Stop this run?'))return;
     AU.klaxon(false);document.body.classList.remove('melt','boom','alarm','cold');
@@ -1157,17 +1682,39 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   show('#bar',true);
   $('#snd').onclick=()=>{AU.init();AU.on=!AU.on;if(!AU.on)AU.klaxon(false);$('#snd').textContent=AU.on?'SOUND ON':'SOUND OFF'};
   $('#bAgain').onclick=begin;
-  setInterval(tick,1000);
+  let lastTickWall = Date.now();
+  setInterval(()=>{
+    const now = Date.now();
+    let missed = Math.floor((now - lastTickWall) / 1000);
+    if(missed < 1) missed = 1;
+    if(missed > 10) missed = 10;
+    for(let k=0;k<missed;k++) tick();
+    lastTickWall = now;
+  }, 1000);
 
   show('#menu',false);
   if(mode==='group'){show('#lobby',true);startPeer();lobby();}
-  else{document.body.classList.add('sbx');S.ov=true;document.body.classList.add('ov');begin();}
+  else{
+    document.body.classList.add('sbx');
+    if(mode==='advanced')document.body.classList.add('adv');
+    S.ov=true;document.body.classList.add('ov');begin();
+  }
   window.addEventListener('beforeunload',()=>{try{S.peer&&S.peer.destroy()}catch(e){}});
 }
 
 if(ROLE==='join')joinPage();
 else if(ROLE&&ROLES[ROLE])client();
-else{$('#bGroup').onclick=showDiff;$('#bSand').onclick=()=>host('sandbox');$('#bLearn').onclick=learn;if(Q.get('mode')==='group')showDiff();if(Q.get('mode')==='learn')learn()}
+else{
+  $('#bGroup').onclick=showDiff;
+  $('#bSand').onclick=()=>host('sandbox');
+  $('#bLearn').onclick=learn;
+  $('#bAdv').onclick=()=>{show('#menu',false);show('#advLanding',true);};
+  $('#advFreeBtn').onclick=()=>{show('#advLanding',false);host('advanced');};
+  $('#advBack').onclick=()=>{show('#advLanding',false);show('#menu',true);};
+  if(Q.get('mode')==='group')showDiff();
+  if(Q.get('mode')==='learn')learn();
+  if(Q.get('mode')==='advanced'){show('#menu',false);show('#advLanding',true);}
+}
 })();
 </script>
 </body>
