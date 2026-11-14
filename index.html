@@ -688,7 +688,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 <div id="pmlive" style="border-color:var(--c)"></div>
 <div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
 <div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
-<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. No fuel temperature, cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
+<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. Fuel temperature is computed internally for Doppler feedback but is not shown as a separate readout. No cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
 <div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div></div></div>
 <button class="btn" id="pmx">CLOSE (Esc)</button></div>
 
@@ -875,7 +875,7 @@ DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,rodsMin:0,r
 DIFF.advanced=Object.assign({},DIFF.easy,{k:'advanced',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
 const LEARN={
 core:['Reactor vessel and coolant','The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.','The top temperature gauge is the modeled hot-leg coolant temperature.'],
-fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.','The simulation does not calculate separate fuel or cladding temperatures.'],
+fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.','Fuel temperature is computed internally (for Doppler feedback) but is not shown as a separate readout. Cladding temperature is not modeled.'],
 rods:['Control rods','Inserting rods increases neutron absorption and adds negative reactivity. The reactivity effect is not linear: the integral rod worth curve is S-shaped.','Division 1. S-curve: differential worth peaks near 50% insertion.'],
 boron:['Soluble boron','Boric acid dissolved in primary coolant supplies a distributed neutron absorber.','Division 4 sets simplified boron concentration in ppm.'],
 pump:['Primary coolant pump','The primary pump circulates pressurized coolant through the reactor core and steam generator.','Division 2 adjusts a normalized pump setting as a heat-removal factor.'],
@@ -1053,7 +1053,16 @@ document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,
 /* ================= CLIENT ================= */
 function client(){
   const role=ROLE, R=ROLES[role], cur=DEF(); let conn,peer,locked=false,retry,CD=10,rejected=false,clientPhase='lobby';
-  const SESSION_ID='s'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  let SESSION_ID;
+  try{
+    SESSION_ID = sessionStorage.getItem('pwr_session_id');
+    if(!SESSION_ID){
+      SESSION_ID = 's'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+      sessionStorage.setItem('pwr_session_id', SESSION_ID);
+    }
+  }catch(e){
+    SESSION_ID = 's'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+  }
   show('#menu',false);show('#cl',true);$('#cn').textContent=R.n;
   $('#chome').onclick=async()=>{if(await ask('Leave this panel?'))goto(location.pathname+'?role=join')};
   const cc=$('#cc'), cv=$('#cv');
@@ -1471,13 +1480,13 @@ function host(mode,diff){
           ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0) / S.adv.dPowerHistory.length
           : 0;
         const nearNoise = S.Nf < 1;
-        const stable = nearNoise || Math.abs(avgDP) <= 0.01 * Math.abs(S.Nf || 1);
+        const stable = nearNoise || Math.abs(avgDP) <= 0.001 * Math.abs(S.Nf || 1);
         const period = stable ? Infinity : S.Nf / avgDP;
         const doubling = stable ? Infinity : Math.LN2 * period;
         const rhoPcm = (S.k - 1) / S.k * 1e5;
         const setInstr=(sel,txt,cls)=>{const el=document.querySelector(sel);if(el){el.textContent=txt;el.className='instr-value '+cls;}};
         setInstr('#vCps', nearNoise ? '—' : formatCps(cps), nearNoise ? 'off' : 'ok');
-        setInstr('#vDose', formatDose(dose), dose>10000 ? 'cr' : dose>1000 ? 'wn' : 'ok');
+        setInstr('#vDose', formatDose(dose), dose>16000 ? 'cr' : dose>1000 ? 'wn' : 'ok');
         const perCls = nearNoise||stable ? 'ok' : Math.abs(period) < 60 ? 'cr' : Math.abs(period) < 300 ? 'wn' : 'ok';
         setInstr('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable), perCls);
         setInstr('#vRho', formatRho(rhoPcm), Math.abs(rhoPcm) < 1000 ? 'ok' : Math.abs(rhoPcm) < 3000 ? 'wn' : 'cr');
@@ -1673,7 +1682,15 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   show('#bar',true);
   $('#snd').onclick=()=>{AU.init();AU.on=!AU.on;if(!AU.on)AU.klaxon(false);$('#snd').textContent=AU.on?'SOUND ON':'SOUND OFF'};
   $('#bAgain').onclick=begin;
-  setInterval(tick,1000);
+  let lastTickWall = Date.now();
+  setInterval(()=>{
+    const now = Date.now();
+    let missed = Math.floor((now - lastTickWall) / 1000);
+    if(missed < 1) missed = 1;
+    if(missed > 10) missed = 10;
+    for(let k=0;k<missed;k++) tick();
+    lastTickWall = now;
+  }, 1000);
 
   show('#menu',false);
   if(mode==='group'){show('#lobby',true);startPeer();lobby();}
