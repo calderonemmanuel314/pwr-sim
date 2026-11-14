@@ -751,11 +751,15 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
       <p>This is an educational model, not a validated plant simulator. It is not suitable for real-plant operation, operator training, licensing, or safety analysis. All numbers are illustrative. Dose values assume a fictional detector position and are not representative of any actual installation. The project is provided under the GNU Affero General Public License v3.0 with no warranty.</p>
     </details>
     <details>
+      <summary>AI ASSISTANCE DISCLOSURE</summary>
+      <p>The PWR Simulation codebase, physics calibration, documentation, and design proposals were developed with substantial assistance from AI language models — primarily DeepSeek and Claude — for code implementation and refactoring, physics parameter calibration, code review, documentation drafting, and bug diagnosis. Pedagogical design decisions, classroom context, physics validation against published reference literature (IAPWS-95, Keepin's six-group delayed-neutron data, standard one-group diffusion theory), and final editorial judgment remain with the project author. Every AI-suggested change was reviewed against the physics literature and against the classroom context before adoption.</p>
+    </details>
+    <details>
       <summary>PHYSICS, VERSION HISTORY &amp; CREDITS</summary>
-      <p>Available in the downloadable documentation. Full physics references, version changelog, and credits are included in <code>about.pdf</code>.</p>
+      <p>Full physics references, version changelog, and credits are included in the standalone documentation at <code>about.html</code>.</p>
     </details>
     <div class="about-footer">
-      <a href="about.pdf" download class="btn" id="aboutDownload">📄 DOWNLOAD FULL DOCUMENTATION (PDF)</a>
+      <a href="about.html" target="_blank" rel="noopener" class="btn" id="aboutDownload">📄 OPEN FULL DOCUMENTATION</a>
       <p class="sub">License: GNU AGPLv3 · <a href="https://github.com/calderonemmanuel314/pwr-sim" target="_blank" rel="noopener" style="color:var(--c)">github.com/calderonemmanuel314/pwr-sim</a></p>
     </div>
   </div>
@@ -1038,8 +1042,8 @@ document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,
   const vEl = document.getElementById('aboutVersion');
   if(vEl) vEl.textContent = 'v' + APP_VERSION;
   const dlLink = document.getElementById('aboutDownload');
-  if(dlLink) dlLink.href = 'about.pdf?v=' + APP_VERSION;
-  fetch('about.pdf', {method:'HEAD', cache:'no-store'}).then(r => {
+  if(dlLink) dlLink.href = 'about.html?v=' + APP_VERSION;
+  fetch('about.html', {method:'HEAD', cache:'no-store'}).then(r => {
     if(!r.ok){
       const dl = document.getElementById('aboutDownload');
       if(dl) dl.style.display = 'none';
