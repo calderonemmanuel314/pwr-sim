@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>About PWR Simulation · Full Documentation</title>
+<style>
+@page { size: A4; margin: 20mm 18mm; }
+@page :first { margin: 0; }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#e8e8e8;color:#1a1a1a;
+  font-family:'Charter','Georgia','Cambria','Times New Roman',serif;
+  font-size:11pt;line-height:1.55}
+.page{background:#fff;max-width:210mm;margin:0 auto;
+  padding:20mm 18mm;min-height:297mm;page-break-after:always;position:relative}
+.page:last-child{page-break-after:auto}
+.cover{background:#10160f;color:#d8ffd8;display:flex;flex-direction:column;
+  justify-content:center;padding:40mm 30mm;min-height:297mm;margin:0 auto;max-width:210mm}
+.cover h1{font-family:Inter,Helvetica,Arial,sans-serif;font-size:42pt;font-weight:300;
+  letter-spacing:.04em;margin:0 0 8mm 0;color:#39ff14;line-height:1.05}
+.cover .subtitle{font-family:Inter,Helvetica,Arial,sans-serif;font-size:15pt;
+  font-weight:400;color:#c8ffc8;margin:0 0 30mm 0;letter-spacing:.02em}
+.cover .project{font-family:Inter,Helvetica,Arial,sans-serif;font-size:11pt;
+  color:#6b8f6b;margin-bottom:4mm;letter-spacing:.15em;text-transform:uppercase}
+.cover .meta{font-family:Inter,Helvetica,Arial,sans-serif;font-size:10pt;color:#9dbf9d;
+  border-top:1px solid #2f4a2f;padding-top:8mm;margin-top:auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:4mm 8mm}
+.cover .meta div{display:flex;flex-direction:column}
+.cover .meta span:first-child{color:#6b8f6b;font-size:8pt;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:1mm}
+.cover .meta span:last-child{color:#c8ffc8;font-size:11pt}
+.cover .warn{background:#2a0a0a;border-left:3px solid #c0501a;
+  padding:6mm 8mm;margin:20mm 0 0 0;color:#ff9a9a;font-weight:600;font-size:11pt}
+h1,h2,h3,h4{font-family:Inter,Helvetica,Arial,sans-serif;color:#10160f;
+  page-break-after:avoid;page-break-inside:avoid}
+h1{font-size:22pt;font-weight:300;margin:0 0 6mm 0;padding-bottom:3mm;
+  border-bottom:2px solid #10160f;letter-spacing:-.01em}
+h1 .num{color:#6b8f6b;font-weight:300;margin-right:4mm}
+h2{font-size:14pt;font-weight:500;margin:8mm 0 3mm 0;color:#2a3a28}
+h3{font-size:11.5pt;font-weight:600;margin:6mm 0 2mm 0;color:#3a4a38}
+p{margin:0 0 3.5mm 0;orphans:3;widows:3}
+ul,ol{margin:0 0 3.5mm 0;padding-left:6mm}
+li{margin-bottom:1.5mm}
+strong{color:#10160f}
+em{font-style:italic}
+.toc{font-family:Inter,Helvetica,Arial,sans-serif;font-size:10.5pt}
+.toc ol{list-style:none;padding:0;margin:0}
+.toc ol > li{display:flex;justify-content:space-between;padding:2mm 0;
+  border-bottom:1px dotted #d0d0c8;margin:0}
+.toc ol > li .num{color:#6b8f6b;margin-right:4mm;min-width:8mm}
+.toc ol > li .title{flex:1}
+table{width:100%;border-collapse:collapse;font-family:Inter,Helvetica,Arial,sans-serif;
+  font-size:9.5pt;margin:3mm 0 5mm 0;page-break-inside:avoid}
+th,td{padding:2mm 3mm;text-align:left;border-bottom:1px solid #d0d0c8;vertical-align:top}
+th{background:#f4f4ee;font-weight:600;color:#10160f;font-size:9pt;
+  letter-spacing:.02em;text-transform:uppercase;border-bottom:2px solid #10160f}
+tr:nth-child(even) td{background:#fafaf5}
+code{font-family:'SF Mono','Menlo','Consolas',monospace;font-size:9.5pt;
+  background:#f2f2ea;padding:1px 4px;border-radius:2px;color:#2a3a28}
+pre{font-family:'SF Mono','Menlo','Consolas',monospace;font-size:9pt;line-height:1.45;
+  background:#f7f7f0;border:1px solid #e0e0d5;border-left:3px solid #10160f;
+  padding:3mm 4mm;margin:3mm 0 4mm 0;overflow-x:auto;page-break-inside:avoid;
+  white-space:pre;color:#1a1a1a}
+.callout{background:#f4f4ee;border-left:3px solid #4a5a48;padding:3mm 5mm;
+  margin:4mm 0;font-size:10pt;page-break-inside:avoid}
+.callout.warning{border-left-color:#c0501a;background:#fdf3ed}
+.callout strong{display:block;margin-bottom:1.5mm;font-size:10pt}
+.section-intro{font-size:11.5pt;color:#4a5a48;margin-bottom:5mm;font-style:italic}
+.footnote{font-size:9pt;color:#6b8f6b;border-top:1px solid #e0e0d5;
+  padding-top:3mm;margin-top:8mm}
+@media print {
+  body{background:#fff}
+  .page{margin:0;padding:0}
+  .cover{margin:0}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="project">PWR Simulation · Educational Reactor Model</div>
+  <h1>ABOUT<br>PWR<br>SIMULATION</h1>
+  <div class="subtitle">Physics, limitations, and disclaimers<br>for the classroom reactor model</div>
+  <div class="warn">
+    ⚠ NOT FOR REAL PLANT OPERATION<br>
+    All numbers are classroom parameters. Not validated against any real reactor. Educational use only.
+  </div>
+  <div class="meta">
+    <div><span>Version</span><span>2.2.1</span></div>
+    <div><span>Build</span><span>2026-11-14</span></div>
+    <div><span>Project</span><span>PWR Simulation</span></div>
+    <div><span>Repository</span><span>github.com/calderonemmanuel314/pwr-sim</span></div>
+    <div><span>Hosted at</span><span>calderonemmanuel314.github.io/pwr-sim/</span></div>
+    <div><span>License</span><span>GNU AGPLv3</span></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="page">
+  <h1><span class="num">§</span>Contents</h1>
+  <div class="toc">
+    <ol>
+      <li><span class="num">1</span><span class="title">Overview</span></li>
+      <li><span class="num">2</span><span class="title">Quick Start</span></li>
+      <li><span class="num">3</span><span class="title">Learning Objectives</span></li>
+      <li><span class="num">4</span><span class="title">Physics Modeled</span></li>
+      <li><span class="num">5</span><span class="title">Limitations</span></li>
+      <li><span class="num">6</span><span class="title">Disclaimers</span></li>
+      <li><span class="num">7</span><span class="title">Version History</span></li>
+      <li><span class="num">8</span><span class="title">Credits &amp; Physics References</span></li>
+      <li><span class="num">9</span><span class="title">AI Assistance Disclosure</span></li>
+    </ol>
+  </div>
+  <div class="callout" style="margin-top:15mm">
+    <strong>How to use this document</strong>
+    This is the authoritative reference for the PWR Simulation educational model. It documents what the model computes, what it simplifies, and what it deliberately does not attempt. Teachers, parents, and administrators can rely on the Limitations, Disclaimers, and AI Disclosure sections (§5, §6, §9) for a full picture of the model's boundaries and its development process.
+  </div>
+</div>
+
+<!-- §1 -->
+<div class="page">
+  <h1><span class="num">§1</span>Overview</h1>
+  <p class="section-intro">What this is, what it isn't, and who it's for.</p>
+  <p>PWR Simulation is a single-file HTML educational simulation of a pressurized-water reactor, designed for Grade 10 classroom use. It teaches reactor dynamics through four control divisions (rods, coolant pump, pressurizer, boron), four primary readouts (hot-leg coolant temperature, system pressure, grid power, k<sub>eff</sub>), and — in Advanced Mode — five nuclear instrumentation readouts (neutron count rate, dose rate, reactor period, reactivity, thermal flux).</p>
+  <p>The application is delivered as a single self-contained HTML file, hosted on GitHub Pages, licensed under the GNU Affero General Public License v3.0. No build step, no bundler, no server-side component.</p>
+  <h2>1.1 What this model is</h2>
+  <ul>
+    <li>A teaching tool for reactor dynamics, criticality, and control coordination.</li>
+    <li>An instrument-reading exercise: students learn to interpret cps, dose, period, and reactivity.</li>
+    <li>A safe sandbox for exploring the consequences of control decisions — including failure modes.</li>
+    <li>An honest approximation with disclosed simplifications.</li>
+  </ul>
+  <h2>1.2 What this model is not</h2>
+  <ul>
+    <li>Not a validated plant simulator.</li>
+    <li>Not suitable for real-plant operation, operator training, licensing, or safety analysis.</li>
+    <li>Not a substitute for a licensed training facility.</li>
+    <li>Not intended to reproduce any actual reactor's specific behavior.</li>
+  </ul>
+  <h2>1.3 Who it's for</h2>
+  <ul>
+    <li><strong>Grade 10 students</strong> — through worksheet-guided exercises and free exploration.</li>
+    <li><strong>Teachers</strong> — running a classroom session on a projector with up to four student phones.</li>
+    <li><strong>Advanced students</strong> — exploring the model with the nuclear instrumentation visible and the CSV recorder running.</li>
+    <li><strong>Administrators and reviewers</strong> — reading the Limitations and Disclaimers for a full disclosure of the model's boundaries.</li>
+  </ul>
+</div>
+
+<!-- §2 -->
+<div class="page">
+  <h1><span class="num">§2</span>Quick Start</h1>
+  <p class="section-intro">One sentence per mode.</p>
+  <h2>2.1 Group Mode</h2>
+  <p>Projector host + up to four student phones. The host screen runs the reactor; each phone controls one division (rods, coolant pump, pressurizer, boron). Students join via QR code or 4-digit join code. The reactor must stay within the power band and within thermal limits, with controls unchanged, for the scenario's hold duration. Scores for Easy, Moderate, and Hard scenarios.</p>
+  <h2>2.2 Sandbox Mode</h2>
+  <p>Single screen, all four controls enabled, no timer, no win condition. Ideal for demonstrating dynamics to a class without the pressure of a scored scenario. Fails into the same melt / over-pressure / temperature overlays as Group Mode — the physics is real even when there is no score.</p>
+  <h2>2.3 Learning Mode</h2>
+  <p>Clickable reactor schematic. Each component (core, fuel, rods, boron, pump, pressurizer, steam generator, turbine, condenser, hot/cold leg, containment, DNB) opens an explanatory panel. The phase-map chip opens the IAPWS-95 saturation overlay.</p>
+  <h2>2.4 Advanced Mode</h2>
+  <p>Nuclear instrumentation, CSV data recorder, and (planned) guided experiments. Free Exploration shows five additional readouts — neutron count rate, dose rate, reactor period, reactivity, thermal flux — and lets students record all state at 1 Hz for offline analysis. The recorder exports a 14-column CSV that opens in Excel or Google Sheets.</p>
+</div>
+
+<!-- §3 -->
+<div class="page">
+  <h1><span class="num">§3</span>Learning Objectives</h1>
+  <p class="section-intro">What students should be able to do after working with the model.</p>
+  <ol>
+    <li>Explain how inserting or withdrawing control rods changes the neutron balance and reactivity.</li>
+    <li>Read hot-leg temperature, system pressure, and grid power, and identify when each is approaching a limit.</li>
+    <li>Recognize criticality, subcriticality, and supercriticality via k<sub>eff</sub> and describe what each means for reactor power.</li>
+    <li>Coordinate across the four divisions to reach and hold a target power level.</li>
+    <li>Operate within safe limits and recognize failure modes (over-pressure, over-temperature, xenon pit, coolant boiling).</li>
+    <li>Explain why a pressurized-water reactor's coolant does not boil during normal operation.</li>
+    <li>(Advanced) Read neutron count rate and estimate reactor power.</li>
+    <li>(Advanced) Interpret reactor period, reactivity, and dose rate, and explain the difference between prompt and delayed effects.</li>
+  </ol>
+</div>
+
+<!-- §4 -->
+<div class="page">
+  <h1><span class="num">§4</span>Physics Modeled</h1>
+  <p class="section-intro">Per subsystem: what's in, what's simplified.</p>
+  <h2>4.1 Neutron balance</h2>
+  <p>One-group k<sub>eff</sub> from a normalized channel weight balance: fuel capture, structural capture, rod absorption (S-curve worth), soluble boron, xenon, and leakage. Feedback channels: moderator temperature (positive), coolant density / void (negative), and Doppler (negative). The numbers are calibrated for classroom playability, not physical accuracy.</p>
+  <h2>4.2 Point kinetics</h2>
+  <p>Six delayed-neutron groups with realistic β and λ values, integrated by RK4 over 100 substeps per model-second. The prompt neutron generation time Λ is intentionally stretched 1000× (0.10 s vs. real ~1×10⁻⁴ s) so that students can watch the reactor respond on human-observable timescales. For periods longer than ~100 s, the model matches theory. For short periods (&lt;10 s), the response is qualitatively correct but numerically distorted.</p>
+  <h2>4.3 Xenon and iodine</h2>
+  <p>Normalized I-135 / Xe-135 chain with time constants compressed ~100× for classroom pacing. Real xenon peaks 9–10 hours after shutdown; the model peaks in ~10 minutes. The pedagogical value — showing that shutdown is not a reset button, that restart may be blocked by xenon — is preserved.</p>
+  <h2>4.4 Thermal-hydraulic</h2>
+  <p>Coolant temperature updated from fission power minus pump-driven heat removal, with a first-order lag. Fuel temperature is computed but not displayed; the model does not compute separate cladding temperature, DNB, or critical heat flux. Pressure updated from a linearized model: heater and spray inputs, plus a temperature term. The pressurizer relief valve is a game parameter (opens at 17.2 MPa, reseats at 16.4 MPa).</p>
+  <h2>4.5 Saturation and phase map</h2>
+  <p>Wagner–Pruss vapor-pressure correlation for water, inverted numerically to compute saturation temperature at a given pressure. The phase-map overlay in the app is accurate. Reference: IAPWS-95 formulation. Above the critical point (373.946 °C, 22.064 MPa) there is no distinct liquid-vapor boundary.</p>
+  <h2>4.6 Grid power</h2>
+  <p>33% thermal-to-electric conversion, minus 5% station service. Fixed; real plants vary. At 1000 MWth thermal, the model delivers ~315 MWe to the grid.</p>
+  <h2>4.7 Nuclear instrumentation (Advanced Mode)</h2>
+  <p>Neutron count rate: 10⁹ cps at full power, proportional to fission rate (single detector across all ranges). Dose rate: four-component sum of prompt γ, N-16 activation (7.1 s half-life), delayed γ from precursors, and fission product γ (compressed 1-hour pool). Reactor period: N<sub>f</sub> / (dN<sub>f</sub>/dt), smoothed over 5 samples, displayed as ±s or +∞ (stable). Reactivity: ρ = (k<sub>eff</sub> − 1)/k<sub>eff</sub> in pcm. Thermal flux: 3×10¹³ n/cm²·s at full power (secondary reading).</p>
+</div>
+
+<!-- §5 -->
+<div class="page">
+  <h1><span class="num">§5</span>Limitations</h1>
+  <p class="section-intro">Full disclosure list. Every simplification must be visible to teachers and reviewers.</p>
+  <ol>
+    <li><strong>Prompt neutron generation time stretched 1000×</strong> for pacing (Λ = 0.10 s vs. real ~1×10⁻⁴ s). Short-period transients give qualitatively correct shape but wrong numerical reactivity.</li>
+    <li><strong>Boron worth per ppm is ~10× too low</strong> (~0.47 pcm/ppm vs. real ~5–10 pcm/ppm). Boron experiments underestimate real boron worth.</li>
+    <li><strong>Doppler coefficient is weak</strong> (~50–150 pcm at full power vs. real ~500–1,500 pcm). The reactor self-stabilizes less than a real PWR.</li>
+    <li><strong>Xenon time constants compressed ~100×.</strong> Real xenon peaks 9–10 hours after shutdown; the model peaks in ~10 minutes.</li>
+    <li><strong>No spatial dimension.</strong> Flux, dose, and power are core-averages. Rod tilt, radial peaking, and axial offset are not modeled.</li>
+    <li><strong>Single count-rate detector</strong> across all power ranges. Real reactors use three overlapping instruments (Source Range, Intermediate Range, Power Range).</li>
+    <li><strong>Dose assumes a fictional shielded position near primary piping.</strong> Real detector positions vary by orders of magnitude.</li>
+    <li><strong>Fission product pool is a single bucket</strong>, not an isotope-by-isotope inventory (~300 isotopes in a real plant).</li>
+    <li><strong>Activation products (Co-60, Fe-59) are not modeled.</strong> Real plants retain residual dose for years after shutdown.</li>
+    <li><strong>Fixed 20 MWth residual heat allowance</strong> at zero fission power. Real decay heat falls with time over hours to years.</li>
+    <li><strong>33% thermal-to-electric conversion, 5% station service</strong> are fixed. Real plants vary with load, coolant temperature, and turbine efficiency.</li>
+    <li><strong>No DNB, critical heat flux, or DNBR.</strong> Coolant failure is a simplified game limit, not a physical boiling crisis calculation.</li>
+    <li><strong>All warning, hold, and failure limits are game parameters</strong> — not real plant settings, not extracted from any regulatory or operational document.</li>
+    <li><strong>Reactivity uses a one-group k<sub>eff</sub></strong>, not a real eigenvalue. Absolute reactivity numbers are approximations, not measurements.</li>
+    <li><strong>Period reading is smoothed over 5 samples (~5 s at 1 Hz).</strong> Fast transients (period &lt;5 s) are not resolvable.</li>
+    <li><strong>The simulation is an educational model</strong>, not a validated plant simulator.</li>
+  </ol>
+</div>
+
+<!-- §6 -->
+<div class="page">
+  <h1><span class="num">§6</span>Disclaimers</h1>
+  <p class="section-intro">Legal and safety framing.</p>
+  <p>This is an <strong>educational model</strong>, not a validated plant simulator. It is not suitable for real-plant operation, operator training, licensing, or safety analysis. All numbers shown in the application — temperatures, pressures, reactivities, doses, failure thresholds — are illustrative classroom parameters. They do not represent any specific facility, do not follow any regulatory standard, and are not verified against any real reactor's operating envelope.</p>
+  <p>Dose values assume a fictional detector position near primary piping. They are not representative of any actual installation and must not be interpreted as predictions of dose at any real location.</p>
+  <p>The application is provided under the <strong>GNU Affero General Public License v3.0</strong> with no warranty, express or implied. See the LICENSE file in the repository for the full text.</p>
+  <div class="callout warning">
+    <strong>Not for classroom use as a safety reference</strong>
+    Nothing in this simulation should be used to inform decisions about radiation safety, reactor operation, or emergency response. Real reactor safety depends on engineered systems (shutdown rods, emergency core cooling, containment, shielding) and licensed operator training — none of which this model attempts to represent.
+  </div>
+</div>
+
+<!-- §7 -->
+<div class="page">
+  <h1><span class="num">§7</span>Version History</h1>
+  <p class="section-intro">Version-by-version changelog.</p>
+  <table>
+    <tr><th style="width:15%">Version</th><th>Description</th></tr>
+    <tr><td><strong>2.2.1</strong></td><td>Documentation delivery switched from <code>about.pdf</code> to <code>about.html</code>. The About screen's "Open Full Documentation" button opens the standalone HTML in a new browser tab. Users who need a printable copy can use their browser's Print → Save as PDF. Added AI Assistance Disclosure (§9). Documentation now editable in place — no PDF regeneration step.</td></tr>
+    <tr><td><strong>2.2.0</strong></td><td>Phase 2 + Phase 3 of Advanced Mode: 14-column CSV data recorder with state machine (idle / recording / stopped / clear), 5000-row cap, Blob-based download; About screen with full Limitations and Disclaimers inline, version display, HEAD-check for PDF availability. Green pulsing REC dot, cache-busted documentation link.</td></tr>
+    <tr><td><strong>2.1.0</strong></td><td>Phase 1 of Advanced Mode: 4th menu button, Advanced landing screen, Free Exploration with five new readouts (neutron count rate, dose, period, reactivity, thermal flux). N-16 pool (7.1 s half-life) and fission-product pool (compressed 1-hour τ) feed the four-component dose calculation. Flat HUD layout reusing Sandbox plumbing via <code>body.adv</code> overlay. Top metric strip shows "ADVANCED MODE" badge; instrumentation values color-coded green / amber / red against thresholds.</td></tr>
+    <tr><td><strong>2.0.0</strong></td><td>Project renamed from GPWR Control Room to PWR Simulation. Session-ID-based 1-device-per-division locking. Per-role OVERRIDE / RELEASE / RECLAIM workflow. UI restructured to 75/25 split between reactor and division panels. Mobile-friendly sandbox layout with tab drawer. Physics rebalanced for classroom playability.</td></tr>
+    <tr><td><strong>1.0.0</strong></td><td>First stable release. Group Mode with PeerJS networking (projector + four phones), Sandbox Mode, Learning Mode. Four control divisions. Four readouts (T, P, grid MWe, k<sub>eff</sub>). Three scenarios (Easy / Moderate / Hard).</td></tr>
+  </table>
+</div>
+
+<!-- §8 -->
+<div class="page">
+  <h1><span class="num">§8</span>Credits &amp; Physics References</h1>
+  <p class="section-intro">Where the physics came from.</p>
+  <h2>8.1 Project</h2>
+  <p>PWR Simulation is designed and maintained by <strong>Emmanuel Calderon</strong> (<code>calderonemmanuel314</code> on GitHub) as a Grade 10 classroom tool.</p>
+  <h2>8.2 Physics references</h2>
+  <ul>
+    <li><strong>Wagner, W. &amp; Pruß, A.</strong> (2002). "The IAPWS Formulation 1995 for the Thermodynamic Properties of Ordinary Water Substance for General and Scientific Use." <em>J. Phys. Chem. Ref. Data</em> 31, 387.</li>
+    <li><strong>Duderstadt, J.J. &amp; Hamilton, L.J.</strong> (1976). <em>Nuclear Reactor Analysis</em>. Wiley. — Standard reference for one-group diffusion and point kinetics.</li>
+    <li><strong>Lamarsh, J.R. &amp; Baratta, A.J.</strong> (2001). <em>Introduction to Nuclear Engineering</em>, 3rd ed. Prentice Hall.</li>
+    <li><strong>Keepin, G.R.</strong> (1965). <em>Physics of Nuclear Kinetics</em>. Addison-Wesley. — Source of the six delayed-neutron group data used in the point-kinetics integrator.</li>
+    <li><strong>IAEA-TECDOC-1612</strong> (2009). "Nuclear Reactor Start-up, Commissioning and Operation." — Startup procedure references.</li>
+  </ul>
+  <h2>8.3 Software</h2>
+  <p>Single-file HTML application, no build step. External dependencies:</p>
+  <ul>
+    <li><strong>JetBrains Mono</strong> — Google Fonts, loaded non-blocking.</li>
+    <li><strong>PeerJS 1.5.1</strong> — CDN with three fallbacks, for Group Mode networking.</li>
+  </ul>
+  <h2>8.4 License</h2>
+  <p>GNU Affero General Public License v3.0. See <code>LICENSE</code> at the repository root for the full text. Network-use clause applies: any hosted modified version must offer the source to its users.</p>
+</div>
+
+<!-- §9 -->
+<div class="page">
+  <h1><span class="num">§9</span>AI Assistance Disclosure</h1>
+  <p class="section-intro">Honest accounting of how AI was used in this project.</p>
+  <p>The PWR Simulation codebase, physics calibration, documentation, and design proposals were developed with <strong>substantial assistance from AI language models</strong> — primarily <strong>DeepSeek</strong> and <strong>Claude</strong>. AI was used for:</p>
+  <ul>
+    <li><strong>Code implementation and refactoring</strong> — writing the physics helpers, the render pipeline, the recorder state machine, and the About screen wiring.</li>
+    <li><strong>Physics parameter calibration</strong> — proposing initial values for the neutron channel weights, the N-16 and fission-product pool coefficients, and the dose contribution coefficients, and suggesting adjustments during playability tuning.</li>
+    <li><strong>Code review and debugging</strong> — reading through the codebase for edge cases, layout bugs, and mode-transition issues; diagnosing reported symptoms against the source.</li>
+    <li><strong>Documentation drafting</strong> — this document, the Limitations list, the proposal, and the inline About screen content.</li>
+    <li><strong>Design proposals</strong> — the phasing roadmap, the instrumentation strip layout, and the CSV column specification.</li>
+  </ul>
+  <h2>9.1 What remains with the human author</h2>
+  <ul>
+    <li><strong>Pedagogical design</strong> — the classroom context (Grade 10, four divisions, projector + phones), the learning objectives, the scenario narratives, the balance between challenge and accessibility.</li>
+    <li><strong>Physics validation</strong> — checking AI-proposed values against published reference literature (IAPWS-95 for steam tables, Keepin's six-group data, standard one-group diffusion theory).</li>
+    <li><strong>Editorial judgment</strong> — deciding which AI-suggested features to keep, which to defer, and which to reject outright.</li>
+    <li><strong>Testing</strong> — running the app in a browser, in the classroom, and on student devices; observing what actually happens.</li>
+    <li><strong>Final decisions</strong> — every change adopted into the shipped code was reviewed by the author before being committed.</li>
+  </ul>
+  <h2>9.2 How to interpret this</h2>
+  <p>AI-assisted development does not mean "unreviewed output." Every AI-suggested change was checked against the physics literature and against the classroom context. Where the AI proposed something that did not fit — a physically unrealistic simplification, an interaction pattern that would confuse students, a feature that would break an existing mode — the proposal was rejected or revised.</p>
+  <p>The intent of this disclosure is not to diminish the result but to describe it accurately. AI tools make a solo project like this possible on a classroom budget; they do not replace the judgment about what to build, why, and for whom.</p>
+  <div class="callout">
+    <strong>If you are evaluating this project</strong>
+    The right question is not "was AI used?" but "was the AI's output validated?" The Limitations section (§5) and the Disclaimers (§6) document the validation boundary of the physics model. This section documents the validation boundary of the development process. Both are honest about what lies beyond.
+  </div>
+</div>
+
+<div class="page" style="min-height:auto;padding:10mm 18mm">
+  <div class="footnote">
+    End of documentation. Version 2.2.1 · 2026-11-14. This document is the file at <code>about.html</code> in the repository root — it is the source of truth for the standalone About documentation and is served directly (no PDF regeneration step). Update it in place whenever the model's physics, limitations, or version history changes, and bump <code>APP_VERSION</code> in <code>index.html</code> at the same time so the cache-busting query on the "Open Full Documentation" link stays in sync. Users who need a printable copy can open this file in a browser and use Print → Save as PDF.
+  </div>
+</div>
+
+</body>
+</html>
