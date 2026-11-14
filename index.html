@@ -244,6 +244,30 @@ body.sbx #tl,body.sbx #tv{display:none!important}
 /* Sandbox tab bar hidden by default (desktop, group-mode mobile) */
 .sbx-tabs{display:none}
 
+/* ── ADVANCED MODE (Phase 1) ───────────────────────────── */
+#instrStrip{display:none}
+body.adv #instrStrip{
+  display:flex;flex-direction:column;gap:.3vh;
+  padding:.5vh .7vw;background:var(--pn);
+  border:1px solid var(--ln);border-radius:12px;flex-shrink:0;
+}
+body.adv #instrHeader{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.62rem;color:var(--dim);letter-spacing:.04em;
+}
+body.adv #instrRow{display:grid;grid-template-columns:repeat(4,1fr);gap:.5vw}
+body.adv .instr-cell{display:flex;flex-direction:column;gap:2px;padding:.2vh .4vw;border-left:1px solid var(--ln)}
+body.adv .instr-cell:first-child{border-left:0}
+body.adv .instr-label{font-size:.55rem;color:var(--dim);letter-spacing:.04em}
+body.adv .instr-value{font-size:clamp(.85rem,1.3vw,1.15rem);font-weight:700;color:var(--c)}
+body.adv .instr-sub{font-size:.52rem;color:var(--dim);opacity:.7}
+
+/* Flat layout: single-column HUD with the panel row at bottom */
+body.adv #hud{grid-template-columns:1fr;grid-template-rows:1fr auto}
+body.adv #right{flex-direction:row;overflow-x:hidden;gap:.6vw}
+body.adv #right .pn{flex:1 1 0;min-height:0;min-width:0;padding:.8vh .7vw}
+body.adv #timerBox{display:none}
+  
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
@@ -349,6 +373,11 @@ body.sbx #tl,body.sbx #tv{display:none!important}
 
   /* Slim the bottom toolbar in sandbox */
   body.sbx #bback{display:none}
+
+  /* Advanced Mode mobile: instrument strip 2×2, smaller text */
+  body.adv #instrRow{grid-template-columns:repeat(2,1fr);gap:3px}
+  body.adv .instr-value{font-size:.8rem}
+  body.adv #instrStrip{padding:4px 6px}
 }
 </style>
 </head>
@@ -361,10 +390,20 @@ body.sbx #tl,body.sbx #tv{display:none!important}
     <button class="btn" id="bGroup">GROUP MODE (HOST)</button>
     <button class="btn y" id="bSand">SANDBOX MODE</button>
     <button class="btn" id="bLearn" style="border-color:var(--c);color:var(--c)">LEARNING MODE</button>
+    <button class="btn" id="bAdv" style="border-color:var(--c);color:var(--c)">ADVANCED MODE</button>
   </div>
-  <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
+    <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br>Advanced Mode: instrumentation and experiments.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
 </div>
 
+<div id="advLanding" class="screen hide">
+  <h1>ADVANCED MODE</h1>
+  <p class="sub">Nuclear instrumentation and guided experiments.</p>
+  <div class="row">
+    <button class="btn" id="advFreeBtn">FREE EXPLORATION</button>
+    <button class="btn" id="advLibBtn" disabled>EXPERIMENT LIBRARY</button>
+  </div>
+  <button class="btn y" id="advBack">◄ BACK</button>
+</div>
 <div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
 <div id="learn" class="screen hide"><div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div><p class="sub">Tap any part of the reactor, or pick one from the list.</p>
 <div class="lrow"><div id="lsvg"></div><div id="linfo"><h3 id="lt"></h3><p id="lr"></p><p id="lg"></p><div id="lx"></div></div></div><div id="lchips"></div></div>
@@ -401,6 +440,35 @@ body.sbx #tl,body.sbx #tv{display:none!important}
       <div class="pn"><h3>HOT-LEG COOLANT TEMP</h3><div class="big" id="vT">--<span class="unit">°C</span></div></div>
       <div class="pn"><h3>SYSTEM PRESSURE</h3><div class="big" id="vP">--<span class="unit">MPa</span></div></div>
       <div class="pn"><h3>POWER TO THE GRID</h3><div class="big" id="vN">--<span class="unit">MWe</span></div><div class="lnk" id="thermalReadout">--</div></div>
+    </div>
+    
+    <div id="instrStrip">
+      <div id="instrHeader">
+        <span>NUCLEAR INSTRUMENTATION</span>
+        <span id="vFlux2">n/cm²·s —</span>
+      </div>
+      <div id="instrRow">
+        <div class="instr-cell">
+          <div class="instr-label">NEUTRON COUNT RATE</div>
+          <div class="instr-value" id="vCps">—</div>
+          <div class="instr-sub">10⁹ cps = full</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">DOSE</div>
+          <div class="instr-value" id="vDose">—</div>
+          <div class="instr-sub">near primary</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">PERIOD</div>
+          <div class="instr-value" id="vPeriod">—</div>
+          <div class="instr-sub" id="vDoubling">—</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">ρ · REACTIVITY</div>
+          <div class="instr-value" id="vRho">—</div>
+          <div class="instr-sub">pcm</div>
+        </div>
+      </div>
     </div>
     <div id="mainRow">
       <div id="kcol">
@@ -634,6 +702,7 @@ hard:{k:'hard',n:'HARD',t:'Restart in the Xenon Pit',rem:480,band:90,hold:15,cd:
  short:'Restart in xenon pit, reach ~285–340 MWe within 8 min.',
  xeLockout:1.05,st:{rods:100,pump:40,boron:1200,T:285,P:14.2,xe:1.4,xi:.168}}};
 DIFF.sandbox=Object.assign({},DIFF.easy,{k:'sandbox',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
+DIFF.advanced=Object.assign({},DIFF.easy,{k:'advanced',hints:0,ph:null,rodsMin:0,rodsMax:100,pumpMin:0,pumpMax:100,boronMin:0,boronMax:2000});
 const LEARN={
 core:['Reactor vessel and coolant','The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.','The top temperature gauge is the modeled hot-leg coolant temperature.'],
 fuel:['Fuel assemblies','Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.','The simulation does not calculate separate fuel or cladding temperatures.'],
@@ -751,6 +820,22 @@ const coolantHeatRemovalFactor=(T,P)=>{
   if(P>=22.064&&T>=373.946)return 1-.35*smoothStep((T-373.946)/60);
   return 1-.45*smoothStep(Math.max(0,T-tsat(P))/30);
 };
+const formatCps = c => c<1e3?c.toFixed(0)+' cps'
+                     : c<1e6?(c/1e3).toFixed(2)+' kcps'
+                     : c<1e9?(c/1e6).toFixed(2)+' Mcps'
+                     :       (c/1e9).toFixed(2)+' Gcps';
+const formatDose = u => u<1000?u.toFixed(1)+' µSv/hr' : (u/1000).toFixed(2)+' mSv/hr';
+const formatPeriod = (s, stable) => stable ? '+∞ (stable)' : ((s>0?'+':'−')+Math.abs(s).toFixed(0)+'s');
+const formatRho = p => (p>=0?'+':'')+p.toFixed(0)+' pcm';
+function doseFromState(Nf, n16, precursors, fp){
+  const prompt = 5000 * (Nf/1000);
+  const n16d = 4000 * n16;
+  const sumLC = precursors.reduce((a,c,i)=>a + LAMBDA_GROUPS[i]*c, 0);
+  const sumLCeq = BETA_EFF * 1000 / LAMBDA_PROMPT_MODEL;
+  const delayed = 2600 * (sumLC / sumLCeq);
+  const fpd = 2500 * fp;
+  return prompt + n16d + delayed + fpd;
+}
 const pmSVG=(pre,dots)=>{const fx=T=>50+T*.98,fy=P=>380-P*12,lp='M'+PS.map(a=>fx(a[0])+' '+fy(a[1])).join('L'),tx=(x,y,t,c,a)=>'<text x="'+x+'" y="'+y+'" fill="'+(c||'#9ab')+'" font-size="11"'+(a?' text-anchor="'+a+'"':'')+'>'+t+'</text>';
   let h='<rect x="50" y="20" width="490" height="360" fill="#1a1d1a"/><path d="'+lp+'L'+fx(373.946)+' 20L50 20L50 380Z" fill="#1e6bff33"/><rect x="'+fx(373.946)+'" y="20" width="'+(540-fx(373.946))+'" height="'+(fy(22.064)-20)+'" fill="#b36bff55"/><path d="'+lp+'" stroke="#35c8ff" stroke-width="2.5" fill="none"/>';
   for(let t=0;t<=500;t+=100)h+=tx(fx(t),396,t,0,'middle');for(let q=0;q<=30;q+=10)h+=tx(44,fy(q)+4,q,0,'end');
@@ -845,8 +930,8 @@ function client(){
 
 /* ================= HOST ================= */
 function host(mode,diff){
-  let WH=15,D=DIFF[mode==='group'?diff:'sandbox'];
-  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false}};
+  let WH=15,D=DIFF[mode==='group'?diff:mode]||DIFF.sandbox;
+  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[]}};
   const id='gpwr-host-'+(1000+Math.floor(Math.random()*9000));
   const base=location.origin+location.pathname;
   const pick=r=>{const o={};ROLES[r].k.forEach(k=>o[k]=S.in[k]);return o};
@@ -867,8 +952,8 @@ function host(mode,diff){
       const st=document.getElementById('os-'+r);
       const btn=document.getElementById('ob-'+r);
       if(!st||!btn)return;
-      if(S.mode==='sandbox'){
-        // Sandbox: no override concept, always enable controls, hide status row via CSS
+      if(S.mode!=='group'){
+        // Sandbox / Advanced: no override concept, always enable controls, hide status row via CSS
         st.textContent='';
         btn.textContent='';
         panel.classList.remove('overridden');
@@ -1024,7 +1109,7 @@ function host(mode,diff){
   /* Sandbox-only: toggle .on tab + .sbx-active panel based on S.sbxTab.
      No-op in group mode. Runs inside render()'s try block. */
   function renderSbxTabs(){
-    if(S.mode!=='sandbox')return;
+    if(S.mode==='group')return;
     document.querySelectorAll('#sbxTabs button').forEach(btn=>{
       btn.classList.toggle('on',S.sbxTab===btn.dataset.sbx);
     });
@@ -1121,7 +1206,26 @@ function host(mode,diff){
         hlEl.textContent=S.mode==='sandbox'?'SANDBOX':(holdActive?'● '+S.hold+'/'+WH+'s':S.hold+'/'+WH+'s');
       }
       {const ct=D.hints&&S.phase==='run'?coach():'';const coachEl=$('#coach');if(coachEl){coachEl.textContent=ct;coachEl.classList.toggle('hide',!ct)}}
-      if(S.mode==='sandbox')renderSbxTabs();
+      if(S.mode!=='group')renderSbxTabs();
+      if(S.mode==='advanced'){
+        const cps = 1e9 * S.Nf / 1000;
+        const dose = doseFromState(S.Nf, S.adv.n16, S.precursors || [], S.adv.fp);
+        const flux = 3e13 * S.Nf / 1000;
+        const avgDP = S.adv.dPowerHistory.length
+          ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0) / S.adv.dPowerHistory.length
+          : 0;
+        const nearNoise = S.Nf < 1;
+        const stable = nearNoise || Math.abs(avgDP) <= 0.01 * Math.abs(S.Nf || 1);
+        const period = stable ? Infinity : S.Nf / avgDP;
+        const doubling = stable ? Infinity : Math.LN2 * period;
+        const rhoPcm = (S.k - 1) / S.k * 1e5;
+        setText('#vCps', nearNoise ? '—' : formatCps(cps));
+        setText('#vDose', formatDose(dose));
+        setText('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable));
+        setText('#vDoubling', nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling '+doubling.toFixed(0)+'s'));
+        setText('#vRho', formatRho(rhoPcm));
+        setText('#vFlux2', 'n/cm²·s ' + flux.toExponential(2));
+      }
     }catch(err){console.error('render failed:',err);}
   }
   function burst(){const cv=$('#fx'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;show('#fx',true);
@@ -1173,6 +1277,12 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       {const f=Math.min(1.2,S.Nf/1500),xi0=S.xi,xe0=S.xe;
         S.xi=Math.max(0,xi0+.0077*f-.0167*xi0);
         S.xe=Math.max(0,xe0+.0167*xi0+.0007*f-(.002+.01*f)*xe0);}
+      if(S.mode==='advanced'){
+        S.adv.n16 += 0.0975 * (S.Nf/1000 - S.adv.n16);   // N-16, 7.1 s half-life
+        S.adv.fp  += (1/3600) * (S.Nf/1000 - S.adv.fp);  // FP pool, compressed 1 hr τ
+        S.adv.dPowerHistory.push(S.dPower);
+        if(S.adv.dPowerHistory.length > 5) S.adv.dPowerHistory.shift();
+      }
       const heatFactor=coolantHeatRemovalFactor(S.T,S.P);
       const rem=32*(Math.min(i.pump,S.pcap)/100)*(S.T-280)*heatFactor;
       const thermalTau=D.thermalTau||150;
@@ -1198,7 +1308,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       const powerDrift=D.powerDrift||25,tempDrift=D.tempDrift||1.5;
       const driftOK=Math.abs(S.N-prev.N)<=powerDrift&&Math.abs(S.T-prev.T)<=tempDrift&&Math.abs(S.P-prev.P)<=(D.pressureDrift||.05);
       const powerOK=Math.abs(S.N-1000)<=D.band;
-      if(S.mode!=='sandbox'){
+      if(S.mode==='group'){
         if(chg){S.hold=0;S.holdGrace=0}
         else if(powerOK&&thermalOK&&driftOK){S.hold++;S.holdGrace=0}
         else{S.holdGrace=(S.holdGrace||0)+1;if(S.holdGrace>3){S.hold=0;S.holdGrace=0}}
@@ -1214,7 +1324,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       if(S.mode==='group'&&D.k==='hard'&&S.lockoutHold>=10)return end('xenonLockout');
       if(S.T>1200){const dil=Math.max.apply(null,S.bh)-i.boron>=400;return end(i.rods<=15&&(dil||i.boron<300)?'spike':'heat')}
       if(S.P<(D.failDepr||10))return end('depr');
-      if(S.mode!=='sandbox'&&S.hold>=WH)return end('win');
+      if(S.mode==='group'&&S.hold>=WH)return end('win');
       S.prev={N:S.N,T:S.T,P:S.P};
       if(S.mode==='group'&&S.rem<=0)end('time');
     }catch(err){console.error('tick failed:',err);}
@@ -1222,9 +1332,13 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const begin=()=>{
     const st=D.st;
     try{
-      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false}});WH=D.hold;
+      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[]}});WH=D.hold;
       S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
       S.Nf=Math.max(0,D.initialFissionPower??0);
+      if(S.mode==='advanced'){
+        S.adv.n16=S.Nf/1000;
+        S.adv.fp =S.Nf/1000;
+      }
       S.Tfuel=S.T+(S.Nf+20)/H_FUEL_COOLANT;
       S.precursors=D.k==='hard'?BETA_GROUPS.map(()=>0):equilibriumPrecursors(S.Nf);
       {const balance=neutronBalance(S.in,S.xe,S.T,S.P,S.Tfuel,D.alphaDoppler);S.k=balance.kEff;S.rho=balance.rho;S.neutronBudget=balance;S.kh=[S.k]}
@@ -1243,9 +1357,9 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       try{sync()}catch(e){console.error('sync() failed in begin():',e)}
     }catch(outerErr){console.error('begin() setup failed:',outerErr)}
 
-    /* Sandbox-only: wire tab buttons once per begin() (onclick overwrites any
-       prior handler, so RESTART does not stack listeners). */
-    if(S.mode==='sandbox'){
+    /* Sandbox / Advanced: wire tab buttons once per begin() (onclick overwrites
+       any prior handler, so RESTART does not stack listeners). */
+    if(S.mode!=='group'){
       const tabsEl=document.getElementById('sbxTabs');
       if(tabsEl){
         tabsEl.querySelectorAll('button').forEach(btn=>{
@@ -1267,6 +1381,12 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const goHome=async()=>{if(S.mode==='group'&&(nconn()||S.phase==='run')&&!await ask('Leave and disconnect all phones?'))return;goto(location.pathname)};
   $('#bhome').onclick=goHome;
   $('#bback').onclick=async()=>{if(S.mode==='sandbox')return goHome();
+    if(S.mode==='advanced'){
+      if(!await ask('Leave Advanced Mode?'))return;
+      AU.klaxon(false);document.body.classList.remove('melt','boom','alarm','cold');
+      goto(location.pathname+'?mode=advanced');
+      return;
+    }
     if(S.phase==='lobby'){if(nconn()&&!await ask('Back to scenario select?'))return;return goto(location.pathname+'?mode=group')}
     if(S.phase==='run'&&!await ask('Stop this run?'))return;
     AU.klaxon(false);document.body.classList.remove('melt','boom','alarm','cold');
@@ -1279,13 +1399,27 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
 
   show('#menu',false);
   if(mode==='group'){show('#lobby',true);startPeer();lobby();}
-  else{document.body.classList.add('sbx');S.ov=true;document.body.classList.add('ov');begin();}
+  else{
+    document.body.classList.add('sbx');
+    if(mode==='advanced')document.body.classList.add('adv');
+    S.ov=true;document.body.classList.add('ov');begin();
+  }
   window.addEventListener('beforeunload',()=>{try{S.peer&&S.peer.destroy()}catch(e){}});
 }
 
 if(ROLE==='join')joinPage();
 else if(ROLE&&ROLES[ROLE])client();
-else{$('#bGroup').onclick=showDiff;$('#bSand').onclick=()=>host('sandbox');$('#bLearn').onclick=learn;if(Q.get('mode')==='group')showDiff();if(Q.get('mode')==='learn')learn()}
+else{
+  $('#bGroup').onclick=showDiff;
+  $('#bSand').onclick=()=>host('sandbox');
+  $('#bLearn').onclick=learn;
+  $('#bAdv').onclick=()=>{show('#menu',false);show('#advLanding',true);};
+  $('#advFreeBtn').onclick=()=>{show('#advLanding',false);host('advanced');};
+  $('#advBack').onclick=()=>{show('#advLanding',false);show('#menu',true);};
+  if(Q.get('mode')==='group')showDiff();
+  if(Q.get('mode')==='learn')learn();
+  if(Q.get('mode')==='advanced'){show('#menu',false);show('#advLanding',true);}
+}
 })();
 </script>
 </body>
