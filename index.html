@@ -1479,7 +1479,7 @@ function host(mode,diff){
         const avgDP = S.adv.dPowerHistory.length
           ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0) / S.adv.dPowerHistory.length
           : 0;
-        const nearNoise = S.Nf < 1;
+        const nearNoise = S.Nf < 1e-5;
         const stable = nearNoise || Math.abs(avgDP) <= 0.001 * Math.abs(S.Nf || 1);
         const period = stable ? Infinity : S.Nf / avgDP;
         const doubling = stable ? Infinity : Math.LN2 * period;
