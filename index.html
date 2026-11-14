@@ -698,7 +698,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   <div class="about-content">
     <div class="about-header">
       <h1>ABOUT PWR SIMULATION</h1>
-      <span class="about-version" id="aboutVersion">v2.2.0</span>
+      <span class="about-version" id="aboutVersion">v2.2.1</span>
       <button class="btn y" id="aboutClose">◄ BACK</button>
     </div>
     <div class="about-warn">
@@ -786,7 +786,7 @@ const Q=new URLSearchParams(location.search), ROLE=Q.get('role'), ROOM=Q.get('ro
 const ROLES={rods:{n:'DIV 1 · CONTROL RODS',k:['rods']},coolant:{n:'DIV 2 · THERMAL-HYDRAULICS',k:['pump']},pressure:{n:'DIV 3 · PRESSURIZER',k:['heat','spray']},xenon:{n:'DIV 4 · BORON / POISON MANAGEMENT',k:['boron']}};
 const ROLE_KEYS=['rods','coolant','pressure','xenon'];
 const DEF=()=>({rods:70,pump:50,heat:0,spray:0,boron:500});
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.2.1';
 const APP_BUILD = '2026-11-14';
 const show=(id,on)=>$(id).classList.toggle('hide',!on);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
