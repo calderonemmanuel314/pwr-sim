@@ -267,7 +267,78 @@ body.adv #hud{grid-template-columns:1fr;grid-template-rows:1fr auto}
 body.adv #right{flex-direction:row;overflow-x:hidden;gap:.6vw}
 body.adv #right .pn{flex:1 1 0;min-height:0;min-width:0;padding:.8vh .7vw}
 body.adv #timerBox{display:none}
-  
+
+/* ── PHASE 2: Recorder panel ──────────────────────────────── */
+#recPanel{display:none}
+body.adv #recPanel{
+  display:flex;align-items:center;gap:.8vw;
+  padding:.4vh .8vw;
+  background:#050805;border:1px solid var(--ln);border-radius:10px;
+  flex-shrink:0;font-size:.7rem;
+}
+body.adv .rec-dot{width:10px;height:10px;border-radius:50%;background:#555;flex-shrink:0}
+body.adv .rec-dot-on{background:var(--r);animation:recPulse 1s ease-in-out infinite}
+@keyframes recPulse{50%{opacity:.35}}
+body.adv #recTime{color:var(--y);font-weight:700;font-family:var(--f);min-width:45px}
+body.adv #recRows{color:var(--dim);font-size:.65rem;flex:1}
+body.adv .rec-actions{display:flex;gap:.4vw}
+body.adv .btn-rec{
+  background:transparent;color:var(--tx);border:1px solid var(--ln);
+  border-radius:6px;padding:.2em .7em;font-size:.65rem;font-family:var(--f);
+  cursor:pointer;letter-spacing:.03em;
+}
+body.adv .btn-rec:hover:not(:disabled){border-color:var(--g);color:var(--g)}
+body.adv .btn-rec:disabled{opacity:.35;cursor:not-allowed}
+body.adv #recStart{color:var(--g);border-color:var(--g)}
+body.adv #recStop{color:var(--r);border-color:var(--r)}
+body.adv #recCSV{color:var(--c);border-color:var(--c)}
+
+/* ── PHASE 3: About screen + corner link ──────────────────── */
+#bAbout{
+  position:fixed;bottom:calc(4.8vh + 8px);right:8px;z-index:50;
+  padding:4px 10px;
+  background:#000a;border:1px solid var(--ln);border-radius:6px;
+  color:var(--dim);font-family:var(--f);font-size:.7rem;
+  letter-spacing:.04em;cursor:pointer;
+  transition:color .15s, border-color .15s;
+}
+#bAbout:hover{color:var(--g);border-color:var(--g)}
+#aboutScreen{
+  position:fixed;inset:0;z-index:65;
+  background:#000e;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:4vh 4vw;overflow-y:auto;
+}
+.about-content{
+  background:var(--pn);border:1px solid var(--ln);border-radius:18px;
+  padding:4vh 4vw;max-width:800px;width:100%;
+  color:var(--tx);font-size:.95rem;line-height:1.55;
+  display:flex;flex-direction:column;gap:1.5vh;
+}
+.about-content h1{font-size:1.6rem;color:var(--g);margin:0}
+.about-header{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.about-version{color:var(--y);font-size:.85rem;font-family:var(--f);letter-spacing:.04em}
+.about-warn{
+  background:#2a0a0a;border-left:3px solid var(--r);
+  padding:.8em 1em;color:#ff9a9a;font-weight:600;border-radius:6px;
+}
+.about-content details{
+  background:#0b100c;border:1px solid var(--ln);
+  border-radius:8px;padding:.6em .8em;
+}
+.about-content details summary{
+  cursor:pointer;color:var(--y);font-weight:600;
+  letter-spacing:.03em;padding:.2em 0;
+}
+.about-content details[open] summary{margin-bottom:.5em}
+.about-content details ul,.about-content details ol{padding-left:1.4em}
+.about-content details li{margin-bottom:.3em}
+.about-content details p{color:var(--tx)}
+.about-content code{background:#000;padding:1px 4px;border-radius:3px;font-size:.85em}
+.about-footer{margin-top:1em;display:flex;flex-direction:column;gap:.5em;align-items:center}
+.about-footer a{text-decoration:none;display:inline-block}
+.about-footer .sub{font-size:.8rem;color:var(--dim);text-align:center}
+.about-footer a.btn{font-size:.9rem;padding:.6em 1.2em;color:var(--g);border-color:var(--g)}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
@@ -378,6 +449,12 @@ body.adv #timerBox{display:none}
   body.adv #instrRow{grid-template-columns:repeat(2,1fr);gap:3px}
   body.adv .instr-value{font-size:.8rem}
   body.adv #instrStrip{padding:4px 6px}
+  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.5rem}
+  body.adv #recTime{font-size:.55rem;min-width:35px}
+  body.adv #recRows{font-size:.5rem}
+  body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
+  body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
+  body.adv .about-content h1{font-size:1.2rem}
 }
 </style>
 </head>
@@ -542,6 +619,17 @@ body.adv #timerBox{display:none}
         </div>
       </div>
     </div>
+    <div id="recPanel">
+      <span id="recDot" class="rec-dot"></span>
+      <span id="recTime">00:00</span>
+      <span id="recRows">Rows: 0 / 5000</span>
+      <div class="rec-actions">
+        <button id="recStart" class="btn-rec" type="button">▶ START</button>
+        <button id="recStop" class="btn-rec" type="button" style="display:none">■ STOP</button>
+        <button id="recCSV" class="btn-rec" type="button" disabled>💾 CSV</button>
+        <button id="recClear" class="btn-rec" type="button" disabled>🗑 CLEAR</button>
+      </div>
+    </div>
     <div id="log"></div>
   </div>
   <div id="right">
@@ -583,7 +671,7 @@ body.adv #timerBox{display:none}
 </div>
 
 <div id="vig"></div><canvas id="fx" class="hide"></canvas><div id="fl"></div>
-<div id="bar" class="hide"><button id="bhome">⌂ HOME</button><button id="bback">◄ BACK</button><button id="snd">SOUND ON</button><button id="bpm">PHASE MAP (P)</button><span id="modelbadge">CLASSROOM MODEL · NOT FOR OPERATION</span></div>
+<button id="bAbout" type="button" title="About PWR Simulation">ⓘ ABOUT</button>
 
 <div id="pm" class="hide"><div class="pmbox"><svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg><div class="pmtx">
 <div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
@@ -596,6 +684,72 @@ body.adv #timerBox{display:none}
 
 <div id="ovr" class="hide"><h1 id="ot"></h1><p class="sub" id="om"></p><button class="btn" id="bAgain">RESTART</button></div>
 
+<div id="aboutScreen" class="hide">
+  <div class="about-content">
+    <div class="about-header">
+      <h1>ABOUT PWR SIMULATION</h1>
+      <span class="about-version" id="aboutVersion">v2.2.0</span>
+      <button class="btn y" id="aboutClose">◄ BACK</button>
+    </div>
+    <div class="about-warn">
+      ⚠ NOT FOR REAL PLANT OPERATION — All numbers are classroom parameters. Not validated against any real reactor. Educational use only.
+    </div>
+    <details open>
+      <summary>OVERVIEW</summary>
+      <p>A simplified, pressurized-water-reactor teaching model. Four crews, one reactor. It teaches reactor dynamics through four control divisions (rods, coolant pump, pressurizer, boron) and, in Advanced Mode, five additional nuclear instrumentation readouts (neutron count rate, dose rate, reactor period, reactivity, thermal flux).</p>
+    </details>
+    <details>
+      <summary>QUICK START</summary>
+      <ul>
+        <li><strong>Group Mode</strong> — projector + up to four phones. Host runs the reactor, students control divisions.</li>
+        <li><strong>Sandbox Mode</strong> — single screen, all controls. No timer, no win condition.</li>
+        <li><strong>Learning Mode</strong> — clickable reactor schematic. Explore components and physics.</li>
+        <li><strong>Advanced Mode</strong> — nuclear instrumentation, CSV data recorder, and (planned) guided experiments.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>OBJECTIVES</summary>
+      <ul>
+        <li>Understand how the four control divisions affect reactor power.</li>
+        <li>Read and interpret hot-leg temperature, system pressure, and grid power.</li>
+        <li>Recognize criticality, subcriticality, and supercriticality via k_eff.</li>
+        <li>Coordinate across divisions to reach and hold a target power level.</li>
+        <li>Practice operating within safe limits and recognize failure modes.</li>
+        <li>(Advanced) Read nuclear instrumentation: count rate, dose, period, reactivity.</li>
+        <li>(Advanced, planned) Perform guided experiments: rod calibration, delayed neutron counting, xenon observation.</li>
+      </ul>
+    </details>
+    <details open>
+      <summary>LIMITATIONS</summary>
+      <ol>
+        <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Short periods distorted.</li>
+        <li>Boron worth per ppm is ~10× too low; Doppler coefficient is weak.</li>
+        <li>Xenon model compressed ~100× — real peaks ~10 hours after shutdown; this model peaks in ~10 minutes.</li>
+        <li>No spatial dimension. Flux, dose, and power are core-averages, not spatial distributions.</li>
+        <li>Single cps detector covers all power ranges (real reactors use SR/IR/PR instruments).</li>
+        <li>Dose assumes a fictional shielded position near primary piping; real detector positions vary by orders of magnitude.</li>
+        <li>Fission product pool is a single bucket, not an isotope-by-isotope inventory.</li>
+        <li>Activation products (Co-60, Fe-59) not modeled — real plants retain residual dose for years.</li>
+        <li>Fixed 20 MWth residual heat allowance at zero power.</li>
+        <li>33% thermal-to-electric conversion; 5% station service (real plants vary).</li>
+        <li>No departure from nucleate boiling (DNB), critical heat flux, or DNBR.</li>
+        <li>All warning, hold, and failure limits are game parameters — not real plant settings.</li>
+      </ol>
+    </details>
+    <details open>
+      <summary>DISCLAIMERS</summary>
+      <p>This is an educational model, not a validated plant simulator. It is not suitable for real-plant operation, operator training, licensing, or safety analysis. All numbers are illustrative. Dose values assume a fictional detector position and are not representative of any actual installation. The project is provided under the GNU Affero General Public License v3.0 with no warranty.</p>
+    </details>
+    <details>
+      <summary>PHYSICS, VERSION HISTORY &amp; CREDITS</summary>
+      <p>Available in the downloadable documentation. Full physics references, version changelog, and credits are included in <code>about.pdf</code>.</p>
+    </details>
+    <div class="about-footer">
+      <a href="about.pdf" download class="btn" id="aboutDownload">📄 DOWNLOAD FULL DOCUMENTATION (PDF)</a>
+      <p class="sub">License: GNU AGPLv3 · <a href="https://github.com/calderonemmanuel314/pwr-sim" target="_blank" rel="noopener" style="color:var(--c)">github.com/calderonemmanuel314/pwr-sim</a></p>
+    </div>
+  </div>
+</div>
 <div id="cl" class="hide">
   <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
   <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p><div id="cb"></div><div id="cv"></div>
@@ -618,6 +772,8 @@ const Q=new URLSearchParams(location.search), ROLE=Q.get('role'), ROOM=Q.get('ro
 const ROLES={rods:{n:'DIV 1 · CONTROL RODS',k:['rods']},coolant:{n:'DIV 2 · THERMAL-HYDRAULICS',k:['pump']},pressure:{n:'DIV 3 · PRESSURIZER',k:['heat','spray']},xenon:{n:'DIV 4 · BORON / POISON MANAGEMENT',k:['boron']}};
 const ROLE_KEYS=['rods','coolant','pressure','xenon'];
 const DEF=()=>({rods:70,pump:50,heat:0,spray:0,boron:500});
+const APP_VERSION = '2.2.0';
+const APP_BUILD = '2026-11-14';
 const show=(id,on)=>$(id).classList.toggle('hide',!on);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 const setText=(sel,txt)=>{const el=document.querySelector(sel);if(el)el.textContent=txt;};
@@ -857,6 +1013,27 @@ let LP='';const phaseFx=(ph,m)=>{if(ph===LP)return;LP=ph;document.body.classList
 addEventListener('pointerdown',()=>AU.init());
 document.addEventListener('click',e=>{if(e.target.closest('button'))AU.tone(660,.05,'square',.05)});
 
+/* ================= ABOUT (global, all modes) ================= */
+{
+  const bAbout = document.getElementById('bAbout');
+  const aboutScr = document.getElementById('aboutScreen');
+  const showAbout = () => { if(aboutScr) aboutScr.classList.remove('hide'); };
+  const hideAbout = () => { if(aboutScr) aboutScr.classList.add('hide'); };
+  if(bAbout) bAbout.onclick = showAbout;
+  const closeBtn = document.getElementById('aboutClose');
+  if(closeBtn) closeBtn.onclick = hideAbout;
+  addEventListener('keydown', e => {
+    if(e.key === 'Escape' && aboutScr && !aboutScr.classList.contains('hide')) hideAbout();
+  });
+  const vEl = document.getElementById('aboutVersion');
+  if(vEl) vEl.textContent = 'v' + APP_VERSION;
+  fetch('about.pdf', {method:'HEAD', cache:'no-store'}).then(r => {
+    if(!r.ok){
+      const dl = document.getElementById('aboutDownload');
+      if(dl) dl.style.display = 'none';
+    }
+  }).catch(()=>{ /* network error — leave button visible */ });
+}
 /* ================= CLIENT ================= */
 function client(){
   const role=ROLE, R=ROLES[role], cur=DEF(); let conn,peer,locked=false,retry,CD=10,rejected=false,clientPhase='lobby';
@@ -931,7 +1108,7 @@ function client(){
 /* ================= HOST ================= */
 function host(mode,diff){
   let WH=15,D=DIFF[mode==='group'?diff:mode]||DIFF.sandbox;
-  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[]}};
+  const S={mode,phase:'lobby',in:DEF(),T:307,P:15.5,N:0,xe:.3,xi:.3,rem:600,hold:0,holdGrace:0,pcap:100,stuck:0,conns:{},ov:false,peer:null,override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[],recording:false,rows:[],maxRows:5000}};
   const id='gpwr-host-'+(1000+Math.floor(Math.random()*9000));
   const base=location.origin+location.pathname;
   const pick=r=>{const o={};ROLES[r].k.forEach(k=>o[k]=S.in[k]);return o};
@@ -1102,7 +1279,33 @@ function host(mode,diff){
       }
     };
   });
-
+  const recStartBtn = document.getElementById('recStart');
+  if(recStartBtn) recStartBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.rows = [];
+    S.adv.recording = true;
+    renderRecorder();
+    AU.init(); AU.tone(660,.08,'square',.1);
+  };
+  const recStopBtn = document.getElementById('recStop');
+  if(recStopBtn) recStopBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.recording = false;
+    renderRecorder();
+    AU.init(); AU.tone(330,.1,'square',.1);
+  };
+  const recCSVBtn = document.getElementById('recCSV');
+  if(recCSVBtn) recCSVBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    exportCSV();
+  };
+  const recClearBtn = document.getElementById('recClear');
+  if(recClearBtn) recClearBtn.onclick = () => {
+    if(S.mode!=='advanced') return;
+    S.adv.rows = [];
+    S.adv.recording = false;
+    renderRecorder();
+  };
   const cls=(el,c)=>{if(el)el.className='big '+c};
   const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
 
@@ -1118,6 +1321,43 @@ function host(mode,diff){
     });
   }
 
+  function renderRecorder(){
+    if(S.mode!=='advanced') return;
+    const rec = S.adv;
+    const recording = rec.recording;
+    const stopped = !recording && rec.rows.length > 0;
+    const idle = !recording && rec.rows.length === 0;
+    const dot = document.getElementById('recDot');
+    const t = document.getElementById('recTime');
+    const r = document.getElementById('recRows');
+    const btnS = document.getElementById('recStart');
+    const btnT = document.getElementById('recStop');
+    const btnCSV = document.getElementById('recCSV');
+    const btnC = document.getElementById('recClear');
+    if(!dot) return;
+    dot.className = 'rec-dot' + (recording ? ' rec-dot-on' : '');
+    const secs = rec.rows.length;
+    if(t) t.textContent = String(Math.floor(secs/60)).padStart(2,'0') + ':' + String(secs%60).padStart(2,'0');
+    if(r) r.textContent = 'Rows: ' + secs + ' / ' + rec.maxRows;
+    if(btnS){ btnS.style.display = (idle || stopped) ? '' : 'none'; btnS.disabled = stopped; }
+    if(btnT){ btnT.style.display = recording ? '' : 'none'; }
+    if(btnCSV) btnCSV.disabled = !stopped;
+    if(btnC) btnC.disabled = rec.rows.length === 0;
+  }
+  function exportCSV(){
+    if(S.mode!=='advanced' || !S.adv.rows.length) return;
+    const header = 'time_s,rod_pct,pump_pct,boron_ppm,heat,spray,countrate_cps,dose_usvh,period_s,reactivity_pcm,k_eff,flux_thermal,temp_c,pressure_mpa';
+    const csv = header + '\n' + S.adv.rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pwr-data-' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
   function render(){
     try{
       const T=S.T,P=S.P,N=S.N,i=S.in;
@@ -1225,6 +1465,7 @@ function host(mode,diff){
         setText('#vDoubling', nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling '+doubling.toFixed(0)+'s'));
         setText('#vRho', formatRho(rhoPcm));
         setText('#vFlux2', 'n/cm²·s ' + flux.toExponential(2));
+        renderRecorder();
       }
     }catch(err){console.error('render failed:',err);}
   }
@@ -1277,11 +1518,30 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
       {const f=Math.min(1.2,S.Nf/1500),xi0=S.xi,xe0=S.xe;
         S.xi=Math.max(0,xi0+.0077*f-.0167*xi0);
         S.xe=Math.max(0,xe0+.0167*xi0+.0007*f-(.002+.01*f)*xe0);}
-      if(S.mode==='advanced'){
+            if(S.mode==='advanced'){
         S.adv.n16 += 0.0975 * (S.Nf/1000 - S.adv.n16);   // N-16, 7.1 s half-life
         S.adv.fp  += (1/3600) * (S.Nf/1000 - S.adv.fp);  // FP pool, compressed 1 hr τ
         S.adv.dPowerHistory.push(S.dPower);
         if(S.adv.dPowerHistory.length > 5) S.adv.dPowerHistory.shift();
+        if(S.adv.recording){
+          if(S.adv.rows.length < S.adv.maxRows){
+            const cps = 1e9 * S.Nf / 1000;
+            const dose = doseFromState(S.Nf, S.adv.n16, S.precursors || [], S.adv.fp);
+            const flux = 3e13 * S.Nf / 1000;
+            const avgDP = S.adv.dPowerHistory.length ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0)/S.adv.dPowerHistory.length : 0;
+            const nearNoise = S.Nf < 1;
+            const stable = nearNoise || Math.abs(avgDP) <= 0.01 * Math.abs(S.Nf || 1);
+            const periodStr = stable ? 'inf' : (S.Nf / avgDP).toFixed(2);
+            const rhoPcm = ((S.k - 1) / S.k * 1e5).toFixed(1);
+            S.adv.rows.push([
+              S.adv.rows.length,
+              i.rods, i.pump, i.boron, i.heat, i.spray,
+              cps.toFixed(0), dose.toFixed(1), periodStr, rhoPcm,
+              S.k.toFixed(6), flux.toExponential(3), S.T.toFixed(2), S.P.toFixed(4)
+            ].join(','));
+            if(S.adv.rows.length >= S.adv.maxRows) S.adv.recording = false;
+          }
+        }
       }
       const heatFactor=coolantHeatRemovalFactor(S.T,S.P);
       const rem=32*(Math.min(i.pump,S.pcap)/100)*(S.T-280)*heatFactor;
@@ -1332,7 +1592,7 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
   const begin=()=>{
     const st=D.st;
     try{
-      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[]}});WH=D.hold;
+      Object.assign(S,{sig:'',phase:S.mode==='group'?'brief':'run',T:st.T,P:st.P,xe:st.xe,xi:st.xi,rem:D.rem,hold:0,holdGrace:0,N:0,pcap:100,stuck:0,e1:0,e2:0,lockoutArmed:false,lockoutHold:0,bh:[],kh:[],valve:0,vlog:0,sbxTab:'rods',override:{rods:false,coolant:false,pressure:false,xenon:false},adv:{n16:0,fp:0,dPowerHistory:[],recording:false,rows:[],maxRows:5000}});WH=D.hold;
       S.in={rods:st.rods,pump:st.pump,heat:0,spray:0,boron:st.boron};
       S.Nf=Math.max(0,D.initialFissionPower??0);
       if(S.mode==='advanced'){
