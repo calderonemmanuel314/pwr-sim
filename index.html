@@ -733,8 +733,8 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
       <summary>LIMITATIONS</summary>
       <ol>
         <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Short periods distorted.</li>
-        <li>Boron worth per ppm is ~10× too low; Doppler coefficient is weak.</li>
-        <li>Xenon model compressed ~100× — real peaks ~10 hours after shutdown; this model peaks in ~10 minutes.</li>
+        <li>Boron worth realistic (~−10 pcm/ppm, comparable to real PWRs). Doppler coefficients 2–6 pcm/°C depending on scenario — Easy slightly above real, Moderate/Hard in range.</li>
+        <li>Xenon model distorted: uneven compression (~570× for I-135, ~96× for Xe-135), post-SCRAM peak ~1–2 min with ~17% overshoot, absolute worth ~3–4× real. Full detail in <code>about.html</code> §4.3 and §5.</li>
         <li>No spatial dimension. Flux, dose, and power are core-averages, not spatial distributions.</li>
         <li>Single cps detector covers all power ranges (real reactors use SR/IR/PR instruments).</li>
         <li>Dose assumes a fictional shielded position near primary piping; real detector positions vary by orders of magnitude.</li>
@@ -1556,8 +1556,8 @@ depr:{res:'lose',m:0,cls:'es-boil',t:'PRESSURE TOO LOW',x:'Pressure fell below t
             const dose = doseFromState(S.Nf, S.adv.n16, S.precursors || [], S.adv.fp);
             const flux = 3e13 * S.Nf / 1000;
             const avgDP = S.adv.dPowerHistory.length ? S.adv.dPowerHistory.reduce((a,b)=>a+b,0)/S.adv.dPowerHistory.length : 0;
-            const nearNoise = S.Nf < 1;
-            const stable = nearNoise || Math.abs(avgDP) <= 0.01 * Math.abs(S.Nf || 1);
+            const nearNoise = S.Nf < 1e-5;
+            const stable = nearNoise || Math.abs(avgDP) <= 0.001 * Math.abs(S.Nf || 1);
             const periodStr = stable ? 'inf' : (S.Nf / avgDP).toFixed(2);
             const rhoPcm = ((S.k - 1) / S.k * 1e5).toFixed(1);
             S.adv.rows.push([
