@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 let peerPromise = null;
 
@@ -67,4 +66,3 @@ export const qrMake = text => {
   let pth = ''; m.forEach((r, y) => r.forEach((c, x) => { if (c) pth += 'M' + (x + 4) + ' ' + (y + 4) + 'h1v1h-1z'; }));
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + (sz + 8) + ' ' + (sz + 8) + '" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="' + pth + '" fill="#000"/></svg>';
 };
-```
