@@ -171,5 +171,5 @@ body.melt #dome{animation:dm .4s infinite alternate}@keyframes dm{to{stroke:#ff2
   body.sbx #right .pn-ctl input[type=range]::-moz-range-thumb{width:32px;height:32px}
   body.sbx #right .pn-ctl .pm{width:44px;height:44px;font-size:1.3rem;opacity:1;pointer-events:auto}
   body.sbx #right .pn-ctl .tb{flex:1;padding:14px 0;font-size:.9rem;opacity:1;pointer-events:auto}
-  body.sbx #bback{display:none}
+  body.sbx:not(.adv) #bback{display:none}
 }
