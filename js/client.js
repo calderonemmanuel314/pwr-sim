@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { $, clamp, show, ask, goto } from './dom.js';
 import { ROLES, DEF } from './config.js';
@@ -171,4 +170,3 @@ export function client(ROLE, ROOM) {
 
   draw(); sync(); go();
 }
-```
