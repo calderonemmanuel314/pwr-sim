@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 export const $ = s => document.querySelector(s);
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -26,4 +25,3 @@ export const ask = m => new Promise(r => {
 });
 
 export const goto = u => location.replace(u + (u.includes('?') ? '&' : '?') + 't=' + Date.now());
-```
