@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 export const AU = { c: null, on: true, k: null };
 
@@ -79,4 +78,3 @@ export function initAudioListeners() {
     if (e.target.closest('button')) AU.tone(660, .05, 'square', .05);
   });
 }
-```
