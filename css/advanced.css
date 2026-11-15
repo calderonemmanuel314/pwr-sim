@@ -120,7 +120,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   body.adv #recTime{font-size:.55rem;min-width:35px}
   body.adv #recRows{font-size:.5rem}
   body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
+  #bar:not(.hide) ~ #bAbout{top:8px;bottom:auto;right:8px}
   body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
   body.adv .about-content h1{font-size:1.2rem}
 }
-
