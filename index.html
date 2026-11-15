@@ -1,18 +1,21 @@
+```html
 <!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
-<title>PWR CONTROL ROOM · Educational Model</title>
+<title>PWR SIMULATION · Educational Model</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/modes.css">
-<link rel="stylesheet" href="css/mobile.css">
+<link rel="stylesheet" href="css/hud.css">
+<link rel="stylesheet" href="css/client.css">
+<link rel="stylesheet" href="css/advanced.css">
 </head>
 <body>
 
 <div id="menu" class="screen">
-  <h1>PWR CONTROL ROOM</h1>
+  <h1>PWR SIMULATION</h1>
   <p class="sub">A simplified, pressurized-water-reactor teaching model. Four crews, one reactor, ten minutes.</p>
   <div class="row">
     <button class="btn" id="bGroup">GROUP MODE (HOST)</button>
@@ -33,21 +36,10 @@
   <button class="btn y" id="advBack">◄ BACK</button>
 </div>
 
-<div id="diff" class="screen hide">
-  <h1>CHOOSE YOUR SCENARIO</h1>
-  <div class="dcards" id="dcards"></div>
-  <button class="btn y" id="dback">◄ BACK</button>
-</div>
+<div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
 
-<div id="learn" class="screen hide">
-  <div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div>
-  <p class="sub">Tap any part of the reactor, or pick one from the list.</p>
-  <div class="lrow">
-    <div id="lsvg"></div>
-    <div id="linfo"><h3 id="lt"></h3><p id="lr"></p><p id="lg"></p><div id="lx"></div></div>
-  </div>
-  <div id="lchips"></div>
-</div>
+<div id="learn" class="screen hide"><div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div><p class="sub">Tap any part of the reactor, or pick one from the list.</p>
+<div class="lrow"><div id="lsvg"></div><div id="linfo"><h3 id="lt"></h3><p id="lr"></p><p id="lg"></p><div id="lx"></div></div></div><div id="lchips"></div></div>
 
 <div id="brf" class="hide"><div class="cfb" style="max-width:min(92vw,900px)"><h1 id="bt"></h1><p id="bs" style="font-size:1.3em"></p><p id="bg" style="color:var(--y)"></p><button class="btn" id="bgo">BEGIN SHIFT</button></div></div>
 <div id="cf" class="hide"><div class="cfb"><p id="cfm"></p><div class="row"><button class="btn" id="cfy">YES</button><button class="btn y" id="cfn">CANCEL</button></div></div></div>
@@ -56,12 +48,7 @@
   <h1>JOIN</h1>
   <p class="sub">Type the join code, then pick your division. Only one device per division.</p>
   <input id="jc" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" autocomplete="off">
-  <div id="jd">
-    <button class="dv" data-r="rods">DIV 1 · CONTROL RODS</button>
-    <button class="dv" data-r="coolant">DIV 2 · COOLANT PUMP</button>
-    <button class="dv" data-r="pressure">DIV 3 · PRESSURIZER</button>
-    <button class="dv" data-r="xenon">DIV 4 · BORON / XENON</button>
-  </div>
+  <div id="jd"><button class="dv" data-r="rods">DIV 1 · CONTROL RODS</button><button class="dv" data-r="coolant">DIV 2 · COOLANT PUMP</button><button class="dv" data-r="pressure">DIV 3 · PRESSURIZER</button><button class="dv" data-r="xenon">DIV 4 · BORON / XENON</button></div>
   <p id="je" class="st"></p>
   <button class="btn" id="jb">JOIN</button>
 </div>
@@ -96,10 +83,26 @@
         <span id="vFlux2">n/cm²·s —</span>
       </div>
       <div id="instrRow">
-        <div class="instr-cell"><div class="instr-label">NEUTRON COUNT RATE</div><div class="instr-value" id="vCps">—</div><div class="instr-sub">10⁹ cps = full</div></div>
-        <div class="instr-cell"><div class="instr-label">DOSE</div><div class="instr-value" id="vDose">—</div><div class="instr-sub">near primary</div></div>
-        <div class="instr-cell"><div class="instr-label">PERIOD</div><div class="instr-value" id="vPeriod">—</div><div class="instr-sub" id="vDoubling">—</div></div>
-        <div class="instr-cell"><div class="instr-label">ρ · REACTIVITY</div><div class="instr-value" id="vRho">—</div><div class="instr-sub">pcm</div></div>
+        <div class="instr-cell">
+          <div class="instr-label">NEUTRON COUNT RATE</div>
+          <div class="instr-value" id="vCps">—</div>
+          <div class="instr-sub">10⁹ cps = full</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">DOSE</div>
+          <div class="instr-value" id="vDose">—</div>
+          <div class="instr-sub">near primary</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">PERIOD</div>
+          <div class="instr-value" id="vPeriod">—</div>
+          <div class="instr-sub" id="vDoubling">—</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">ρ · REACTIVITY</div>
+          <div class="instr-value" id="vRho">—</div>
+          <div class="instr-sub">pcm</div>
+        </div>
       </div>
     </div>
 
@@ -168,7 +171,11 @@
  <ellipse id="molten" cx="120" cy="450" rx="110" ry="30" fill="#ff5a00" stroke="none" opacity=".9"/>
 </svg>
         </div>
-        <div id="timerBox"><div id="tv">10:00</div><div class="bar"><i id="hold"></i></div><div id="hl">0/10s</div></div>
+        <div id="timerBox">
+          <div id="tv">10:00</div>
+          <div class="bar"><i id="hold"></i></div>
+          <div id="hl">0/10s</div>
+        </div>
       </div>
     </div>
 
@@ -188,7 +195,10 @@
 
   <div id="right">
     <div class="sbx-tabs" id="sbxTabs">
-      <button data-sbx="rods">RODS</button><button data-sbx="coolant">PUMP</button><button data-sbx="pressure">PRESS</button><button data-sbx="xenon">BORON</button>
+      <button data-sbx="rods">RODS</button>
+      <button data-sbx="coolant">PUMP</button>
+      <button data-sbx="pressure">PRESS</button>
+      <button data-sbx="xenon">BORON</button>
     </div>
     <div class="pn" data-role="rods">
       <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
@@ -223,24 +233,27 @@
 
 <div id="vig"></div><canvas id="fx" class="hide"></canvas><div id="fl"></div>
 <div id="bar" class="hide"><button id="bhome">⌂ HOME</button><button id="bback">◄ BACK</button><button id="snd">SOUND ON</button><button id="bpm">PHASE MAP (P)</button><span id="modelbadge">CLASSROOM MODEL · NOT FOR OPERATION</span></div>
-<button id="bAbout" type="button" title="About PWR Simulation">ⓘ ABOUT</button>
 
-<div id="pm" class="hide">
-  <div class="pmbox">
-    <svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg>
-    <div class="pmtx">
-      <div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
-      <div id="pmlive" style="border-color:var(--c)"></div>
-      <div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
-      <div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
-      <div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. Fuel temperature is computed internally for Doppler feedback but is not shown as a separate readout. No cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
-      <div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div>
-    </div>
-  </div>
-  <button class="btn" id="pmx">CLOSE (Esc)</button>
-</div>
+<div id="pm" class="hide"><div class="pmbox"><svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg><div class="pmtx">
+<div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
+<div id="pmlive" style="border-color:var(--c)"></div>
+<div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
+<div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
+<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. Fuel temperature is computed internally for Doppler feedback but is not shown as a separate readout. No cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
+<div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div></div></div>
+<button class="btn" id="pmx">CLOSE (Esc)</button></div>
 
 <div id="ovr" class="hide"><h1 id="ot"></h1><p class="sub" id="om"></p><button class="btn" id="bAgain">RESTART</button></div>
+
+<div id="cl" class="hide">
+  <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
+  <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p><div id="cb"></div><div id="cv"></div>
+  <div id="cc"></div>
+  <div id="cd"><i id="cdi"></i><span>Transmitting command to core…</span></div>
+  <button class="btn" id="ex" disabled>CONNECTING…</button>
+</div>
+
+<button id="bAbout" type="button" title="About PWR Simulation">ⓘ ABOUT</button>
 
 <div id="aboutScreen" class="hide">
   <div class="about-content">
@@ -249,7 +262,9 @@
       <span class="about-version" id="aboutVersion">v2.2.1</span>
       <button class="btn y" id="aboutClose">◄ BACK</button>
     </div>
-    <div class="about-warn">⚠ NOT FOR REAL PLANT OPERATION — All numbers are classroom parameters. Not validated against any real reactor. Educational use only.</div>
+    <div class="about-warn">
+      ⚠ NOT FOR REAL PLANT OPERATION — All numbers are classroom parameters. Not validated against any real reactor. Educational use only.
+    </div>
     <details open>
       <summary>OVERVIEW</summary>
       <p>A simplified, pressurized-water-reactor teaching model. Four crews, one reactor. It teaches reactor dynamics through four control divisions (rods, coolant pump, pressurizer, boron) and, in Advanced Mode, five additional nuclear instrumentation readouts (neutron count rate, dose rate, reactor period, reactivity, thermal flux).</p>
@@ -311,22 +326,6 @@
   </div>
 </div>
 
-<div id="cl" class="hide">
-  <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
-  <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p>
-  <div id="cb"></div><div id="cv"></div><div id="cc"></div>
-  <div id="cd"><i id="cdi"></i><span>Transmitting command to core…</span></div>
-  <button class="btn" id="ex" disabled>CONNECTING…</button>
-</div>
-
-<script defer src="js/config.js"></script>
-<script defer src="js/utils.js"></script>
-<script defer src="js/qr.js"></script>
-<script defer src="js/physics.js"></script>
-<script defer src="js/learn-about.js"></script>
-<script defer src="js/client.js"></script>
-<script defer src="js/host-render.js"></script>
-<script defer src="js/host-sim.js"></script>
-<script defer src="js/main.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
