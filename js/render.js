@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { $, clamp, fmt, show, setText, setHTML, setAttr } from './dom.js';
 import {
@@ -222,4 +221,3 @@ export function render(S, D, WH, coachText) {
     console.error('render failed:', err);
   }
 }
-```
