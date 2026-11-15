@@ -345,6 +345,50 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 .about-footer a{text-decoration:none;display:inline-block}
 .about-footer .sub{font-size:.8rem;color:var(--dim);text-align:center}
 .about-footer a.btn{font-size:.9rem;padding:.6em 1.2em;color:var(--g);border-color:var(--g)}
+/* ── PHASE 4: Experiment Library + Briefing ──────────────── */
+#advLib{overflow-y:auto;justify-content:flex-start}
+#libGrid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:2vh 1.4vw;width:min(1400px,94vw);padding:2vh 0;
+}
+.libcard{
+  text-align:left;background:var(--pn);
+  border:2px solid var(--ln);border-radius:18px;
+  padding:2.4vh 1.4vw;
+  display:flex;flex-direction:column;gap:1vh;
+  font-size:clamp(.82rem,1vw,1.05rem);
+  cursor:pointer;transition:border-color .15s,background .15s;
+}
+.libcard:hover{border-color:var(--g);background:#142014}
+.libcard b{font-size:1.2em;color:var(--c);font-weight:400;line-height:1.2}
+.libcard p{color:var(--dim);line-height:1.4;flex:1;margin:0}
+.libcard .libmeta{
+  color:var(--y);font-size:.75em;letter-spacing:.04em;
+  display:flex;justify-content:space-between;gap:.6vw;flex-wrap:wrap;
+  border-top:1px solid var(--ln);padding-top:.8vh;
+}
+.libcard .libtier{color:var(--dim)}
+.libcard.t2{border-color:#b36bff44}
+.libcard.t3{border-color:#35c8ff44}
+#advBrief{
+  position:fixed;inset:0;z-index:56;background:#000d;
+  display:flex;align-items:center;justify-content:center;
+  padding:3vh 3vw;overflow-y:auto;
+}
+.briefbox{
+  background:var(--pn);border:2px solid var(--c);border-radius:18px;
+  padding:3vh 3vw;max-width:min(900px,94vw);width:100%;
+  display:flex;flex-direction:column;gap:1.6vh;
+  color:var(--tx);font-size:1rem;line-height:1.5;
+}
+.briefbox h2{
+  font-weight:400;color:var(--c);font-size:1.4em;
+  border-bottom:1px solid var(--ln);padding-bottom:1.2vh;
+}
+.brief-section{background:#0b100c;border-left:3px solid var(--ln);padding:1.2vh 1vw;border-radius:8px}
+.brief-label{color:var(--y);font-size:.72em;letter-spacing:.08em;font-weight:600;margin-bottom:.6vh}
+.brief-actions{display:flex;gap:1vw;justify-content:center;flex-wrap:wrap;margin-top:1.4vh}
+.brief-actions .btn{font-size:.95rem;padding:.65em 1.2em}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #hud{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;gap:6px;padding:6px;bottom:74px;overflow-y:auto}
   #left{min-height:0}
@@ -488,6 +532,35 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
     <button class="btn" id="advLibBtn" disabled>EXPERIMENT LIBRARY</button>
   </div>
   <button class="btn y" id="advBack">◄ BACK</button>
+</div>
+<div id="advLib" class="screen hide">
+  <h1>EXPERIMENT LIBRARY</h1>
+  <p class="sub">Guided experiments. Each opens a briefing with objective, procedure, and a downloadable worksheet.</p>
+  <div id="libGrid"></div>
+  <button class="btn y" id="libBack">◄ BACK</button>
+</div>
+
+<div id="advBrief" class="hide">
+  <div class="briefbox">
+    <h2 id="briefTitle">—</h2>
+    <div class="brief-section">
+      <div class="brief-label">OBJECTIVE</div>
+      <div id="briefObj">—</div>
+    </div>
+    <div class="brief-section">
+      <div class="brief-label">PROCEDURE</div>
+      <div id="briefProc">—</div>
+    </div>
+    <div class="brief-section">
+      <div class="brief-label">WHAT TO RECORD</div>
+      <div id="briefRec">—</div>
+    </div>
+    <div class="brief-actions">
+      <button class="btn" id="briefWS" style="display:none">📄 WORKSHEET</button>
+      <button class="btn" id="briefStart">▶ START EXP.</button>
+      <button class="btn y" id="briefCancel">◄ CANCEL</button>
+    </div>
+  </div>
 </div>
 <div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
 <div id="learn" class="screen hide"><div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div><p class="sub">Tap any part of the reactor, or pick one from the list.</p>
@@ -1715,6 +1788,155 @@ else{
   if(Q.get('mode')==='learn')learn();
   if(Q.get('mode')==='advanced'){show('#menu',false);show('#advLanding',true);}
 }
+})();
+</script>
+<script>
+/* ================= PHASE 4: Experiment Library ================= */
+(function(){
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const show = (id,on) => { const el=$(id); if(el) el.classList.toggle('hide',!on); };
+
+  // Experiment catalogue — source of truth for cards AND briefings
+  const EXP = [
+    {
+      id:'rodcal',
+      title:'ROD CALIBRATION BY 1/M PLOT',
+      desc:'Approach critical from subcritical. Record count rate at each rod position and extrapolate the critical rod position.',
+      duration:'~15 min', tier:1,
+      worksheet:'worksheets/rod-calibration-1overM.pdf',
+      objective:'Measure subcritical multiplication and predict the critical rod position by extrapolating 1/count-rate vs rod position.',
+      procedure:[
+        'Reactor starts at rods=100% (deep subcritical). Auto-pressurizer holds 15.3–15.7 MPa; pump locked at 50%; boron at 1500 ppm; xenon held at 0.',
+        'Step rods DOWN in 5% increments: 95%, 90%, 85%, …',
+        'At each step, wait for the count rate to stabilize, then log 5 samples.',
+        'Stop after 5–8 steps (do not cross criticality).',
+        'Plot 1/cps vs rod position. Extrapolate to where 1/cps → 0 — that is the predicted critical rod position.'
+      ],
+      record:'Rod position (%), five individual cps readings, their average, and 1/average. The app writes a per-step CSV at the end.'
+    },
+    {
+      id:'dnc',
+      title:'DELAYED NEUTRON COUNTING',
+      desc:'SCRAM from steady power and record the count-rate decay. Identify the ~55-second group-1 delayed neutron half-life.',
+      duration:'~10 min', tier:1,
+      worksheet:'worksheets/delayed-neutron-counting.pdf',
+      objective:'Measure the decay half-life of the first delayed-neutron group by recording count rate after a SCRAM.',
+      procedure:[
+        'Bring reactor to steady ~100 MWth (setup is automatic).',
+        'Verify count rate stable for 30 s.',
+        'Trigger SCRAM.',
+        'Recording starts automatically. Do not touch controls for 10 minutes.',
+        'Plot log₁₀(cps) vs time on the worksheet; the linear tail gives the group-1 half-life.'
+      ],
+      record:'Time (s) and cps — logged automatically. Worksheet asks for a log-plot and a half-life estimate.'
+    },
+    {
+      id:'rodworth',
+      title:'ROD WORTH BY PERIOD (INHOUR)',
+      desc:'Set rod position, measure stable reactor period, convert period to reactivity via the inhour equation. Build an integral worth curve.',
+      duration:'~20 min', tier:1,
+      worksheet:'worksheets/rod-calibration-inhour.pdf',
+      objective:'Measure the integral control-rod worth curve by stepping rods and reading the stable period at each step.',
+      procedure:[
+        'Reach critical at rods ≈ 60%.',
+        'Withdraw rods by 2% and hold — observe the positive period.',
+        'Record the stable period (period readout settles within ~1 min).',
+        'Insert rods by 2% from critical and record the negative period.',
+        'Repeat for several offsets. Convert each period to reactivity via the inhour equation and integrate.'
+      ],
+      record:'Rod position, stable period (s), and reactivity (pcm). Worksheet has the inhour equation and a table to fill in.'
+    },
+    {
+      id:'scram',
+      title:'SCRAM TRANSIENT',
+      desc:'Watch the prompt drop and the delayed tail on the count-rate readout in the first few seconds after rod insertion.',
+      duration:'~5 min', tier:1,
+      worksheet:'worksheets/scram-transient.pdf',
+      objective:'Distinguish the prompt neutron drop from the delayed-neutron decay after a SCRAM.',
+      procedure:[
+        'Bring reactor to ~500 MWth and stable.',
+        'Trigger SCRAM.',
+        'Observe count rate: sharp initial drop (prompt neutrons), then a slower tail (delayed neutrons).',
+        'Note the count rate at t = 0, t = 1 s, t = 10 s, t = 60 s.'
+      ],
+      record:'Four count-rate readings at t = 0, 1, 10, 60 s. Worksheet asks which fraction of the drop is prompt vs delayed.'
+    },
+    {
+      id:'xenon',
+      title:'XENON TRANSIENT',
+      desc:'Observe the xenon pit forming after shutdown. Watch how the reactor becomes harder to restart the longer it sits.',
+      duration:'~10 min', tier:1,
+      worksheet:'worksheets/xenon-transient.pdf',
+      objective:'Observe the iodine→xenon chain and the post-shutdown xenon buildup.',
+      procedure:[
+        'Bring reactor to full power and stable.',
+        'SCRAM.',
+        'Watch reactivity (pcm) over the next few sim-minutes: xenon absorption grows as iodine decays, then slowly clears.',
+        'Optional: try to restart at t = 2 min, t = 5 min, t = 10 min after shutdown and record the rod position needed for criticality each time.'
+      ],
+      record:'Reactivity (pcm) vs time after shutdown. Worksheet asks for peak xenon worth and a rough time-to-peak.'
+    }
+  ];
+
+  // Populate the grid
+  const grid = $('#libGrid');
+  if(grid){
+    grid.innerHTML = EXP.map(e =>
+      '<button class="libcard'+(e.tier>1?' t'+e.tier:'')+'" data-id="'+e.id+'">'
+      + '<b>'+e.title+'</b>'
+      + '<p>'+e.desc+'</p>'
+      + '<div class="libmeta"><span>'+e.duration+'</span><span class="libtier">TIER '+e.tier+'</span></div>'
+      + '</button>'
+    ).join('');
+  }
+
+  // Un-lock the LIBRARY button on the landing screen (was disabled in Phase 3)
+  const libBtn = $('#advLibBtn');
+  if(libBtn){ libBtn.disabled=false; libBtn.onclick = () => { show('#advLanding',false); show('#advLib',true); }; }
+
+  // Library → back to landing
+  const libBack = $('#libBack');
+  if(libBack) libBack.onclick = () => { show('#advLib',false); show('#advLanding',true); };
+
+  // Card → briefing (delegated so re-render won't break)
+  if(grid) grid.addEventListener('click', ev => {
+    const card = ev.target.closest('.libcard');
+    if(!card) return;
+    const exp = EXP.find(e => e.id === card.dataset.id);
+    if(!exp) return;
+
+    $('#briefTitle').textContent = exp.title;
+    $('#briefObj').textContent   = exp.objective;
+    $('#briefProc').innerHTML    = '<ol style="padding-left:1.3em;margin:0">'
+                                   + exp.procedure.map(s => '<li>'+s+'</li>').join('')
+                                   + '</ol>';
+    $('#briefRec').textContent   = exp.record;
+
+    // Worksheet button — hidden unless the file exists (§3.3 contract)
+    const ws = $('#briefWS');
+    ws.style.display = 'none';
+    ws.onclick = null;
+    if(exp.worksheet){
+      fetch(exp.worksheet,{method:'HEAD',cache:'no-store'})
+        .then(r => {
+          if(r.ok){
+            ws.style.display = 'inline-block';
+            ws.onclick = () => window.open(exp.worksheet,'_blank','noopener');
+          }
+        })
+        .catch(()=>{ /* leave hidden */ });
+    }
+
+    // START EXP — Phase 5 territory
+    $('#briefStart').onclick = () => {
+      alert('Experiment engine arrives in Phase 5.\n\nThis Phase 4 build ships the library UI and briefing overlay. Phase 5 wires "START EXP." to the rod-calibration state machine.');
+    };
+
+    $('#briefCancel').onclick = () => show('#advBrief', false);
+
+    show('#advBrief', true);
+  });
 })();
 </script>
 </body>
