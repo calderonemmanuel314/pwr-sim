@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { APP_VERSION, APP_BUILD } from './config.js';
 
@@ -26,4 +25,3 @@ export function initAbout() {
     if (!r.ok && dlLink) dlLink.style.display = 'none';
   }).catch(() => { /* network error — leave button visible */ });
 }
-```
