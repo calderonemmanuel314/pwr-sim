@@ -58,4 +58,4 @@ export function learn() {
   $('#lback').onclick = () => { show('#learn', false); show('#menu', true); };
   one('rods');
 }
-```
+
