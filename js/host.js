@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { $, clamp, show, setText, ask, goto } from './dom.js';
 import { ROLES, ROLE_KEYS, DEF, DIFF, ES } from './config.js';
@@ -431,4 +430,3 @@ export function host(mode, diff) {
   }
   window.addEventListener('beforeunload', () => { try { S.peer && S.peer.destroy(); } catch (e) {} });
 }
-```
