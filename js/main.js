@@ -1,0 +1,105 @@
+```js
+// SPDX-License-Identifier: AGPL-3.0-or-later
+export const APP_VERSION = '2.2.1';
+export const APP_BUILD = '2026-11-14';
+
+export const ROLES = {
+  rods: { n: 'DIV 1 · CONTROL RODS', k: ['rods'] },
+  coolant: { n: 'DIV 2 · THERMAL-HYDRAULICS', k: ['pump'] },
+  pressure: { n: 'DIV 3 · PRESSURIZER', k: ['heat', 'spray'] },
+  xenon: { n: 'DIV 4 · BORON / POISON MANAGEMENT', k: ['boron'] },
+};
+
+export const ROLE_KEYS = ['rods', 'coolant', 'pressure', 'xenon'];
+export const DEF = () => ({ rods: 70, pump: 50, heat: 0, spray: 0, boron: 500 });
+
+export const DIFF = {
+  easy: {
+    k: 'easy', n: 'EASY', t: 'Morning Ramp-Up', rem: 600, band: 300, hold: 10, cd: 5, subcoolMargin: 5,
+    pressureDrift: .10, tempDrift: 3.0, powerDrift: 55,
+    thermalTau: 250, pressureRate: 0.5, alphaDoppler: 0.00015,
+    thermalHigh: 360, thermalCritical: 400, pressureHigh: 19, pressureLow: 11, pressureCriticalHigh: 23, pressureCriticalLow: 10,
+    failOver: 26, failDepr: 9,
+    rodsMin: 5, rodsMax: 95, pumpMin: 25, pumpMax: 100, boronMin: 100, boronMax: 1500,
+    initialFissionPower: 275, hints: 1,
+    story: 'Overnight demand was light, so the reactor has been at about 30% power for 8 hours. Factories open at 7:00 and the city needs full output.',
+    goal: 'Supply about 315 MWe to the grid. Accepted fluctuation ~220–410 MWe. Keep conditions safe and hold steady for 10 seconds.',
+    short: 'Bring grid power to ~220–410 MWe, hold 10 seconds.',
+    st: { rods: 70, pump: 50, boron: 500, T: 298, P: 15.5, xe: .45, xi: .11 },
+    ph: {
+      rods: 'Withdraw rods in steps to add power.',
+      coolant: 'Raise the pump as power rises.',
+      pressure: 'Heaters when pressure sags, spray when it climbs.',
+      xenon: 'Keep boron near 500 ppm unless needed.',
+    },
+  },
+  moderate: {
+    k: 'moderate', n: 'MODERATE', t: 'The Evening Surge', rem: 600, band: 150, hold: 8, cd: 10, subcoolMargin: 8,
+    pressureDrift: .08, tempDrift: 2.5, powerDrift: 40,
+    thermalTau: 175, pressureRate: 0.75, alphaDoppler: 0.00008,
+    thermalHigh: 350, thermalCritical: 375, pressureHigh: 18, pressureLow: 12, pressureCriticalHigh: 22, pressureCriticalLow: 10,
+    failOver: 25, failDepr: 9.5,
+    rodsMin: 0, rodsMax: 100, pumpMin: 15, pumpMax: 100, boronMin: 50, boronMax: 2000,
+    initialFissionPower: 105, hints: 0,
+    story: 'The reactor has run at low power for 15 hours. Heatwave drives up demand; grid requests ~315 MWe.',
+    goal: 'Supply about 315 MWe. Accepted fluctuation ~265–360 MWe. Watch the xenon effect, keep conditions safe, hold steady for 8 seconds.',
+    short: 'Bring grid power to ~265–360 MWe, stabilize 8 seconds.',
+    st: { rods: 58, pump: 30, boron: 900, T: 293, P: 14.8, xe: .3319, xi: .06 },
+  },
+  hard: {
+    k: 'hard', n: 'HARD', t: 'Restart in the Xenon Pit', rem: 480, band: 90, hold: 15, cd: 15, subcoolMargin: 6,
+    pressureDrift: .06, tempDrift: 2.0, powerDrift: 32,
+    thermalTau: 150, pressureRate: 1.0, alphaDoppler: 0.00005,
+    thermalHigh: 350, thermalCritical: 355, pressureHigh: 17.5, pressureLow: 13, pressureCriticalHigh: 20, pressureCriticalLow: 10,
+    failOver: 24, failDepr: 10,
+    rodsMin: 0, rodsMax: 100, pumpMin: 0, pumpMax: 100, boronMin: 0, boronMax: 2000,
+    initialFissionPower: .05, hints: 0,
+    story: 'Another plant tripped. Your reactor shut down hours ago, attempting restart near the modeled xenon peak.',
+    goal: 'Supply about 315 MWe. Accepted fluctuation ~285–340 MWe. Manage xenon and equipment problems, keep conditions safe, hold steady for 15 seconds.',
+    short: 'Restart in xenon pit, reach ~285–340 MWe within 8 min.',
+    xeLockout: 1.05,
+    st: { rods: 100, pump: 40, boron: 1200, T: 285, P: 14.2, xe: 1.4, xi: .168 },
+  },
+};
+
+DIFF.sandbox = Object.assign({}, DIFF.easy, {
+  k: 'sandbox', hints: 0, ph: null, rodsMin: 0, rodsMax: 100, pumpMin: 0, pumpMax: 100, boronMin: 0, boronMax: 2000,
+});
+DIFF.advanced = Object.assign({}, DIFF.easy, {
+  k: 'advanced', hints: 0, ph: null, rodsMin: 0, rodsMax: 100, pumpMin: 0, pumpMax: 100, boronMin: 0, boronMax: 2000,
+});
+
+export const ES = {
+  boil: { res: 'lose', m: 0, cls: 'es-boil', t: 'COOLANT CAN NO LONGER BE COOLED SAFELY', x: 'The model detected very hot coolant together with low pressure.' },
+  xenonLockout: { res: 'lose', m: 0, cls: 'es-panic', t: 'THE REACTOR COULD NOT RESTART', x: 'The team tried to restart, then returned to the shutdown settings.' },
+  spike: { res: 'lose', m: 0, cls: 'es-spike', t: 'POWER RAN AWAY · EMERGENCY STOP', x: 'Extremely hot coolant, nearly withdrawn rods, and very little boron.' },
+  time: { res: 'lose', m: 0, cls: 'es-time', t: 'TIME IS UP · GRID TARGET NOT REACHED', x: 'Did not reach requested electricity before time ran out.' },
+  win: { res: 'win', m: 0, cls: 'es-win', t: 'SUCCESS · STEADY ELECTRICITY TO THE GRID', x: 'Team supplied about 315 MWe and kept reactor conditions steady.' },
+  heat: { res: 'lose', m: 0, cls: 'es-boil', t: 'COOLANT TEMPERATURE TOO HIGH', x: 'Hot-leg coolant much hotter than the game’s allowed limit.' },
+  over: { res: 'lose', m: 0, cls: 'es-boil', t: 'PRESSURE TOO HIGH', x: 'Pressure went beyond the game’s pressure limit.' },
+  depr: { res: 'lose', m: 0, cls: 'es-boil', t: 'PRESSURE TOO LOW', x: 'Pressure fell below the game’s limit.' },
+};
+
+export const LEARN = {
+  core: ['Reactor vessel and coolant', 'The reactor pressure vessel contains the fuel assemblies and primary coolant. Fission releases energy in the fuel; the pressurized water carries that heat to the steam generator and also slows (moderates) neutrons.', 'The top temperature gauge is the modeled hot-leg coolant temperature.'],
+  fuel: ['Fuel assemblies', 'Fuel pellets are enclosed in fuel-rod cladding and grouped into assemblies. Fission releases energy and additional neutrons that can sustain a chain reaction.', 'Fuel temperature is computed internally (for Doppler feedback) but is not shown as a separate readout. Cladding temperature is not modeled.'],
+  rods: ['Control rods', 'Inserting rods increases neutron absorption and adds negative reactivity. The reactivity effect is not linear: the integral rod worth curve is S-shaped.', 'Division 1. S-curve: differential worth peaks near 50% insertion.'],
+  boron: ['Soluble boron', 'Boric acid dissolved in primary coolant supplies a distributed neutron absorber.', 'Division 4 sets simplified boron concentration in ppm.'],
+  pump: ['Primary coolant pump', 'The primary pump circulates pressurized coolant through the reactor core and steam generator.', 'Division 2 adjusts a normalized pump setting as a heat-removal factor.'],
+  press: ['Pressurizer', 'The pressurizer helps control primary-system pressure. Pressure sets the saturation temperature of the coolant.', 'Division 3 selects heaters, spray, or hold.'],
+  valve: ['Pressurizer relief valve', 'A relief valve opens when set pressure is exceeded.', 'This model opens at 17.2 MPa and reseats near 16.4 MPa.'],
+  keff: ['Chain reaction: growing, shrinking, or steady?', 'k_eff compares generations of neutrons: k_eff = neutrons in the next generation ÷ neutrons in the current generation. k_eff < 1: chain reaction weakens (subcritical). k_eff = 1: steady (critical). k_eff > 1: chain reaction grows (supercritical). k_eff describes how the chain reaction is behaving — it is not the same as reactor power.', 'The model uses ν̄ = 2.43, β ≈ 0.0065, six delayed-neutron groups, and Λ = 0.10 s (stretched for pacing). Includes fuel-temperature/Doppler feedback — negative reactivity proportional to (T_fuel − T_coolant). Calibrated classroom parameters.'],
+  xenon: ['Iodine-135 and xenon-135', 'Fission produces iodine-135, which decays into xenon-135, a strong absorber.', 'Normalized iodine/xenon with compressed time constants — teaching device.'],
+  phase: ['Phase map: primary coolant', 'Plots hot-leg and cold-leg primary coolant against pressure. Below saturation, liquid coolant is subcooled.', 'Saturation-boundary only. Not a plant operating diagram.', 'chart'],
+  sg: ['Steam generator', 'Hot primary coolant transfers heat across tube walls to secondary water.', 'The model shows the energy-conversion path.'],
+  turb: ['Turbine', 'Steam expands through the turbine and transfers energy to a rotating shaft.', 'Animation driven by the model power value.'],
+  gen: ['Generator and the path to the grid', '(1) Fission releases energy. (2) Reactor carries it as heat. (3) Heat produces steam. (4) Steam spins turbine. (5) Shaft spins generator. (6) Some electricity runs plant equipment. (7) Rest goes to the grid.', 'Reactor heat × 33% = generator gross. × 5% = plant use. Gross − plant use = net grid.'],
+  cond: ['Condenser', 'Removes heat from turbine exhaust.', 'Illustrative animation.'],
+  hot: ['Hot leg', 'Carries primary coolant from reactor to steam generator.', 'Yellow phase-map marker tracks hot-leg coolant temperature.'],
+  cold: ['Cold leg', 'Returns primary coolant from the steam generator through the pump.', 'Cold-leg reference fixed near 280 °C.'],
+  steam: ['Secondary loop', 'Receives heat through the steam-generator tubes, produces steam, drives the turbine.', 'Primary and secondary water are separate circuits.'],
+  dome: ['Containment building', 'A major barrier designed to limit radioactive releases during accidents.', 'Teaching aid.'],
+  dnb: ['Boiling crisis and DNB', 'Departure from nucleate boiling is a local heat-transfer crisis at a heated surface.', 'This game does NOT calculate DNB, critical heat flux, or DNBR.'],
+  model: ['What this model does and does not calculate', 'Classroom model of how chain reaction, cooling, pressure, steam, turbine, and generator affect one another.', 'Grid-power estimate: 33% heat-to-electric minus 5% plant use. All warning and failure limits are game settings.'],
+};
+```
