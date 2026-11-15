@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { clamp } from './dom.js';
 
@@ -157,4 +156,3 @@ export const pmSVG = (pre, dots) => {
   return h + tx(60, 414, '● HOT LEG', '#ffd400') + tx(230, 414, '● COLD LEG (inlet, 280 °C)', '#35c8ff') + tx(300, 432, 'TEMPERATURE (°C)')
     + '<text transform="rotate(-90 12 200)" x="12" y="200" fill="#9ab" font-size="11" text-anchor="middle">PRESSURE (MPa)</text>' + tx(536, 372, 'MODEL MAP', '#ffd400', 'end');
 };
-```
