@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 <html lang="en">
@@ -21,7 +20,7 @@
     <button class="btn" id="bGroup">GROUP MODE (HOST)</button>
     <button class="btn y" id="bSand">SANDBOX MODE</button>
     <button class="btn" id="bLearn" style="border-color:var(--c);color:var(--c)">LEARNING MODE</button>
-    <button class="btn" id="bAdv" style="border-color:var(--r);color:var(--r)">ADVANCED MODE</button>
+    <button class="btn" id="bAdv" style="border-color:var(--c);color:var(--c)">ADVANCED MODE</button>
   </div>
   <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br>Advanced Mode: instrumentation and experiments.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
 </div>
@@ -259,7 +258,7 @@
   <div class="about-content">
     <div class="about-header">
       <h1>ABOUT PWR SIMULATION</h1>
-      <span class="about-version" id="aboutVersion">v2.2.1</span>
+      <span class="about-version" id="aboutVersion">v2.2.2</span>
       <button class="btn y" id="aboutClose">◄ BACK</button>
     </div>
     <div class="about-warn">
@@ -293,7 +292,7 @@
     <details open>
       <summary>LIMITATIONS</summary>
       <ol>
-        <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Short periods distorted.</li>
+        <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Distorts short periods and inflates asymptotic reactivity-vs-period by ~2.18×.</li>
         <li>Boron worth realistic (~−10 pcm/ppm, comparable to real PWRs). Doppler coefficients 2–6 pcm/°C depending on scenario — Easy slightly above real, Moderate/Hard in range.</li>
         <li>Xenon model distorted: uneven compression (~570× for I-135, ~96× for Xe-135), post-SCRAM peak ~1–2 min with ~17% overshoot, absolute worth ~3–4× real. Full detail in <code>about.html</code> §4.3 and §5.</li>
         <li>No spatial dimension. Flux, dose, and power are core-averages, not spatial distributions.</li>
