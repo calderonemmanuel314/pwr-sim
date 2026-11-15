@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 export const APP_VERSION = '2.2.1';
 export const APP_BUILD = '2026-11-14';
@@ -102,4 +101,3 @@ export const LEARN = {
   dnb: ['Boiling crisis and DNB', 'Departure from nucleate boiling is a local heat-transfer crisis at a heated surface.', 'This game does NOT calculate DNB, critical heat flux, or DNBR.'],
   model: ['What this model does and does not calculate', 'Classroom model of how chain reaction, cooling, pressure, steam, turbine, and generator affect one another.', 'Grid-power estimate: 33% heat-to-electric minus 5% plant use. All warning and failure limits are game settings.'],
 };
-```
