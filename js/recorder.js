@@ -1,4 +1,3 @@
-```js
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { AU } from './audio.js';
 import { doseFromState } from './physics.js';
@@ -101,4 +100,3 @@ export function bindRecorderControls(S) {
     renderRecorder(S);
   };
 }
-```
