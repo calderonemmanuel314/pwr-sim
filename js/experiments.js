@@ -109,6 +109,7 @@ function beginExperiment() {
 function endExperiment() {
   if (state !== 'running' || !current) return;
   state = 'complete';
+  stopHost();
   show('#procCard', false);
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
   $('#ecTitle').textContent = current.title;
