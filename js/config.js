@@ -106,27 +106,20 @@ export const LEARN = {
 // enabled: false for everything except the dev shell-test card until each phase ships.
 // phase:  which roadmap phase builds the mechanics. duration is seconds (approx).
 export const EXPERIMENTS = [
-  // ── Phase 4: shell test (dev-only, remove when Phase 5 lands) ──
-  {
-    id: 'shell-test', title: 'SHELL TEST (DEV)', tier: 0, duration: 60, phase: 4, enabled: true, worksheet: null,
-    objective: 'Verify the library → briefing → procedure → completion flow. No physics touched.',
-    procedure: [
-      'Read this briefing.',
-      'Press BEGIN EXPERIMENT — the HUD opens with a procedure card bottom-right.',
-      'Press END EXPERIMENT on the card.',
-      'Confirm the completion screen shows the title and elapsed time.',
-      'Press BACK TO LIBRARY.',
-    ],
-    record: 'Nothing — this card is removed once Phase 5 lands.',
-    limitations: 'None — this card exercises only the Phase 4 shell.',
-  },
-
   // ── Tier 1 ──
-  { id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: false, worksheet: 'rod-calibration-1m.pdf',
+  { id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'rod-calibration-1m.pdf',
     objective: 'Extrapolate critical rod position from a 1/count-rate plot.',
-    procedure: [], record: 'Step CSV: rod_pct, sim_t, five cps readings, average, 1/cps, k_eff.',
-    limitations: 'Steady-state multiplication does not depend on generation time. Settling is slow near criticality.' },
-
+    procedure: [
+      'Fixed setup: pump locked at 50%, boron 1500 ppm, xenon 0, auto-pressurizer holds 15.3–15.7 MPa.',
+      'Start with rods at 100% (deeply subcritical). Press SETTLE & LOG.',
+      'Step rods down by 5%. Press SETTLE & LOG. Record the row.',
+      'Repeat until you have at least 5 rows, including 1–2 close to critical.',
+      'Press DONE. Read the predicted critical rod position from the fit.',
+      '(Optional) Press TEST PREDICTION. Record k_eff at that position.',
+    ],
+    record: 'Step CSV: step, rod_pct, sim_t, s1–s5 (five cps samples), avg_cps, inv_cps, k_eff.',
+    limitations: 'Steady-state multiplication does not depend on generation time, so 1/M is safe here. Settling is slow near criticality — use smaller rod steps as k_eff approaches 1. Real reactors need correction factors. See about.html §5.' },
+  
   { id: 'rod-worth-inhour', title: 'ROD WORTH BY PERIOD', tier: 1, duration: 900, phase: 7, enabled: false, worksheet: 'rod-worth-inhour.pdf',
     objective: 'Convert stable period to reactivity via the inhour equation; build an integral-worth curve.',
     procedure: [], record: 'Rod position, stable period, derived reactivity.',
