@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-export const APP_VERSION = '2.2.2';
-export const APP_BUILD = '2026-11-14';
+export const APP_VERSION = '2.3.0';
+export const APP_BUILD = '2026-11-16';
 
 export const ROLES = {
   rods: { n: 'DIV 1 · CONTROL RODS', k: ['rods'] },
@@ -101,3 +101,86 @@ export const LEARN = {
   dnb: ['Boiling crisis and DNB', 'Departure from nucleate boiling is a local heat-transfer crisis at a heated surface.', 'This game does NOT calculate DNB, critical heat flux, or DNBR.'],
   model: ['What this model does and does not calculate', 'Classroom model of how chain reaction, cooling, pressure, steam, turbine, and generator affect one another.', 'Grid-power estimate: 33% heat-to-electric minus 5% plant use. All warning and failure limits are game settings.'],
 };
+
+// Experiment catalogue (Phase 4 shell).
+// enabled: false for everything except the dev shell-test card until each phase ships.
+// phase:  which roadmap phase builds the mechanics. duration is seconds (approx).
+export const EXPERIMENTS = [
+  // ── Phase 4: shell test (dev-only, remove when Phase 5 lands) ──
+  {
+    id: 'shell-test', title: 'SHELL TEST (DEV)', tier: 0, duration: 60, phase: 4, enabled: true, worksheet: null,
+    objective: 'Verify the library → briefing → procedure → completion flow. No physics touched.',
+    procedure: [
+      'Read this briefing.',
+      'Press BEGIN EXPERIMENT — the HUD opens with a procedure card bottom-right.',
+      'Press END EXPERIMENT on the card.',
+      'Confirm the completion screen shows the title and elapsed time.',
+      'Press BACK TO LIBRARY.',
+    ],
+    record: 'Nothing — this card is removed once Phase 5 lands.',
+    limitations: 'None — this card exercises only the Phase 4 shell.',
+  },
+
+  // ── Tier 1 ──
+  { id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: false, worksheet: 'rod-calibration-1m.pdf',
+    objective: 'Extrapolate critical rod position from a 1/count-rate plot.',
+    procedure: [], record: 'Step CSV: rod_pct, sim_t, five cps readings, average, 1/cps, k_eff.',
+    limitations: 'Steady-state multiplication does not depend on generation time. Settling is slow near criticality.' },
+
+  { id: 'rod-worth-inhour', title: 'ROD WORTH BY PERIOD', tier: 1, duration: 900, phase: 7, enabled: false, worksheet: 'rod-worth-inhour.pdf',
+    objective: 'Convert stable period to reactivity via the inhour equation; build an integral-worth curve.',
+    procedure: [], record: 'Rod position, stable period, derived reactivity.',
+    limitations: 'Uses the model’s own stretched generation time; a single correction factor will not do.' },
+
+  { id: 'delayed-neutron-counting', title: 'DELAYED NEUTRON COUNTING', tier: 1, duration: 600, phase: 6, enabled: false, worksheet: 'delayed-neutron-counting.pdf',
+    objective: 'Identify the longest-lived delayed group from a post-SCRAM flux decay.',
+    procedure: [], record: 'Time and count rate after SCRAM; group half-lives.',
+    limitations: 'Long-time decay correct. Source floor sets the lowest count rate.' },
+
+  { id: 'scram-transient', title: 'SCRAM TRANSIENT', tier: 1, duration: 300, phase: 7, enabled: false, worksheet: 'scram-transient.pdf',
+    objective: 'Observe the prompt drop followed by the delayed tail after a SCRAM.',
+    procedure: [], record: 'Time-resolved power in the first seconds.',
+    limitations: 'Prompt drop visible at 1 Hz only because generation time is stretched. Teach qualitatively.' },
+
+  { id: 'xenon-transient', title: 'XENON TRANSIENT', tier: 1, duration: 600, phase: 7, enabled: false, worksheet: 'xenon-transient.pdf',
+    objective: 'Watch iodine-to-xenon buildup and burnoff after a power change.',
+    procedure: [], record: 'Time, iodine, xenon, reactivity.',
+    limitations: 'Xenon timescales compressed unevenly; post-trip peak small and early. See roadmap §6.' },
+
+  // ── Tier 2 ──
+  { id: 'n16-dose-decay', title: 'N-16 DOSE DECAY', tier: 2, duration: 900, phase: 8, enabled: false, worksheet: 'n16-dose-decay.pdf',
+    objective: 'Follow post-shutdown dose through its staged decay.',
+    procedure: [], record: 'Time and dose after shutdown.',
+    limitations: 'N-16 pool exists in the model; activation products (Co-60, Fe-59) not modeled.' },
+
+  { id: 'xenon-pit-restart', title: 'XENON PIT RESTART', tier: 2, duration: 900, phase: 8, enabled: false, worksheet: 'xenon-pit-restart.pdf',
+    objective: 'Experience why shutdown is not a reset.',
+    procedure: [], record: 'Restart attempt: rods, boron, xenon, period.',
+    limitations: 'Xenon model distortion applies. See roadmap §6.' },
+
+  { id: 'doppler-coefficient', title: 'DOPPLER COEFFICIENT', tier: 2, duration: 600, phase: 8, enabled: false, worksheet: 'doppler-coefficient.pdf',
+    objective: 'Measure fuel-temperature feedback from a power step.',
+    procedure: [], record: 'Power step, fuel temperature, reactivity change.',
+    limitations: 'Doppler defined on fuel-minus-coolant temperature, not absolute fuel temperature.' },
+
+  // ── Tier 3 ──
+  { id: 'mtc-measurement', title: 'MTC MEASUREMENT', tier: 3, duration: 900, phase: 9, enabled: false, worksheet: 'mtc-measurement.pdf',
+    objective: 'Measure reactivity coefficient of coolant temperature.',
+    procedure: [], record: 'Coolant temperature change, reactivity change.',
+    limitations: 'One-group lumped coolant, no spatial distribution.' },
+
+  { id: 'boron-worth', title: 'BORON WORTH', tier: 3, duration: 600, phase: 9, enabled: false, worksheet: 'boron-worth.pdf',
+    objective: 'Determine differential and integral boron worth.',
+    procedure: [], record: 'Boron ppm, reactivity change.',
+    limitations: 'Boron worth is a single linear coefficient in this model.' },
+
+  { id: 'startup-drill', title: 'STARTUP DRILL', tier: 3, duration: 900, phase: 9, enabled: false, worksheet: 'startup-drill.pdf',
+    objective: 'Take the reactor from shutdown to power by coordinating all four divisions.',
+    procedure: [], record: 'Rods, boron, temperature, period at each step.',
+    limitations: 'Rods move instantly; one slider moves the whole bank. Expect touchy control.' },
+
+  { id: 'load-following', title: 'LOAD FOLLOWING', tier: 3, duration: 900, phase: 9, enabled: false, worksheet: 'load-following.pdf',
+    objective: 'Track a changing grid demand through feedback and xenon interplay.',
+    procedure: [], record: 'Demand, actual power, control actions.',
+    limitations: 'Rods move instantly; xenon model distortion applies.' },
+];
