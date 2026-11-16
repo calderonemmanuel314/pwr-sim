@@ -16,6 +16,7 @@ let hostHandle = null;
 // ── Phase 5: per-experiment session state (reset in beginExperiment) ──
 let log = [];              // [{ step, rodPct, simT, samples:[s1..s5], avgCps, invCps, kEff, capped }]
 let detEff = 1;            // detector efficiency offset, rolled once per session (1 ± 0.03)
+let cpsFirst = null;       // reference count rate for 1/M = cpsFirst / cps_current
 let settling = false;      // re-entry guard
 let lastWarned = false;    // whether the last log hit the 1000 s cap
 let predictedRodPct = null; // extrapolated critical rod position from DONE fit
@@ -29,6 +30,10 @@ const CPS_FLOOR        = 100;   // source-level detector background
 function stopHost() {
   if (hostHandle && typeof hostHandle.stop === 'function') hostHandle.stop();
   hostHandle = null;
+}
+
+function blindKeff(on) {
+  document.body.classList.toggle('k-blind', !!on);
 }
 
 const hasFile = url => fetch(url, { method: 'HEAD' }).then(r => r.ok).catch(() => false);
@@ -60,7 +65,7 @@ function linearFit(points) {
   const n = points.length;
   if (n < 2) return null;
   let sx = 0, sy = 0, sxy = 0, sxx = 0;
-  points.forEach(p => { sx += p.rodPct; sy += p.invCps; sxy += p.rodPct * p.invCps; sxx += p.rodPct * p.rodPct; });
+  points.forEach(p => { sx += p.rodPct; sy += p.invM; sxy += p.rodPct * p.invM; sxx += p.rodPct * p.rodPct; });
   const denom = n * sxx - sx * sx;
   if (Math.abs(denom) < 1e-15) return null;
   const m = (n * sxy - sx * sy) / denom;
@@ -154,7 +159,11 @@ function settleAndLog() {
     const samples = [];
     for (let i = 0; i < 5; i++) samples.push(poissonSample(cpsTrue));
     const avgCps = samples.reduce((a, b) => a + b, 0) / 5;
-    const invCps = avgCps > 0 ? 1 / avgCps : 0;
+
+    // 1/M: reference is the first logged avgCps. detEff cancels in the ratio,
+    // so detector calibration does not bias the extrapolated critical position.
+    if (log.length === 0) cpsFirst = avgCps;
+    const invM = (cpsFirst > 0 && avgCps > 0) ? (cpsFirst / avgCps) : 1;
 
     log.push({
       step: log.length + 1,
@@ -162,14 +171,13 @@ function settleAndLog() {
       simT: result.simT,
       samples,
       avgCps,
-      invCps,
+      invM,
       kEff: S.k,
       capped: !result.settled,
     });
     lastWarned = !result.settled;
-    predictedRodPct = null;  // invalidate any prior fit
+    predictedRodPct = null;
 
-    // Clear prior prediction display
     const predEl = $('#pcPred');
     if (predEl) { predEl.innerHTML = ''; predEl.classList.add('hide'); }
 
@@ -201,10 +209,14 @@ function finishExperiment() {
   }
   predictedRodPct = -fit.b / fit.m;
 
+  // Reveal k_eff — the student's manual extrapolation is now checkable.
+  blindKeff(false);
+
   const predEl = $('#pcPred');
   if (predEl) {
     predEl.innerHTML =
-      '<b>Extrapolated critical rod position:</b> ' + predictedRodPct.toFixed(1) + '%' +
+      '<b>Your extrapolation:</b> critical at ' + predictedRodPct.toFixed(1) + '% rod' +
+      '<br><span style="color:var(--dim);font-size:.85em">k_eff readout is now live. Press TEST PREDICTION to verify your answer.</span>' +
       '<br><button class="btn" id="pcTest" type="button" style="margin-top:6px">TEST PREDICTION</button>';
     predEl.classList.remove('hide');
     const testBtn = $('#pcTest');
@@ -243,6 +255,7 @@ function testPrediction() {
 }
 
 // ── Procedure-card updates ──
+// ── Procedure-card updates ──
 function renderProcCard() {
   const warnEl = $('#pcWarn');
   if (warnEl) {
@@ -253,6 +266,30 @@ function renderProcCard() {
       warnEl.classList.add('hide');
     }
   }
+  const logEl = $('#pcLog');
+  if (!logEl) return;
+  if (log.length === 0) { logEl.classList.add('hide'); logEl.innerHTML = ''; return; }
+  const rows = log.map(p =>
+    '<tr>' +
+      '<td style="text-align:left;padding:1px 4px">' + p.step + '</td>' +
+      '<td style="text-align:right;padding:1px 4px">' + p.rodPct + '</td>' +
+      '<td style="text-align:right;padding:1px 4px">' + fmtNum(p.avgCps) + '</td>' +
+      '<td style="text-align:right;padding:1px 4px;color:var(--y)">' + p.invM.toFixed(2) + '</td>' +
+      '<td style="text-align:center;padding:1px 4px">' + (p.capped ? '⚠' : '') + '</td>' +
+    '</tr>'
+  ).join('');
+  logEl.innerHTML =
+    '<table style="width:100%;font-family:monospace;font-size:.6rem;border-collapse:collapse">' +
+      '<thead><tr style="color:#888;border-bottom:1px solid #333">' +
+        '<th style="text-align:left;padding:1px 4px">#</th>' +
+        '<th style="text-align:right;padding:1px 4px">rod%</th>' +
+        '<th style="text-align:right;padding:1px 4px">cps</th>' +
+        '<th style="text-align:right;padding:1px 4px">1/M</th>' +
+        '<th style="text-align:center;padding:1px 4px"> </th>' +
+      '</tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+    '</table>';
+  logEl.classList.remove('hide');
 }
 
 // ── Plot: 1/cps vs rod %, with fit line and zero crossing ──
@@ -304,7 +341,7 @@ function drawPlot(showFit) {
   }
 
   // ── Y-range ──
-  const yVals = fitPoints.map(p => p.invCps);
+  const yVals = fitPoints.map(p => p.invM);
   if (fit) {
     yVals.push(fit.m * xMin + fit.b);
     yVals.push(fit.m * xMax + fit.b);
@@ -346,7 +383,7 @@ function drawPlot(showFit) {
   ctx.fillStyle = '#f2c94c';
   log.forEach(p => {
     const x = sx(p.rodPct);
-    const y = sy(p.invCps);
+    const y = sy(p.invM);
     ctx.beginPath();
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fill();
@@ -407,7 +444,7 @@ function renderEcTable() {
       '<td>' + fmtNum(p.samples[3]) + '</td>' +
       '<td>' + fmtNum(p.samples[4]) + '</td>' +
       '<td>' + fmtNum(p.avgCps) + '</td>' +
-      '<td>' + p.invCps.toExponential(3) + '</td>' +
+      '<td>' + p.invM.toFixed(3) + '</td>' +
       '<td>' + p.kEff.toFixed(4) + '</td>' +
       '<td>' + (p.capped ? '⚠' : '') + '</td>' +
     '</tr>'
@@ -417,7 +454,7 @@ function renderEcTable() {
       '<thead><tr>' +
         '<th>#</th><th>rod %</th><th>sim_t</th>' +
         '<th>s1</th><th>s2</th><th>s3</th><th>s4</th><th>s5</th>' +
-        '<th>avg_cps</th><th>1/cps</th><th>k_eff</th><th>⚠</th>' +
+        '<th>avg_cps</th><th>1/M</th><th>k_eff</th><th>⚠</th>' +
       '</tr></thead>' +
       '<tbody>' + rows + '</tbody>' +
     '</table>';
@@ -426,7 +463,7 @@ function renderEcTable() {
 
 // ── CSV: step,rod_pct,sim_t,s1,s2,s3,s4,s5,avg_cps,inv_cps,k_eff ──
 function buildCSV() {
-  const header = 'step,rod_pct,sim_t,s1,s2,s3,s4,s5,avg_cps,inv_cps,k_eff';
+  const header = 'step,rod_pct,sim_t,s1,s2,s3,s4,s5,avg_cps,inv_M,k_eff';
   const rows = log.map(p => [
     p.step,
     p.rodPct,
@@ -437,7 +474,7 @@ function buildCSV() {
     p.samples[3],
     p.samples[4],
     p.avgCps.toFixed(2),
-    p.invCps.toExponential(6),
+    p.invM.toFixed(6),
     p.kEff.toFixed(6),
   ].join(','));
   return [header].concat(rows).join('\n');
@@ -533,6 +570,7 @@ function beginExperiment() {
   // Reset Phase-5 session state
   log = [];
   detEff = 1;
+  cpsFirst = null;
   predictedRodPct = null;
   lastWarned = false;
   settling = false;
@@ -547,6 +585,8 @@ function beginExperiment() {
   if (hostHandle && hostHandle.state) {
     hostHandle.state._experimentActive = true;
   }
+  cpsFirst = null;
+  blindKeff(isRodCal);
   if (isRodCal && hostHandle && hostHandle.state) {
     setupRodCal(hostHandle);
   }
@@ -570,6 +610,7 @@ function endExperiment() {
   if (state !== 'running' || !current) return;
   state = 'complete';
   if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
+  blindKeff(false);
   stopHost();
   show('#procCard', false);
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
@@ -613,6 +654,7 @@ function rerunExperiment() {
 
 function backToLibrary() {
   if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
+  blindKeff(false);
   stopHost();
   log = [];
   predictedRodPct = null;
