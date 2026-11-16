@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Experiment Library shell (Phase 4).
 // Renders the library grid from EXPERIMENTS; drives idle → briefing → running → complete.
-import { $, show, setHTML } from './dom.js';
+import { $, show, setHTML, fmt } from './dom.js';
 import { EXPERIMENTS } from './config.js';
 import { host } from './host.js';
 
@@ -97,13 +97,11 @@ function beginExperiment() {
   startedAt = Date.now();
   show('#expBrief', false);
   stopHost();
+  stopHost();
   hostHandle = host('advanced');
-  setTimeout(() => {
-    if (current !== exp) return;
-    $('#pcTitle').textContent = exp.title;
-    setHTML('#pcSteps', (exp.procedure || []).map(s => '<li>' + s + '</li>').join(''));
-    show('#procCard', true);
-  }, 200);
+  $('#pcTitle').textContent = exp.title;
+  setHTML('#pcSteps', (exp.procedure || []).map(s => '<li>' + s + '</li>').join(''));
+  show('#procCard', true);
 }
 
 function endExperiment() {
@@ -114,7 +112,7 @@ function endExperiment() {
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
   $('#ecTitle').textContent = current.title;
   setHTML('#ecMetrics',
-    '<div class="ec-metric"><b>' + fmtDuration(elapsed) + '</b>elapsed</div>' +
+    '<div class="ec-metric"><b>' + fmt(elapsed) + '</b>elapsed</div>' +
     '<div class="ec-metric"><b>' + (current.phase === 4 ? 'SHELL' : 'PHASE ' + current.phase) + '</b>status</div>'
   );
   setWorksheet('#ecWks', current);
