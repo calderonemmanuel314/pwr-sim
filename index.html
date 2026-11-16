@@ -70,8 +70,9 @@
   <h1>EXPERIMENT COMPLETE</h1>
   <p id="ecTitle" class="sub"></p>
   <div id="ecMetrics"></div>
+  <div id="ecTable" class="hide"></div>
   <div class="row">
-    <button class="btn" id="ecCSV" type="button" disabled title="No data yet — arrives with Phase 5">💾 CSV</button>
+    <button class="btn" id="ecCSV" type="button" disabled>💾 CSV</button>
     <a class="btn" id="ecWks" href="#" download hidden>📄 WORKSHEET</a>
     <button class="btn y" id="ecRerun" type="button">RERUN</button>
     <button class="btn" id="ecLib" type="button">BACK TO LIBRARY</button>
@@ -213,6 +214,15 @@
         <div id="procCard" class="hide">
           <div class="pc-head"><b id="pcTitle">PROCEDURE</b><button id="pcToggle" class="pc-toggle" type="button">▾</button></div>
           <ol id="pcSteps"></ol>
+          <div id="pcRodCal" class="hide">
+            <canvas id="pcPlot" width="320" height="140"></canvas>
+            <div id="pcWarn" class="hide"></div>
+            <div class="pc-btns">
+              <button class="btn y" id="pcSettle" type="button">SETTLE &amp; LOG</button>
+              <button class="btn" id="pcDone" type="button">DONE</button>
+            </div>
+            <div id="pcPred" class="hide"></div>
+          </div>
           <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
         </div>
       </div>
