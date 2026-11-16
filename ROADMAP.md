@@ -2,12 +2,11 @@
 
 Only unfinished work is listed here, **with the detail needed to build it**. What already ships is documented by the code (`README.md` for structure, `about.html` for the model and its limits). When an item ships, delete it from this file.
 
-Rough sizing from the original plan: Phases 4 and 5 together about 650 lines across the modular files; Phase 6 about 250; Phases 7 and 8 about 250 combined; Phase 9 about 250.
+Rough sizing from the original plan: Phase 5 about 300 lines; Phase 6 about 250; Phases 7 and 8 about 250 combined; Phase 9 about 250.
 
-## 0. Before Phase 4
+## 0. Before Phase 5
 
 - [ ] **Classroom stress test.** Four physical phones on one Wi-Fi router for at least 2 minutes in Group Mode, and a full Hard playthrough (win attempt, heat failure, xenon lockout).
-- [ ] **Add `LICENSE`** (AGPLv3 text) to the repo root. The README links to it.
 - [ ] **Confirm the `check-docs` workflow passes** on GitHub (Actions tab).
 - [ ] **Fix the narrow-viewport overlap** of `#timerBox` with the reactor SVG in Group Mode.
 - [ ] **Decide the xenon question** (section 6, first item) before building any xenon experiment.
@@ -21,37 +20,7 @@ Rough sizing from the original plan: Phases 4 and 5 together about 650 lines acr
 - **Zero build.** Static HTML, CSS and native ES modules. No bundler, npm build, or backend.
 - **Update docs together.** After shipping a phase, update `about.html`, bump `APP_VERSION` in `js/config.js`, and run `node tools/check-docs.mjs`.
 
-## 2. Phase 4: Experiment Library shell
-
-**Entry flow.** The Advanced landing screen already has a disabled EXPERIMENT LIBRARY button (`#advLibBtn`). Phase 4 enables it and opens the library screen. Free Exploration stays as it is.
-
-**Library screen.** A grid of experiment cards, a back button, and a title.
-
-```
- < BACK                     EXPERIMENT LIBRARY
- +-------------------+ +-------------------+ +-------------------+
- | ROD CALIBRATION   | | DELAYED NEUTRON   | | XENON TRANSIENT   |
- | BY 1/M PLOT       | | COUNTING          | |                   |
- | ~15 min   wksht   | | ~10 min   wksht   | | ~10 min   wksht   |
- +-------------------+ +-------------------+ +-------------------+
- | ROD WORTH BY      | | SCRAM TRANSIENT   | | N-16 DOSE DECAY   |
- | PERIOD (INHOUR)   | |                   | |                   |
- +-------------------+ +-------------------+ +-------------------+
-```
-
-Each card shows the title, an estimated duration, and a worksheet marker. Cards for experiments not built yet are disabled.
-
-**Briefing overlay (on card click).** Objective, procedure, what to record, and a worksheet link pointing at `worksheets/<experiment>.pdf`. The link is hidden automatically if the PDF is missing (same HEAD-check approach as the About button).
-
-**During an experiment.** The view is the Free Exploration layout. The procedure card sits as a small floating overlay in the bottom-right of the schematic area.
-
-**Completion screen.** Appears when the student presses END EXPERIMENT or completes all steps. It shows summary metrics, a CSV download, the worksheet link, a rerun button, and a return-to-library button.
-
-**Worksheets.** Static PDFs in a `worksheets/` folder next to `index.html`, downloaded through `<a href="worksheets/..." download>`. Students fill them in by hand from on-screen data or the exported CSV. Keep file names lowercase with hyphens (GitHub Pages is case-sensitive). Suggested file names, one per catalogue entry in section 4:
-
-`rod-calibration-1m.pdf`, `rod-worth-inhour.pdf`, `delayed-neutron-counting.pdf`, `scram-transient.pdf`, `xenon-transient.pdf`, `n16-dose-decay.pdf`, `xenon-pit-restart.pdf`, `doppler-coefficient.pdf`, `mtc-measurement.pdf`, `boron-worth.pdf`, `startup-drill.pdf`, `load-following.pdf`.
-
-Use the same slug as the experiment's id in code, so the card, the briefing and the worksheet link are derived from one name. See "File and folder conventions" in `README.md` for the rest of the filing rules.
+## 2. Phase 4: Experiment Library shell (ACCOMPLISHED)
 
 ## 3. Phase 5: Rod calibration by 1/M (first experiment)
 
@@ -113,6 +82,7 @@ Decide these before building, and state them in the briefing and worksheet.
 | Doppler measurement | Doppler is defined on fuel-minus-coolant temperature and the coefficient differs by scenario. Design the procedure around that, or change the model. |
 | Any post-SCRAM cooling | Decay heat is a constant allowance, not a decaying curve. |
 | Startup and load following | Rods move instantly and one slider moves the whole bank. Expect touchy control. |
+| Any experiment | Briefings and worksheets must state the caveats above before the experiment ships. The per-experiment `limitations` field in `EXPERIMENTS` is the mechanism. |
 
 ## 6. Model fidelity backlog (optional; decide teaching value vs realism)
 
@@ -152,7 +122,11 @@ These came out of a code review. Each is a choice, not necessarily a bug. If you
 
 - Experiment briefing UI: overlay.
 - First experiment: rod calibration by 1/M.
-- Worksheet format: static PDFs under `worksheets/`.
+- Worksheet format: static PDFs under `worksheets/`. Worksheet links are HEAD-checked at briefing open and hidden if the PDF is missing.
+- Catalogue source: one `EXPERIMENTS` array in `js/config.js`. Card, briefing text, and worksheet link all derive from `id`; adding an experiment is a data change.
+- Experiment shell state machine: idle → briefing → running → complete, in `js/experiments.js`. The procedure card is a floating overlay inside `#ctr` (reactor-priority rule).
+- Completion screen CSV button is present but disabled until Phase 5, when an experiment produces rows.
+- Unbuilt experiments carry `enabled: false` in `EXPERIMENTS` and appear greyed out in the library. A dev-only `shell-test` card exercises the shell and is removed when Phase 5's first experiment is stable.
 
 ## 10. Decisions still open
 
