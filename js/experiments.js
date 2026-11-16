@@ -5,7 +5,7 @@
 // step, plots 1/cps vs rod %, fits the last 4–5 points, extrapolates to criticality.
 import { $, show, setHTML, fmt } from './dom.js';
 import { EXPERIMENTS } from './config.js';
-import { host, advanceOneSecond } from './host.js';
+import { host, advanceOneSecond, experimentalPreTick, experimentalPostTick } from './host.js';
 import { equilibriumPrecursors, neutronBalance } from './physics.js';
 
 let current = null;
@@ -68,12 +68,7 @@ function linearFit(points) {
   return { m, b };
 }
 
-// ── Auto-pressurizer: holds P in [15.3, 15.7] MPa ──
-function autoPressurize(S) {
-  if (S.P < 15.3)      { S.in.heat = 1; S.in.spray = 0; }
-  else if (S.P > 15.7) { S.in.heat = 0; S.in.spray = 1; }
-  else                 { S.in.heat = 0; S.in.spray = 0; }
-}
+
 
 // ── Run settle loop until |ΔNf/Nf| < ε for K consecutive ticks, or 1000 s ──
 // Returns { settled, simT, runaway }.
@@ -84,8 +79,9 @@ function runSettleLoop(S, D) {
   let runaway = false;
   let simT = 0;
   for (let t = 0; t < SETTLE_MAX_TICKS; t++) {
-    autoPressurize(S);
+    experimentalPreTick(S);
     advanceOneSecond(S, D);
+    experimentalPostTick(S);
     simT = t + 1;
     const denom = Math.max(Math.abs(prevNf), 1e-12);
     const delta = Math.abs(S.Nf - prevNf) / denom;
@@ -507,6 +503,9 @@ function beginExperiment() {
   hostHandle = host('advanced');
 
   const isRodCal = exp.id === 'rod-calibration-1m';
+  if (hostHandle && hostHandle.state) {
+    hostHandle.state._experimentActive = true;
+  }
   if (isRodCal && hostHandle && hostHandle.state) {
     setupRodCal(hostHandle);
   }
@@ -529,6 +528,7 @@ function beginExperiment() {
 function endExperiment() {
   if (state !== 'running' || !current) return;
   state = 'complete';
+  if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
   stopHost();
   show('#procCard', false);
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
@@ -571,6 +571,7 @@ function rerunExperiment() {
 }
 
 function backToLibrary() {
+  if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
   stopHost();
   log = [];
   predictedRodPct = null;
