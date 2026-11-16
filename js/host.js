@@ -13,6 +13,7 @@ import { initReactorSvg, renderSbxTabs, render, burst } from './render.js';
 
 export function host(mode, diff) {
   let WH = 15;
+  let STOPPED = false;
   const D = DIFF[mode === 'group' ? diff : mode] || DIFF.sandbox;
   const S = {
     mode, phase: 'lobby', in: DEF(), T: 307, P: 15.5, N: 0, xe: .3, xi: .3,
@@ -412,7 +413,8 @@ export function host(mode, diff) {
   $('#bAgain').onclick = begin;
 
   let lastTickWall = Date.now();
-  setInterval(() => {
+  const intervalId = setInterval(() => {
+    if (STOPPED) return;
     const now = Date.now();
     const missed = clamp(Math.floor((now - lastTickWall) / 1000), 1, 10);
     for (let k = 0; k < missed; k++) tick();
@@ -429,4 +431,13 @@ export function host(mode, diff) {
     begin();
   }
   window.addEventListener('beforeunload', () => { try { S.peer && S.peer.destroy(); } catch (e) {} });
+
+  return {
+    stop() {
+      STOPPED = true;
+      clearInterval(intervalId);
+      AU.klaxon(false);
+      document.body.classList.remove('melt', 'boom', 'alarm', 'cold', 'sbx', 'adv', 'ov');
+    }
+  };
 }
