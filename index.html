@@ -52,7 +52,7 @@
 <div id="brf" class="hide"><div class="cfb" style="max-width:min(92vw,900px)"><h1 id="bt"></h1><p id="bs" style="font-size:1.3em"></p><p id="bg" style="color:var(--y)"></p><button class="btn" id="bgo">BEGIN SHIFT</button></div></div>
 <div id="cf" class="hide"><div class="cfb"><p id="cfm"></p><div class="row"><button class="btn" id="cfy">YES</button><button class="btn y" id="cfn">CANCEL</button></div></div></div>
 
-<div id="expBrief" class="hide"><div class="cfb" style="max-width:min(92vw,900px)">
+<div id="expBrief" class="hide" style="display:none"><div class="cfb" style="max-width:min(92vw,900px)">
   <h1 id="ebTitle"></h1>
   <p id="ebMeta" class="sub"></p>
   <h3>OBJECTIVE</h3><p id="ebObj"></p>
@@ -66,7 +66,7 @@
   </div>
 </div></div>
 
-<div id="expComplete" class="hide"><div class="cfb" style="max-width:min(92vw,900px)">
+<div id="expComplete" class="hide" style="display:none"><div class="cfb" style="max-width:min(92vw,900px)">
   <h1>EXPERIMENT COMPLETE</h1>
   <p id="ecTitle" class="sub"></p>
   <div id="ecMetrics"></div>
@@ -210,7 +210,7 @@
           <div class="bar"><i id="hold"></i></div>
           <div id="hl">0/10s</div>
         </div>
-        <div id="procCard" class="hide">
+        <div id="procCard" class="hide" style="display:none">
           <div class="pc-head"><b id="pcTitle">PROCEDURE</b><button id="pcToggle" class="pc-toggle" type="button">▾</button></div>
           <ol id="pcSteps"></ol>
           <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
