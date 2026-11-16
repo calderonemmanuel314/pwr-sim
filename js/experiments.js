@@ -41,11 +41,11 @@ const findExp = id => EXPERIMENTS.find(e => e.id === id) || null;
 function setWorksheet(sel, exp) {
   const a = $(sel);
   if (!a) return;
-  if (!exp || !exp.worksheet) { a.style.display = 'none'; return; }
+  if (!exp || !exp.worksheet) { a.hidden = true; return; }
   const href = 'worksheets/' + exp.worksheet;
   a.href = href;
-  a.style.display = 'none';
-  hasFile(href).then(ok => { a.style.display = ok ? '' : 'none'; });
+  a.hidden = true;
+  hasFile(href).then(ok => { a.hidden = !ok; });
 }
 
 export function openLibrary() {
