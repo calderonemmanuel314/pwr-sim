@@ -12,7 +12,7 @@ An educational, browser-based simulation of a simplified pressurized-water react
 | Group | Projector host plus up to four phones (one division each) over PeerJS/WebRTC. Timed scenarios with win and failure endings. |
 | Sandbox | One screen, all controls, no timer. |
 | Learning | Clickable reactor schematic with explanations and a water phase map. |
-| Advanced | Free Exploration with nuclear instrumentation and a CSV recorder. The Experiment Library is planned (see [`ROADMAP.md`](ROADMAP.md)). |
+| Advanced | Free Exploration with nuclear instrumentation and a CSV recorder, plus an Experiment Library shell (cards, briefings, procedure card, completion screen, worksheet links). Individual experiments ship in Phases 5–9. |
 
 ## Run it locally
 
@@ -40,8 +40,10 @@ js/
   render.js       HUD, k_eff strip, instrumentation, effects
   recorder.js     Advanced Mode CSV recorder
   learn.js        Learning Mode explorer
+  experiments.js  Experiment Library shell (cards, briefings, procedure card, completion)
   about.js        About overlay
   audio.js, qr.js, dom.js   Sound, QR/PeerJS loader, DOM helpers
+worksheets/       One static PDF per experiment (Phase 5 onward), plus README
 tools/check-docs.mjs   Checks that docs agree with the code
 ```
 
@@ -71,6 +73,8 @@ External runtime dependencies are only JetBrains Mono (Google Fonts) and PeerJS 
 | I want to... | Edit |
 |---|---|
 | Add or change a scenario, ending, or Learning topic | `DIFF`, `ES`, or `LEARN` in `js/config.js` (a Learning topic also needs a `data-part` on the SVG in `index.html`) |
+| Add or edit an experiment (title, duration, `enabled` flag, briefing text, worksheet slug) | `EXPERIMENTS` in `js/config.js` |
+| Add an experiment's mechanics (settle-and-log, step capture, completion metrics) | `js/experiments.js`, plus per-experiment state in `js/host.js` |
 | Add an instrumentation readout | a cell in `#instrRow` in `index.html`, its formatting and color thresholds in `js/render.js`, and a column in `js/recorder.js` |
 | Change physics constants | `js/physics.js` (then run the docs checker) |
 | Change documentation | `about.html`, then bump the version in `js/config.js` |
