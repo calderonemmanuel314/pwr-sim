@@ -156,7 +156,12 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   text-align: center;
   margin: 0;
 }
-#advLibrary #libSub { text-align: center; margin: 0 0 12px; }
+#advLibrary #libSub {
+  text-align: center;
+  margin: 0 0 12px;
+  max-width: none;
+  width: 100%;
+}
 
 #advLibrary .libgrid {
   display: grid;
