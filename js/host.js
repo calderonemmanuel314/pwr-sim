@@ -452,6 +452,8 @@ export function host(mode, diff) {
       removeEventListener('keydown', onKeyDown);
       AU.klaxon(false);
       document.body.classList.remove('melt', 'boom', 'alarm', 'cold');
-    }
+    },
+    state: S,
+    diff: D,
   };
 }
