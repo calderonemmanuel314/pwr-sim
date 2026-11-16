@@ -11,6 +11,43 @@ import {
 import { recordAdvTick, bindRecorderControls } from './recorder.js';
 import { initReactorSvg, renderSbxTabs, render, burst } from './render.js';
 
+// Advance one simulated second of reactor physics.
+// Mutates S (kinetics + xenon + thermal + pressure). Returns post-tick fission power.
+// Does NOT render, play audio, remote-send, decrement timer, or run failure checks.
+// Callers (tick(), settle loop in experiments.js) handle UI/failure/time separately.
+export function advanceOneSecond(S, D) {
+  const i = S.in;
+  const TfEq = S.T + (S.Nf + 20) / H_FUEL_COOLANT;
+  let TfNext = S.Tfuel + (TfEq - S.Tfuel) / TAU_FUEL;
+  if (!isFinite(TfNext)) TfNext = S.T;
+  S.Tfuel = clamp(TfNext, 0, 2000);
+
+  const balance = neutronBalance(i, S.xe, S.T, S.P, S.Tfuel, D.alphaDoppler);
+  S.k = balance.kEff; S.rho = balance.rho; S.neutronBudget = balance;
+  const oldFissionPower = S.Nf;
+  const kinetics = advancePointKinetics(S.Nf, S.precursors, S.rho);
+  S.Nf = kinetics.power; S.precursors = kinetics.precursors;
+  S.dPower = S.Nf - oldFissionPower;
+  S.kh = (S.kh || []).concat(S.k).slice(-90);
+  const n = S.Nf + 20; S.N = n;
+
+  const f = Math.min(1.2, S.Nf / 1500), xi0 = S.xi, xe0 = S.xe;
+  S.xi = Math.max(0, xi0 + .0077 * f - .0167 * xi0);
+  S.xe = Math.max(0, xe0 + .0167 * xi0 + .0007 * f - (.002 + .01 * f) * xe0);
+
+  recordAdvTick(S);
+
+  const heatFactor = coolantHeatRemovalFactor(S.T, S.P);
+  const rem = 32 * (Math.min(i.pump, S.pcap) / 100) * (S.T - 280) * heatFactor;
+  S.T = Math.max(280, S.T + (n - rem) / (D.thermalTau || 150));
+  S.P += (D.pressureRate || 1) * (.0025 * (S.T - 305) - .015 + (i.heat ? .05 : 0) - (i.spray || S.stuck > 0 ? .08 : 0));
+  if (S.P > 17.2) S.valve = 1; else if (S.P < 16.4) S.valve = 0;
+  if (S.valve) { S.P -= .15; if (!S.vlog) { S.vlog = 1; S._valveOpened = true; } } else { S.vlog = 0; S._valveOpened = false; }
+  S.P = clamp(S.P, 0, 26); if (S.stuck > 0) S.stuck--;
+
+  return S.Nf;
+}
+
 export function host(mode, diff) {
   let WH = 15;
   let STOPPED = false;
@@ -190,33 +227,8 @@ export function host(mode, diff) {
     if (S.phase !== 'run') return;
     try {
       const i = S.in, prev = S.prev || { N: S.N, T: S.T, P: S.P, Nf: S.Nf };
-      const TfEq = S.T + (S.Nf + 20) / H_FUEL_COOLANT;
-      let TfNext = S.Tfuel + (TfEq - S.Tfuel) / TAU_FUEL;
-      if (!isFinite(TfNext)) TfNext = S.T;
-      S.Tfuel = clamp(TfNext, 0, 2000);
-
-      const balance = neutronBalance(i, S.xe, S.T, S.P, S.Tfuel, D.alphaDoppler);
-      S.k = balance.kEff; S.rho = balance.rho; S.neutronBudget = balance;
-      const oldFissionPower = S.Nf;
-      const kinetics = advancePointKinetics(S.Nf, S.precursors, S.rho);
-      S.Nf = kinetics.power; S.precursors = kinetics.precursors;
-      S.dPower = S.Nf - oldFissionPower;
-      S.kh = (S.kh || []).concat(S.k).slice(-90);
-      const n = S.Nf + 20; S.N = n;
-
-      const f = Math.min(1.2, S.Nf / 1500), xi0 = S.xi, xe0 = S.xe;
-      S.xi = Math.max(0, xi0 + .0077 * f - .0167 * xi0);
-      S.xe = Math.max(0, xe0 + .0167 * xi0 + .0007 * f - (.002 + .01 * f) * xe0);
-
-      recordAdvTick(S);
-
-      const heatFactor = coolantHeatRemovalFactor(S.T, S.P);
-      const rem = 32 * (Math.min(i.pump, S.pcap) / 100) * (S.T - 280) * heatFactor;
-      S.T = Math.max(280, S.T + (n - rem) / (D.thermalTau || 150));
-      S.P += (D.pressureRate || 1) * (.0025 * (S.T - 305) - .015 + (i.heat ? .05 : 0) - (i.spray || S.stuck > 0 ? .08 : 0));
-      if (S.P > 17.2) S.valve = 1; else if (S.P < 16.4) S.valve = 0;
-      if (S.valve) { S.P -= .15; if (!S.vlog) { S.vlog = 1; evt('MODEL RELIEF VALVE · pressure above 17.2 MPa'); } } else S.vlog = 0;
-      S.P = clamp(S.P, 0, 26); if (S.stuck > 0) S.stuck--;
+      advanceOneSecond(S, D);
+      if (S._valveOpened) { S._valveOpened = false; evt('MODEL RELIEF VALVE · pressure above 17.2 MPa'); }
 
       if (S.mode === 'group') {
         S.rem--;
