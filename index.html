@@ -30,9 +30,18 @@
   <p class="sub">Nuclear instrumentation and guided experiments.</p>
   <div class="row">
     <button class="btn" id="advFreeBtn">FREE EXPLORATION</button>
-    <button class="btn" id="advLibBtn" disabled>EXPERIMENT LIBRARY</button>
+    <button class="btn" id="advLibBtn">EXPERIMENT LIBRARY</button>
   </div>
   <button class="btn y" id="advBack">◄ BACK</button>
+</div>
+
+<div id="advLibrary" class="screen hide">
+  <div class="libhead">
+    <button class="btn y" id="libBack">◄ BACK</button>
+    <h1>EXPERIMENT LIBRARY</h1>
+  </div>
+  <p class="sub" id="libSub">Guided experiments. Each card opens a briefing; worksheets download as PDF.</p>
+  <div class="libgrid" id="libGrid"></div>
 </div>
 
 <div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
@@ -42,6 +51,32 @@
 
 <div id="brf" class="hide"><div class="cfb" style="max-width:min(92vw,900px)"><h1 id="bt"></h1><p id="bs" style="font-size:1.3em"></p><p id="bg" style="color:var(--y)"></p><button class="btn" id="bgo">BEGIN SHIFT</button></div></div>
 <div id="cf" class="hide"><div class="cfb"><p id="cfm"></p><div class="row"><button class="btn" id="cfy">YES</button><button class="btn y" id="cfn">CANCEL</button></div></div></div>
+
+<div id="expBrief" class="hide"><div class="cfb" style="max-width:min(92vw,900px)">
+  <h1 id="ebTitle"></h1>
+  <p id="ebMeta" class="sub"></p>
+  <h3>OBJECTIVE</h3><p id="ebObj"></p>
+  <h3>PROCEDURE</h3><ol id="ebProc"></ol>
+  <h3>WHAT TO RECORD</h3><p id="ebRecord"></p>
+  <p id="ebLimits" class="sub" style="color:var(--y)"></p>
+  <div class="row">
+    <a class="btn" id="ebWks" href="#" download style="display:none">📄 WORKSHEET</a>
+    <button class="btn y" id="ebBegin" type="button">BEGIN EXPERIMENT</button>
+    <button class="btn" id="ebCancel" type="button">CANCEL</button>
+  </div>
+</div></div>
+
+<div id="expComplete" class="hide"><div class="cfb" style="max-width:min(92vw,900px)">
+  <h1>EXPERIMENT COMPLETE</h1>
+  <p id="ecTitle" class="sub"></p>
+  <div id="ecMetrics"></div>
+  <div class="row">
+    <button class="btn" id="ecCSV" type="button" disabled title="No data yet — arrives with Phase 5">💾 CSV</button>
+    <a class="btn" id="ecWks" href="#" download style="display:none">📄 WORKSHEET</a>
+    <button class="btn y" id="ecRerun" type="button">RERUN</button>
+    <button class="btn" id="ecLib" type="button">BACK TO LIBRARY</button>
+  </div>
+</div></div>
 
 <div id="join" class="screen hide">
   <h1>JOIN</h1>
@@ -175,8 +210,12 @@
           <div class="bar"><i id="hold"></i></div>
           <div id="hl">0/10s</div>
         </div>
+        <div id="procCard" class="hide">
+          <div class="pc-head"><b id="pcTitle">PROCEDURE</b><button id="pcToggle" class="pc-toggle" type="button">▾</button></div>
+          <ol id="pcSteps"></ol>
+          <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
+        </div>
       </div>
-    </div>
 
     <div id="recPanel">
       <span id="recDot" class="rec-dot"></span>
