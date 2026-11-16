@@ -437,7 +437,7 @@ export function host(mode, diff) {
       STOPPED = true;
       clearInterval(intervalId);
       AU.klaxon(false);
-      document.body.classList.remove('melt', 'boom', 'alarm', 'cold', 'sbx', 'adv', 'ov');
+      document.body.classList.remove('melt', 'boom', 'alarm', 'cold');
     }
   };
 }
