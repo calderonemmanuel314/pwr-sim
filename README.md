@@ -62,7 +62,7 @@ External runtime dependencies are only JetBrains Mono (Google Fonts) and PeerJS 
 | Repo docs | `README.md`, `ROADMAP.md`, `LICENSE` (repo root) |
 | Styles, one file per area (theme, HUD, phone controller, Advanced/About) | `css/` |
 | JavaScript, one native ES module per responsibility | `js/` |
-| Experiment worksheets (Phase 4 onward), one static PDF per experiment | `worksheets/<experiment>.pdf`, next to `index.html` |
+| Experiment worksheets (Phase 5 onward), one static PDF per experiment | `worksheets/<experiment>.pdf`, next to `index.html` |
 | Developer scripts that are not loaded by the app | `tools/` |
 | CI workflows | `.github/workflows/` |
 
