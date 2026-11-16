@@ -8,6 +8,12 @@ import { host } from './host.js';
 let current = null;
 let startedAt = 0;
 let state = 'idle'; // idle | briefing | running | complete
+let hostHandle = null;
+
+function stopHost() {
+  if (hostHandle && typeof hostHandle.stop === 'function') hostHandle.stop();
+  hostHandle = null;
+}
 
 const hasFile = url => fetch(url, { method: 'HEAD' }).then(r => r.ok).catch(() => false);
 
@@ -90,7 +96,8 @@ function beginExperiment() {
   state = 'running';
   startedAt = Date.now();
   show('#expBrief', false);
-  host('advanced');
+  stopHost();
+  hostHandle = host('advanced');
   setTimeout(() => {
     if (current !== exp) return;
     $('#pcTitle').textContent = exp.title;
@@ -125,6 +132,7 @@ function rerunExperiment() {
 }
 
 function backToLibrary() {
+  stopHost();
   show('#expComplete', false);
   show('#procCard', false);
   show('#hud', false);
