@@ -47,6 +47,40 @@ tools/check-docs.mjs   Checks that docs agree with the code
 
 External runtime dependencies are only JetBrains Mono (Google Fonts) and PeerJS 1.5.1 (CDN, three fallbacks, loaded in `js/qr.js`).
 
+## File and folder conventions
+
+**Naming.** Keep every file and folder name **lowercase with hyphens** (for example `rod-calibration.pdf`). GitHub Pages is case-sensitive, so `About.html` and `about.html` are different files. The only exceptions are the conventional top-level files `README.md`, `ROADMAP.md` and `LICENSE`.
+
+**Where things go.**
+
+| Kind of file | Location |
+|---|---|
+| App entry page and inline reactor SVG | `index.html` (repo root) |
+| Standalone documentation (source of truth for limitations and disclaimers) | `about.html` (repo root) |
+| Repo docs | `README.md`, `ROADMAP.md`, `LICENSE` (repo root) |
+| Styles, one file per area (theme, HUD, phone controller, Advanced/About) | `css/` |
+| JavaScript, one native ES module per responsibility | `js/` |
+| Experiment worksheets (Phase 4 onward), one static PDF per experiment | `worksheets/<experiment>.pdf`, next to `index.html` |
+| Developer scripts that are not loaded by the app | `tools/` |
+| CI workflows | `.github/workflows/` |
+
+**Worksheets.** PDFs live in `worksheets/` and are linked as `worksheets/<experiment>.pdf` with the `download` attribute. If a PDF is missing, the app hides its link instead of showing a broken one.
+
+**Where a change goes.**
+
+| I want to... | Edit |
+|---|---|
+| Add or change a scenario, ending, or Learning topic | `DIFF`, `ES`, or `LEARN` in `js/config.js` (a Learning topic also needs a `data-part` on the SVG in `index.html`) |
+| Add an instrumentation readout | a cell in `#instrRow` in `index.html`, its formatting and color thresholds in `js/render.js`, and a column in `js/recorder.js` |
+| Change physics constants | `js/physics.js` (then run the docs checker) |
+| Change documentation | `about.html`, then bump the version in `js/config.js` |
+
+**Every source file starts with** `SPDX-License-Identifier: AGPL-3.0-or-later` as a comment on line 1 (HTML files put it just after the doctype). The first line of an HTML file must be `<!DOCTYPE html>`, with nothing before it.
+
+**Exported data.** The recorder names downloads `pwr-data-<date>-<time>.csv` using a timestamp, so repeated exports never overwrite each other.
+
+**Cache busting.** The link to `about.html` carries `?v=<APP_VERSION>`. Bumping the version in `js/config.js` also forces phones to pick up new code.
+
 ## How the model works
 
 Everything runs at 1 Hz inside `tick()` in `js/host.js`. If a browser tab is throttled, a catch-up loop replays missed ticks (up to 10 per timer fire).
