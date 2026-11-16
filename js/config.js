@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-export const APP_VERSION = '2.2.1';
+export const APP_VERSION = '2.2.2';
 export const APP_BUILD = '2026-11-14';
 
 export const ROLES = {
