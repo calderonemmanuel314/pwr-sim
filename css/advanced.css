@@ -212,6 +212,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 }
 #expBrief .cfb, #expComplete .cfb {
   width: min(92vw, 900px);
+  max-width: min(92vw, 900px);
   margin: 0 auto;
   background: #0c120d;
   border: 2px solid var(--c);
