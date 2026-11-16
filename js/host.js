@@ -48,6 +48,33 @@ export function advanceOneSecond(S, D) {
   return S.Nf;
 }
 
+// ── Phase 5 experiment helpers ──
+// Called around advanceOneSecond() when S._experimentActive is set, in BOTH
+// the host's normal 1 Hz tick and the settle loop in experiments.js.
+// Together they keep the plant in a safe, stable band so the rod-calibration
+// experiment can complete without tripping end().
+
+export function experimentalPreTick(S) {
+  if (!S._experimentActive) return;
+  // Auto-coolant: pump tracks fission power to hold hot-leg T ≈ 307 °C
+  const feedforward = 2 + S.Nf * 0.117;
+  const feedback = (S.T - 307) * 0.5;
+  S.in.pump = Math.round(Math.max(2, Math.min(95, feedforward + feedback)));
+  // Auto-pressurizer: hold P in [15.3, 15.7]
+  if (S.P < 15.3)      { S.in.heat = 1; S.in.spray = 0; }
+  else if (S.P > 15.7) { S.in.heat = 0; S.in.spray = 1; }
+  else                 { S.in.heat = 0; S.in.spray = 0; }
+}
+
+export function experimentalPostTick(S) {
+  if (!S._experimentActive) return;
+  // Soft clamps — set just below alarm thresholds so no beep/failure fires.
+  if (S.T > 335) S.T = 335;
+  if (S.P < 15.0) S.P = 15.0;
+  if (S.P > 17.0) S.P = 17.0;
+  if (!isFinite(S.Nf) || S.Nf > 1e7) S.Nf = 1e7;
+}
+
 export function host(mode, diff) {
   let WH = 15;
   let STOPPED = false;
@@ -227,7 +254,9 @@ export function host(mode, diff) {
     if (S.phase !== 'run') return;
     try {
       const i = S.in, prev = S.prev || { N: S.N, T: S.T, P: S.P, Nf: S.Nf };
+      experimentalPreTick(S);
       advanceOneSecond(S, D);
+      experimentalPostTick(S);
       if (S._valveOpened) { S._valveOpened = false; evt('MODEL RELIEF VALVE · pressure above 17.2 MPa'); }
 
       if (S.mode === 'group') {
