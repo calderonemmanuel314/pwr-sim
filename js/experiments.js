@@ -256,6 +256,10 @@ function renderProcCard() {
 }
 
 // ── Plot: 1/cps vs rod %, with fit line and zero crossing ──
+// Axes always accommodate: all data points, the fit-line endpoints, and rCrit
+// (if the fit produced one in [0,100]). Drawing is clipped to the plot rect
+// so nothing spills into labels or off-canvas. A minimum x-span of 20% keeps
+// a single point at rod=100 (or any edge) from hugging the border.
 function drawPlot(showFit) {
   const c = $('#pcPlot');
   if (!c) return;
@@ -270,19 +274,46 @@ function drawPlot(showFit) {
     return;
   }
 
-  // Y-range: last 5 points' invCps
-  const fitPoints = log.slice(-5);
-  const maxInv = Math.max(...fitPoints.map(p => p.invCps), 1e-15);
-  const yMax = maxInv * 1.4;
-  const yMin = 0;
-  // X-range: all logged rod positions
-  const rods = log.map(p => p.rodPct);
-  const xMin = Math.max(0, Math.min(...rods) - 5);
-  const xMax = Math.min(100, Math.max(...rods) + 5);
-
-  const pad = { l: 40, r: 8, t: 8, b: 20 };
+  const pad = { l: 40, r: 16, t: 8, b: 20 };
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
+
+  // Fit computed first so its endpoints can influence axis ranges
+  const fitPoints = log.slice(-5);
+  const fit = (showFit && log.length >= 4) ? linearFit(fitPoints) : null;
+  const rCrit = (fit && Math.abs(fit.m) > 1e-15) ? (-fit.b / fit.m) : null;
+
+  // ── X-range ──
+  const xRods = log.map(p => p.rodPct);
+  if (rCrit !== null && rCrit >= 0 && rCrit <= 100) xRods.push(rCrit);
+  const rawMinX = Math.min(...xRods);
+  const rawMaxX = Math.max(...xRods);
+  const spanX = Math.max(rawMaxX - rawMinX, 1);
+  const padX = Math.max(5, spanX * 0.15);
+  let xMin = Math.max(0, rawMinX - padX);
+  let xMax = Math.min(100, rawMaxX + padX);
+  // Enforce a minimum visible span of 20%, anchored so data stays in view
+  if (xMax - xMin < 20) {
+    if (rawMaxX >= 100 - 0.5) { xMin = Math.max(0, 100 - 20); xMax = 100; }
+    else if (rawMinX <= 0.5) { xMin = 0; xMax = Math.min(100, 20); }
+    else {
+      const mid = (rawMinX + rawMaxX) / 2;
+      xMin = Math.max(0, mid - 10);
+      xMax = Math.min(100, mid + 10);
+    }
+  }
+
+  // ── Y-range ──
+  const yVals = fitPoints.map(p => p.invCps);
+  if (fit) {
+    yVals.push(fit.m * xMin + fit.b);
+    yVals.push(fit.m * xMax + fit.b);
+  }
+  const yMin = 0;
+  const rawMaxY = Math.max(...yVals, 1e-15);
+  const padY = Math.max(rawMaxY * 0.15, 1e-15);
+  const yMax = rawMaxY + padY;
+
   const sx = r => pad.l + ((r - xMin) / Math.max(1e-9, xMax - xMin)) * plotW;
   const sy = v => pad.t + (1 - (v - yMin) / Math.max(1e-15, yMax - yMin)) * plotH;
 
@@ -300,15 +331,22 @@ function drawPlot(showFit) {
   ctx.font = '9px monospace';
   ctx.fillText('1/cps', 4, pad.t + 8);
   ctx.fillText('rod %', W - pad.r - 36, H - 4);
-  ctx.fillText(xMin + '', pad.l - 4, H - pad.b + 10);
-  ctx.fillText(xMax + '', W - pad.r - 12, H - pad.b + 10);
+  ctx.textAlign = 'center';
+  ctx.fillText(xMin.toFixed(0), pad.l, H - pad.b + 10);
+  ctx.fillText(xMax.toFixed(0), W - pad.r, H - pad.b + 10);
+  ctx.textAlign = 'left';
 
-  // Data points (skip out-of-range)
+  // ── Clip drawing to the plot rect ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(pad.l, pad.t, plotW, plotH);
+  ctx.clip();
+
+  // Data points
   ctx.fillStyle = '#f2c94c';
   log.forEach(p => {
     const x = sx(p.rodPct);
     const y = sy(p.invCps);
-    if (y < pad.t - 2 || y > H - pad.b + 2) return;
     ctx.beginPath();
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fill();
@@ -320,36 +358,39 @@ function drawPlot(showFit) {
     }
   });
 
-  // Fit line + zero crossing
-  if (showFit && log.length >= 4) {
-    const fit = linearFit(log.slice(-5));
-    if (fit && Math.abs(fit.m) > 1e-15) {
-      const r1 = xMin, r2 = xMax;
-      const v1 = fit.m * r1 + fit.b;
-      const v2 = fit.m * r2 + fit.b;
-      ctx.strokeStyle = '#35c8ff';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(sx(r1), sy(v1));
-      ctx.lineTo(sx(r2), sy(v2));
-      ctx.stroke();
+  // Fit line
+  if (fit && Math.abs(fit.m) > 1e-15) {
+    ctx.strokeStyle = '#35c8ff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(sx(xMin), sy(fit.m * xMin + fit.b));
+    ctx.lineTo(sx(xMax), sy(fit.m * xMax + fit.b));
+    ctx.stroke();
 
-      const rCrit = -fit.b / fit.m;
-      if (rCrit >= 0 && rCrit <= 100) {
-        ctx.strokeStyle = '#e8324a';
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(sx(rCrit), pad.t);
-        ctx.lineTo(sx(rCrit), H - pad.b);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#e8324a';
-        ctx.fillText(rCrit.toFixed(1) + '%', sx(rCrit) + 2, pad.t + 8);
-      }
+    // rCrit vertical dashed marker
+    if (rCrit !== null && rCrit >= 0 && rCrit <= 100) {
+      ctx.strokeStyle = '#e8324a';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sx(rCrit), pad.t);
+      ctx.lineTo(sx(rCrit), H - pad.b);
+      ctx.stroke();
+      ctx.setLineDash([]);
     }
   }
-}
 
+  ctx.restore();
+
+  // rCrit label outside the clip, right-aligned near the edge so it stays visible
+  if (fit && rCrit !== null && rCrit >= 0 && rCrit <= 100) {
+    ctx.fillStyle = '#e8324a';
+    ctx.font = '9px monospace';
+    const lx = sx(rCrit);
+    const labelW = 36;
+    const drawX = (lx + labelW + 4 > W - pad.r) ? lx - labelW - 2 : lx + 2;
+    ctx.fillText(rCrit.toFixed(1) + '%', drawX, pad.t + 10);
+  }
+}
 // ── Completion screen table ──
 function renderEcTable() {
   const el = $('#ecTable');
