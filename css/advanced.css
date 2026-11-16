@@ -132,7 +132,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 
 /* ── Library screen ── */
 #advLibrary:not(.hide) {
-  display: flex !important;
+  display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
@@ -149,7 +149,6 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   align-items: center;
   gap: 16px;
   margin: 0 0 4px;
-  flex-shrink: 0;
 }
 #advLibrary .libhead #libBack { justify-self: start; }
 #advLibrary .libhead h1 {
@@ -157,18 +156,13 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   text-align: center;
   margin: 0;
 }
-
-#advLibrary #libSub {
-  text-align: center;
-  margin: 0 0 12px;
-}
+#advLibrary #libSub { text-align: center; margin: 0 0 12px; }
 
 #advLibrary .libgrid {
-  display: grid !important;
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
-  margin: 0;
 }
 
 .libcard {
@@ -181,7 +175,6 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   background: rgba(0,0,0,.35);
   color: inherit;
   text-align: left;
-  cursor: pointer;
   font: inherit;
   border-radius: 4px;
   min-height: 110px;
@@ -206,24 +199,21 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   inset: 0;
   z-index: 200;
   background: rgba(0,0,0,.85);
-  padding: 16px;
+  padding: 5vh 4vw;
   overflow-y: auto;
 }
 #expBrief:not(.hide), #expComplete:not(.hide) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
 }
 #expBrief .cfb, #expComplete .cfb {
   width: min(92vw, 900px);
-  max-width: 100%;
-  max-height: calc(100dvh - 32px);
-  overflow-y: auto;
+  margin: 0 auto;
   background: #0c120d;
   border: 2px solid var(--c);
   border-radius: 6px;
   padding: 20px;
 }
+
 #expBrief h1, #expComplete h1 {
   color: var(--g);
   margin: 0 0 4px;
@@ -238,18 +228,13 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   text-align: left;
 }
 #expBrief p { text-align: left; }
-#expBrief ol {
-  padding-left: 20px;
-  margin: 4px 0 12px;
-  text-align: left;
-}
+#expBrief ol { padding-left: 20px; margin: 4px 0 12px; text-align: left; }
 #expBrief ol li { margin: 4px 0; }
 #expBrief .row, #expComplete .row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
-  justify-content: flex-start;
 }
 
 #ecMetrics { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
@@ -300,9 +285,5 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 #procCard .btn { width: 100%; font-size: .75rem; padding: 6px; }
 
 @media (max-width: 720px) {
-  #procCard {
-    width: calc(100% - 16px);
-    left: 8px;
-    right: 8px;
-  }
+  #procCard { width: calc(100% - 16px); left: 8px; right: 8px; }
 }
