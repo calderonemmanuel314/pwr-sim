@@ -7,6 +7,7 @@ import { initAbout } from './about.js';
 import { learn } from './learn.js';
 import { joinPage, client } from './client.js';
 import { host } from './host.js';
+import { initExperiments, openLibrary } from './experiments.js';
 
 function showDiff() {
   show('#menu', false);
@@ -29,6 +30,7 @@ function showDiff() {
 
 initAudioListeners();
 initAbout();
+initExperiments();
 loadPeer().catch(() => { /* Retry happens when entering Group Mode or Client */ });
 
 const Q = new URLSearchParams(location.search);
@@ -45,6 +47,7 @@ if (ROLE === 'join') {
   $('#bLearn').onclick = learn;
   $('#bAdv').onclick = () => { show('#menu', false); show('#advLanding', true); };
   $('#advFreeBtn').onclick = () => { show('#advLanding', false); host('advanced'); };
+  $('#advLibBtn').onclick = openLibrary;
   $('#advBack').onclick = () => { show('#advLanding', false); show('#menu', true); };
 
   const mode = Q.get('mode');
