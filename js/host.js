@@ -341,14 +341,15 @@ export function host(mode, diff) {
   $('#bpm').onclick = () => pmt();
   $('#pmx').onclick = () => pmt(false);
   $('#phase').onclick = () => pmt(true);
-  addEventListener('keydown', e => {
+  const onKeyDown = e => {
     if (e.key === 'Escape') pmt(false);
     else if (!e.shiftKey && !e.ctrlKey && (e.key === 'p' || e.key === 'P') && S.phase === 'run') pmt();
     else if (e.shiftKey && (e.key === 'O' || e.key === 'o')) {
       e.preventDefault(); S.ov = !S.ov; document.body.classList.toggle('ov', S.ov);
       if (S.phase === 'lobby') lobby();
     }
-  });
+  };
+  addEventListener('keydown', onKeyDown);
 
   const oRodsEl = $('#oRods'); if (oRodsEl) oRodsEl.oninput = e => { S.in.rods = +e.target.value; sync(); if (S.override.rods) sendTo('rods', { t: 'ack', v: pick('rods'), cd: D.cd, br: D.short, hint: D.ph ? D.ph.rods : '' }); };
   const oPumpEl = $('#oPump'); if (oPumpEl) oPumpEl.oninput = e => { S.in.pump = +e.target.value; sync(); if (S.override.coolant) sendTo('coolant', { t: 'ack', v: pick('coolant'), cd: D.cd, br: D.short, hint: D.ph ? D.ph.coolant : '' }); };
@@ -436,6 +437,7 @@ export function host(mode, diff) {
     stop() {
       STOPPED = true;
       clearInterval(intervalId);
+      removeEventListener('keydown', onKeyDown);
       AU.klaxon(false);
       document.body.classList.remove('melt', 'boom', 'alarm', 'cold');
     }
