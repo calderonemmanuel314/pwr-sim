@@ -10,5 +10,5 @@ The app links with `<a href="worksheets/<slug>.pdf" download>`. If a PDF is
 missing, the link is hidden automatically (HEAD check). Drop a PDF here and
 the link appears the next time that experiment's briefing opens.
 
-PDFs are added as each experiment's phase ships. See ROADMAP.md §2 and §4
-for the catalogue and mapping.
+PDFs are added as each experiment's phase ships. See ROADMAP.md §4 for the
+catalogue and slug list.
