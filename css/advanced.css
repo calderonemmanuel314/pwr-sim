@@ -124,3 +124,64 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
   body.adv .about-content h1{font-size:1.2rem}
 }
+
+
+/* ── Phase 4: Experiment Library shell ── */
+
+/* #ctr becomes the positioning context for the procedure card overlay */
+#ctr { position: relative; }
+
+/* Library screen */
+.libhead { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.libhead h1 { margin: 0; }
+.libgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.libcard {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  padding: 14px; border: 2px solid var(--c); background: rgba(0,0,0,.35);
+  color: inherit; text-align: left; cursor: pointer; font: inherit;
+  border-radius: 4px; min-height: 96px;
+}
+.libcard b { font-size: 1rem; color: var(--y); }
+.libcard i { font-style: normal; font-size: .85rem; color: var(--dim); }
+.libcard small { font-size: .7rem; color: var(--c); letter-spacing: .05em; }
+.libcard:hover:not(:disabled) { border-color: var(--y); }
+.libcard:disabled, .libcard-off { opacity: .45; cursor: not-allowed; }
+
+/* Briefing + completion modals — positioning always, display only when shown */
+#expBrief, #expComplete {
+  position: fixed; inset: 0; place-items: center;
+  background: rgba(0,0,0,.85); z-index: 200; padding: 16px; overflow-y: auto;
+}
+#expBrief:not(.hide), #expComplete:not(.hide) { display: grid; }
+#expBrief .cfb, #expComplete .cfb {
+  background: #0c120d; border: 2px solid var(--c); padding: 20px;
+  border-radius: 6px; width: 100%; max-width: min(92vw,900px);
+}
+#expBrief h3 { color: var(--y); margin: 12px 0 4px; font-size: .95rem; letter-spacing: .06em; }
+#expBrief ol { padding-left: 20px; margin: 4px 0 12px; }
+#expBrief ol li { margin: 4px 0; }
+#expBrief .row, #expComplete .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+/* Completion screen metrics */
+#ecMetrics { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.ec-metric { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--c); border-radius: 4px; }
+.ec-metric b { font-size: 1.4rem; color: var(--y); }
+
+/* Procedure card — floats bottom-right inside #ctr */
+#procCard {
+  position: absolute; right: 8px; bottom: 8px;
+  width: 320px; max-width: calc(100% - 16px);
+  background: rgba(12,18,13,.94); border: 2px solid var(--y);
+  border-radius: 6px; padding: 10px; z-index: 50; font-size: .8rem;
+}
+#procCard .pc-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+#procCard .pc-head b { color: var(--y); font-size: .8rem; letter-spacing: .06em; }
+#procCard .pc-toggle { background: transparent; border: 1px solid var(--y); color: var(--y); font: inherit; cursor: pointer; padding: 0 6px; border-radius: 3px; }
+#procCard ol { padding-left: 18px; margin: 4px 0 8px; }
+#procCard ol li { margin: 2px 0; line-height: 1.3; }
+#procCard.pc-collapsed ol, #procCard.pc-collapsed #pcEnd { display: none; }
+#procCard .btn { width: 100%; font-size: .75rem; padding: 6px; }
+
+@media (max-width: 720px) {
+  #procCard { width: calc(100% - 16px); left: 8px; right: 8px; }
+}
