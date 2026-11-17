@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+<title>PWR SIMULATION · Educational Model</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/base.css?v=2.3.1">
+<link rel="stylesheet" href="css/hud.css?v=2.3.1">
+<link rel="stylesheet" href="css/client.css">
+<link rel="stylesheet" href="css/advanced.css?v=2.3.1">
+</head>
+<body>
+
+<div id="menu" class="screen">
+  <h1>PWR SIMULATION</h1>
+  <p class="sub">A simplified, pressurized-water-reactor teaching model. Four crews, one reactor, ten minutes.</p>
+  <div class="row">
+    <button class="btn" id="bGroup">GROUP MODE (HOST)</button>
+    <button class="btn y" id="bSand">SANDBOX MODE</button>
+    <button class="btn" id="bLearn" style="border-color:var(--c);color:var(--c)">LEARNING MODE</button>
+    <button class="btn" id="bAdv" style="border-color:var(--r);color:var(--r)">ADVANCED MODE</button>
+  </div>
+  <p class="sub">Group Mode: projector + four phones.<br>Sandbox Mode: one screen, all controls.<br>Learning Mode: explore the reactor.<br>Advanced Mode: instrumentation and experiments.<br><b style="color:var(--y)">Classroom model · not for real plant operation.</b></p>
+</div>
+
+<div id="advLanding" class="screen hide">
+  <h1>ADVANCED MODE</h1>
+  <p class="sub">Nuclear instrumentation and guided experiments.</p>
+  <div class="row">
+    <button class="btn" id="advFreeBtn">FREE EXPLORATION</button>
+    <button class="btn" id="advLibBtn">EXPERIMENT LIBRARY</button>
+  </div>
+  <button class="btn y" id="advBack">◄ BACK</button>
+</div>
+
+<div id="advLibrary" class="screen hide">
+  <div class="libhead">
+    <button class="btn y" id="libBack">◄ BACK</button>
+    <h1>EXPERIMENT LIBRARY</h1>
+  </div>
+  <p class="sub" id="libSub">Guided experiments. Each card opens a briefing; worksheets download as PDF.</p>
+  <div class="libgrid" id="libGrid"></div>
+</div>
+
+<div id="diff" class="screen hide"><h1>CHOOSE YOUR SCENARIO</h1><div class="dcards" id="dcards"></div><button class="btn y" id="dback">◄ BACK</button></div>
+
+<div id="learn" class="screen hide"><div class="lhead"><h1>LEARNING MODE</h1><button class="btn y" id="lback">◄ BACK</button></div><p class="sub">Tap any part of the reactor, or pick one from the list.</p>
+<div class="lrow"><div id="lsvg"></div><div id="linfo"><h3 id="lt"></h3><p id="lr"></p><p id="lg"></p><div id="lx"></div></div></div><div id="lchips"></div></div>
+
+<div id="brf" class="hide"><div class="cfb" style="max-width:min(92vw,900px)"><h1 id="bt"></h1><p id="bs" style="font-size:1.3em"></p><p id="bg" style="color:var(--y)"></p><button class="btn" id="bgo">BEGIN SHIFT</button></div></div>
+<div id="cf" class="hide"><div class="cfb"><p id="cfm"></p><div class="row"><button class="btn" id="cfy">YES</button><button class="btn y" id="cfn">CANCEL</button></div></div></div>
+
+<div id="expBrief" class="hide"><div class="cfb">
+  <h1 id="ebTitle"></h1>
+  <p id="ebMeta" class="sub"></p>
+  <h3>OBJECTIVE</h3><p id="ebObj"></p>
+  <h3>PROCEDURE</h3><ol id="ebProc"></ol>
+  <h3>WHAT TO RECORD</h3><p id="ebRecord"></p>
+  <p id="ebLimits" class="sub" style="color:var(--y)"></p>
+  <div class="row">
+    <a class="btn" id="ebWks" href="#" download hidden>📄 WORKSHEET</a>
+    <button class="btn y" id="ebBegin" type="button">BEGIN EXPERIMENT</button>
+    <button class="btn" id="ebCancel" type="button">CANCEL</button>
+  </div>
+</div></div>
+
+<div id="expComplete" class="hide"><div class="cfb">
+  <h1>EXPERIMENT COMPLETE</h1>
+  <p id="ecTitle" class="sub"></p>
+  <div id="ecMetrics"></div>
+  <div id="ecTable" class="hide"></div>
+  <div class="row">
+    <button class="btn" id="ecCSV" type="button" disabled>💾 CSV</button>
+    <a class="btn" id="ecWks" href="#" download hidden>📄 WORKSHEET</a>
+    <button class="btn y" id="ecRerun" type="button">RERUN</button>
+    <button class="btn" id="ecLib" type="button">BACK TO LIBRARY</button>
+  </div>
+</div></div>
+
+<div id="join" class="screen hide">
+  <h1>JOIN</h1>
+  <p class="sub">Type the join code, then pick your division. Only one device per division.</p>
+  <input id="jc" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" autocomplete="off">
+  <div id="jd"><button class="dv" data-r="rods">DIV 1 · CONTROL RODS</button><button class="dv" data-r="coolant">DIV 2 · COOLANT PUMP</button><button class="dv" data-r="pressure">DIV 3 · PRESSURIZER</button><button class="dv" data-r="xenon">DIV 4 · BORON / XENON</button></div>
+  <p id="je" class="st"></p>
+  <button class="btn" id="jb">JOIN</button>
+</div>
+
+<div id="lobby" class="screen hide">
+  <h1>LOBBY</h1>
+  <div class="lobrow">
+    <div class="qrcol"><div class="qrbox" id="qr"></div><div class="sub">Scan to open the join page</div><div class="sub" id="jurl" style="font-size:.8rem"></div></div>
+    <div class="lobside">
+      <div class="sub" id="lmsg">Opening signalling channel…</div>
+      <div class="sub">JOIN CODE</div>
+      <div id="hid">----</div>
+      <div class="slots" id="slots"></div>
+      <button class="btn" id="bStart" disabled>START SIMULATION</button>
+      <p class="sub">Start unlocks at 4 of 4 connections.</p>
+    </div>
+  </div>
+</div>
+
+<div id="hud" class="hide">
+  <div id="left">
+    <div id="top">
+      <div class="pn"><h3>HOT-LEG COOLANT TEMP</h3><div class="big" id="vT">--<span class="unit">°C</span></div></div>
+      <div class="pn"><h3>SYSTEM PRESSURE</h3><div class="big" id="vP">--<span class="unit">MPa</span></div></div>
+      <div class="pn"><h3>POWER TO THE GRID</h3><div class="big" id="vN">--<span class="unit">MWe</span></div><div class="lnk" id="thermalReadout">--</div></div>
+      <div id="modeBadge">ADVANCED MODE</div>
+    </div>
+
+    <div id="instrStrip">
+      <div id="instrHeader">
+        <span>NUCLEAR INSTRUMENTATION</span>
+        <span id="vFlux2">n/cm²·s —</span>
+      </div>
+      <div id="instrRow">
+        <div class="instr-cell">
+          <div class="instr-label">NEUTRON COUNT RATE</div>
+          <div class="instr-value" id="vCps">—</div>
+          <div class="instr-sub">10⁹ cps = full</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">DOSE</div>
+          <div class="instr-value" id="vDose">—</div>
+          <div class="instr-sub">near primary</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">PERIOD</div>
+          <div class="instr-value" id="vPeriod">—</div>
+          <div class="instr-sub" id="vDoubling">—</div>
+        </div>
+        <div class="instr-cell">
+          <div class="instr-label">ρ · REACTIVITY</div>
+          <div class="instr-value" id="vRho">—</div>
+          <div class="instr-sub">pcm</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mainRow">
+      <div id="kcol">
+        <div class="kvert-hd">k<sub>eff</sub></div>
+        <div class="kscale"><span id="kLo">0.98</span><span id="kHi">1.02</span></div>
+        <div id="kw"><svg id="kg" viewBox="0 0 40 300" preserveAspectRatio="none"></svg></div>
+        <b id="kv">1.0000</b>
+        <span id="kst">CRITICAL</span>
+        <small id="krate" style="font-size:.42rem;color:var(--dim);text-align:center;line-height:1.1;display:none"></small>
+        <span id="kclip" class="hide" style="font-size:.5rem;color:var(--y);text-align:center"></span>
+      </div>
+      <div id="ctr">
+        <div id="statusStrip">
+          <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
+          <div id="coach" class="hide"></div>
+          <div id="phase">--</div>
+        </div>
+        <div id="svgw">
+<svg viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg" font-family="monospace" fill="none" stroke-width="2.5" stroke-linecap="round">
+ <defs>
+  <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#1e2b21"/><stop offset=".5" stop-color="#5f7763"/><stop offset="1" stop-color="#1b261e"/></linearGradient>
+  <linearGradient id="sheen" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".3" stop-color="#fff" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>
+  <pattern id="fp" width="6" height="100" patternUnits="userSpaceOnUse"><rect x="1.2" y="2" width="3.6" height="96" rx="1.8" fill="#f2c94c"/></pattern>
+  <clipPath id="vc"><rect x="60" y="200" width="120" height="230" rx="40"/></clipPath>
+  <clipPath id="rc"><rect x="50" y="146" width="140" height="290"/></clipPath>
+ </defs>
+ <path id="dome" d="M20 490V240Q20 30 300 30T580 240V490Z" stroke="#1f3a1f" stroke-dasharray="4 6" fill="#0c120d" fill-opacity=".5"/>
+ <path d="M20 490H580" stroke="#2a4a2a"/>
+ <path d="M180 250H340M340 400H180M245 170V250" stroke="#1b2a26" stroke-width="16"/>
+ <path id="hot" class="flow" d="M180 250H340" stroke="#ff7a2a"/><path id="cold" class="flow" d="M340 400H180" stroke="#35c8ff"/>
+ <circle cx="260" cy="400" r="24" fill="#0b120d" stroke="#9bb59d"/><g id="pump" class="spin" style="--ts:1s"><path d="M260 384V416M244 400H276M249 389L271 411M271 389L249 411" stroke="#35c8ff" stroke-width="2"/></g>
+ <text x="228" y="448" fill="#35c8ff" stroke="none" font-size="10">PUMP</text>
+ <rect x="60" y="200" width="120" height="230" rx="40" fill="#0b120d"/>
+ <rect id="water" x="60" y="200" width="120" height="230" clip-path="url(#vc)" fill="#1e6bff" stroke="none" opacity=".85"/>
+ <g id="fuel" clip-path="url(#vc)"><rect x="64" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="91" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="115" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="139" y="315" width="12" height="100" rx="3" fill="url(#fp)"/><rect x="166" y="315" width="12" height="100" rx="3" fill="url(#fp)"/></g>
+ <g clip-path="url(#rc)"><g id="rods"><rect x="76" y="270" width="92" height="8" rx="4" fill="#c8ffc8" stroke="none"/><g fill="#9fb2ad" stroke="#e8fff4" stroke-width="1"><rect x="80" y="278" width="8" height="132" rx="4"/><rect x="104" y="278" width="8" height="132" rx="4"/><rect x="128" y="278" width="8" height="132" rx="4"/><rect x="152" y="278" width="8" height="132" rx="4"/></g><g fill="#2e3b38" stroke="none"><rect x="80" y="382" width="8" height="28" rx="4"/><rect x="104" y="382" width="8" height="28" rx="4"/><rect x="128" y="382" width="8" height="28" rx="4"/><rect x="152" y="382" width="8" height="28" rx="4"/></g></g></g>
+ <rect x="60" y="200" width="120" height="230" rx="40" fill="url(#sheen)" opacity=".45" stroke="none"/>
+ <rect id="vessel" x="60" y="200" width="120" height="230" rx="40" stroke="#9bb59d" stroke-width="5"/>
+ <rect x="66" y="146" width="108" height="56" rx="10" fill="url(#metal)" stroke="#9bb59d" opacity=".9"/><rect x="96" y="128" width="48" height="20" rx="7" fill="url(#metal)" stroke="#9bb59d"/>
+ <text x="44" y="120" fill="#c8ffc8" stroke="none" font-size="10">RODS</text><text x="190" y="335" fill="#f2c94c" stroke="none" font-size="10">◄ FUEL</text>
+ <rect x="215" y="60" width="60" height="110" rx="22" fill="#0b120d" stroke="#9bb59d" stroke-width="4"/>
+ <rect id="plev" x="219" y="110" width="52" height="57" rx="18" fill="#1e6bff" stroke="none" opacity=".7"/>
+ <path id="heat" d="M226 164H264" stroke="#ff2a2a" stroke-width="5" opacity="0"/>
+ <g id="spray" opacity="0"><circle class="drop" cx="230" cy="78" r="3" fill="#35c8ff" stroke="none"/><circle class="drop" cx="245" cy="74" r="3" fill="#35c8ff" stroke="none" style="animation-delay:.25s"/><circle class="drop" cx="260" cy="78" r="3" fill="#35c8ff" stroke="none" style="animation-delay:.5s"/></g>
+ <text x="210" y="52" fill="#6b8f6b" stroke="none" font-size="10">PRESS.</text>
+ <rect x="340" y="150" width="90" height="290" rx="30" fill="#0b120d" stroke="#9bb59d" stroke-width="4"/>
+ <path d="M356 250H414V400H356M368 262H402V388H368" stroke="#ff7a2a" opacity=".65" stroke-width="2"/>
+ <text x="332" y="462" fill="#6b8f6b" stroke="none" font-size="10">STEAM GEN</text>
+ <path d="M385 150V90H470M545 130V425H385V440" stroke="#1b2a26" stroke-width="12"/>
+ <path id="steam" class="flow" d="M385 150V90H470" stroke="#e8f6ff"/><path id="feed" class="flow" d="M545 130V425H385V440" stroke="#35c8ff" opacity=".8"/>
+ <polygon points="470,66 540,44 540,136 470,114" fill="url(#metal)" stroke="#9bb59d"/>
+ <g id="turb" class="spin" style="--ts:2s"><path d="M505 70V110M485 90H525M491 76L519 104M519 76L491 104" stroke="#ffd400" stroke-width="2"/></g>
+ <rect x="548" y="60" width="50" height="60" rx="10" fill="#0b120d" stroke="#ffd400"/><path id="gl" d="M556 90h34" stroke="#ffd400" stroke-width="7" opacity=".2"/>
+ <text x="470" y="30" fill="#6b8f6b" stroke="none" font-size="10">TURB/GEN</text>
+ <rect x="480" y="430" width="70" height="30" rx="8" stroke="#35c8ff" opacity=".7"/><text x="486" y="478" fill="#6b8f6b" stroke="none" font-size="10">CONDENSER</text>
+ <rect x="296" y="274" width="40" height="68" rx="8" fill="#0b120d" stroke="#b36bff"/><rect id="blev" x="299" y="339" width="34" height="0" rx="5" fill="#b36bff" opacity=".75" stroke="none"/>
+ <text x="288" y="266" fill="#b36bff" stroke="none" font-size="9">BORON</text>
+ <path id="bpipe" class="flow" d="M316 342V400" stroke="#b36bff" opacity="0"/>
+ <g id="bdots" stroke="none"></g><g id="nflux" stroke="none"></g>
+ <path id="prv" d="M238 56l-6-10M245 56v-12M252 56l6-10" stroke="#e8f6ff" stroke-width="2.5" opacity="0"/>
+ <text x="262" y="242" fill="#ff9a5a" stroke="none" font-size="10">HOT ▶</text><text x="184" y="418" fill="#7fd8ff" stroke="none" font-size="9">◀ COLD</text>
+ <path id="crack" d="M120 200L110 240L130 275L108 320L132 365L116 430" stroke="#fff" stroke-width="3"/>
+ <ellipse id="molten" cx="120" cy="450" rx="110" ry="30" fill="#ff5a00" stroke="none" opacity=".9"/>
+</svg>
+        </div>
+        <div id="timerBox">
+          <div id="tv">10:00</div>
+          <div class="bar"><i id="hold"></i></div>
+          <div id="hl">0/10s</div>
+        </div>
+      </div>
+      <div id="expCol">
+        <div id="gslot">
+          <div class="gwrap" id="gK">
+            <div class="ghead"><span>k<sub>eff</sub> vs ROD %</span><span id="gKVal">—</span></div>
+            <canvas id="pcKPlot"></canvas>
+          </div>
+          <div class="gwrap" id="gM">
+            <div class="ghead"><span>1/M vs ROD %</span><span id="gMNote"></span></div>
+            <canvas id="pcPlot" width="320" height="140"></canvas>
+          </div>
+        </div>
+        <div id="pcActions">
+          <div id="pcWarn" class="hide"></div>
+          <div class="pc-btns">
+            <button class="btn y" id="pcSettle" type="button">SETTLE &amp; LOG</button>
+            <button class="btn" id="pcDone" type="button">DONE</button>
+          </div>
+          <div id="pcPred" class="hide"></div>
+        </div>
+        <div id="procCard" class="hide">
+          <div class="pc-head"><b id="pcTitle">PROCEDURE</b><button id="pcToggle" class="pc-toggle" type="button">▾</button></div>
+          <ol id="pcSteps"></ol>
+          <div id="pcRodCal" class="hide">
+            <p class="pc-hint">Move the rods, press SETTLE &amp; LOG (4+ steps), then DONE.</p>
+            <div id="pcLog" class="hide"></div>
+          </div>
+          <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="recPanel">
+      <span id="recDot" class="rec-dot"></span>
+      <span id="recTime">00:00</span>
+      <span id="recRows">Rows: 0 / 5000</span>
+      <div class="rec-actions">
+        <button id="recStart" class="btn-rec" type="button">▶ START</button>
+        <button id="recStop" class="btn-rec" type="button" style="display:none">■ STOP</button>
+        <button id="recCSV" class="btn-rec" type="button" disabled>💾 CSV</button>
+        <button id="recClear" class="btn-rec" type="button" disabled>🗑 CLEAR</button>
+      </div>
+    </div>
+    <div id="log"></div>
+  </div>
+
+  <div id="right">
+    <div class="pn" data-role="rods">
+      <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
+      <div class="bar"><i id="bRods"></i></div>
+      <div class="lnk" id="lRods" style="font-size:.68rem;color:var(--dim)"></div>
+      <div class="pn-ctl" data-key="rods"><button class="pm" data-d="-1" data-step="5">−</button><input type="range" id="oRods" min="0" max="100" disabled><button class="pm" data-d="1" data-step="5">+</button></div>
+      <div class="pn-ovr"><span class="pn-status" id="os-rods">● LINK OK</span><button class="ovr-btn" id="ob-rods" data-r="rods">OVERRIDE</button></div>
+    </div>
+    <div class="pn" data-role="coolant">
+      <div class="pn-hd"><h3>DIV 2 · PUMP</h3><span class="pn-val" id="rPump">--</span></div>
+      <div class="bar"><i id="bPump"></i></div>
+      <div class="lnk" id="lPump" style="font-size:.68rem;color:var(--dim)">--</div>
+      <div class="pn-ctl" data-key="pump"><button class="pm" data-d="-1" data-step="5">−</button><input type="range" id="oPump" min="0" max="100" disabled><button class="pm" data-d="1" data-step="5">+</button></div>
+      <div class="pn-ovr"><span class="pn-status" id="os-coolant">● LINK OK</span><button class="ovr-btn" id="ob-coolant" data-r="coolant">OVERRIDE</button></div>
+    </div>
+    <div class="pn" data-role="pressure">
+      <div class="pn-hd"><h3>DIV 3 · PRESS.</h3><span class="pn-val" id="rPres">--</span></div>
+      <div class="bar"><i id="bPres"></i></div>
+      <div class="lnk" id="lPres" style="font-size:.68rem;color:var(--dim)">--</div>
+      <div class="pn-ctl"><button class="tb" id="oSpr" disabled>▼</button><button class="tb" id="oHold" disabled>■</button><button class="tb" id="oHeat" disabled>▲</button></div>
+      <div class="pn-ovr"><span class="pn-status" id="os-pressure">● LINK OK</span><button class="ovr-btn" id="ob-pressure" data-r="pressure">OVERRIDE</button></div>
+    </div>
+    <div class="pn" data-role="xenon">
+      <div class="pn-hd"><h3>DIV 4 · BORON</h3><span class="pn-val" id="rBor">--</span></div>
+      <div class="bar"><i id="bBor"></i></div>
+      <div class="bm" id="bmini"></div>
+      <div class="pn-ctl" data-key="boron"><button class="pm" data-d="-1" data-step="50">−</button><input type="range" id="oBor" min="0" max="2000" step="10" disabled><button class="pm" data-d="1" data-step="50">+</button></div>
+      <div class="pn-ovr"><span class="pn-status" id="os-xenon">● LINK OK</span><button class="ovr-btn" id="ob-xenon" data-r="xenon">OVERRIDE</button></div>
+    </div>
+  </div>
+
+  <div id="mobileFabs">
+    <div class="sbx-tabs" id="sbxTabs">
+      <button data-sbx="rods">RODS</button>
+      <button data-sbx="coolant">PUMP</button>
+      <button data-sbx="pressure">PRESS</button>
+      <button data-sbx="xenon">BORON</button>
+    </div>
+    <button id="bpmMobile" type="button" title="Phase Map">PM</button>
+  </div>
+</div>
+
+<div id="vig"></div><canvas id="fx" class="hide"></canvas><div id="fl"></div>
+<div id="bar" class="hide"><button id="bhome">⌂ HOME</button><button id="bback">◄ BACK</button><button id="snd">SOUND ON</button><button id="bpm">PHASE MAP (P)</button><span id="modelbadge">CLASSROOM MODEL · NOT FOR OPERATION</span></div>
+
+<div id="pm" class="hide"><div class="pmbox"><svg id="pmsvg" viewBox="0 0 560 440" font-family="monospace"></svg><div class="pmtx">
+<div style="border-color:var(--y)"><b>WHICH WATER IS THIS?</b>PRIMARY COOLANT. Yellow: hot-leg; cyan: cold-leg. The two loops are separate. Saturation boundary from the Wagner–Pruss correlation; saturation temperature by numerical inversion.</div>
+<div id="pmlive" style="border-color:var(--c)"></div>
+<div style="border-color:#35c8ff"><b>1 · SUBCOOLED LIQUID</b>Below the saturation temperature at current pressure, the primary coolant remains liquid. Reference point ≈ 315 °C / 15.5 MPa.</div>
+<div style="border-color:#b36bff"><b>2 · CRITICAL POINT</b>About 373.946 °C and 22.064 MPa. Above both coordinates there is no distinct liquid–vapor boundary.</div>
+<div style="border-color:#ffd400"><b>MODEL LIMITS</b>Tracks bulk coolant only. Fuel temperature is computed internally for Doppler feedback but is not shown as a separate readout. No cladding temperature, DNB, DNBR, or vessel stress. Relief-valve and pressure limits are game parameters.</div>
+<div style="border-color:#39ff14">Supercritical water is a fluid state, not plasma or fusion.</div></div></div>
+<button class="btn" id="pmx">CLOSE (Esc)</button></div>
+
+<div id="ovr" class="hide"><h1 id="ot"></h1><p class="sub" id="om"></p><button class="btn" id="bAgain">RESTART</button></div>
+
+<div id="cl" class="hide">
+  <header><button id="chome">⌂</button><h2 id="cn"></h2><span id="lk" class="st">OFFLINE</span></header>
+  <p class="src" id="cnotice">EDUCATIONAL SIMULATION ONLY</p><div id="cb"></div><div id="cv"></div>
+  <div id="cc"></div>
+  <div id="cd"><i id="cdi"></i><span>Transmitting command to core…</span></div>
+  <button class="btn" id="ex" disabled>CONNECTING…</button>
+</div>
+
+<button id="bAbout" type="button" title="About PWR Simulation">ⓘ ABOUT</button>
+
+<div id="aboutScreen" class="hide">
+  <div class="about-content">
+    <div class="about-header">
+      <h1>ABOUT PWR SIMULATION</h1>
+      <span class="about-version" id="aboutVersion">v2.3.0</span>
+      <button class="btn y" id="aboutClose">◄ BACK</button>
+    </div>
+    <div class="about-warn">
+      ⚠ NOT FOR REAL PLANT OPERATION — All numbers are classroom parameters. Not validated against any real reactor. Educational use only.
+    </div>
+    <details open>
+      <summary>OVERVIEW</summary>
+      <p>A simplified, pressurized-water-reactor teaching model. Four crews, one reactor. It teaches reactor dynamics through four control divisions (rods, coolant pump, pressurizer, boron) and, in Advanced Mode, five additional nuclear instrumentation readouts (neutron count rate, dose rate, reactor period, reactivity, thermal flux).</p>
+    </details>
+    <details>
+      <summary>QUICK START</summary>
+      <ul>
+        <li><strong>Group Mode</strong> — projector + up to four phones. Host runs the reactor, students control divisions.</li>
+        <li><strong>Sandbox Mode</strong> — single screen, all controls. No timer, no win condition.</li>
+        <li><strong>Learning Mode</strong> — clickable reactor schematic. Explore components and physics.</li>
+        <li><strong>Advanced Mode</strong> — nuclear instrumentation, CSV data recorder, and an Experiment Library of guided experiments.</li>
+      </ul>
+    </details>
+    <details>
+      <summary>OBJECTIVES</summary>
+      <ul>
+        <li>Understand how the four control divisions affect reactor power.</li>
+        <li>Read and interpret hot-leg temperature, system pressure, and grid power.</li>
+        <li>Recognize criticality, subcriticality, and supercriticality via k_eff.</li>
+        <li>Coordinate across divisions to reach and hold a target power level.</li>
+        <li>Practice operating within safe limits and recognize failure modes.</li>
+        <li>(Advanced) Read nuclear instrumentation: count rate, dose, period, reactivity.</li>
+        <li>(Advanced) Browse the Experiment Library, read an experiment briefing, and step through the procedure and completion flow.</li>
+      </ul>
+    </details>
+    <details open>
+      <summary>LIMITATIONS</summary>
+      <ol>
+        <li>Prompt neutron generation time stretched 1000× for pacing (Λ = 0.1 s vs real ~1e-4 s). Distorts short periods and inflates asymptotic reactivity-vs-period by ~2.18×.</li>
+        <li>Boron worth realistic (~−10 pcm/ppm, comparable to real PWRs). Doppler coefficients 2–6 pcm/°C depending on scenario — Easy slightly above real, Moderate/Hard in range.</li>
+        <li>Xenon model distorted: uneven compression (~570× for I-135, ~96× for Xe-135), post-SCRAM peak ~1–2 min with ~17% overshoot, absolute worth ~3–4× real. Full detail in <code>about.html</code> §4.3 and §5.</li>
+        <li>No spatial dimension. Flux, dose, and power are core-averages, not spatial distributions.</li>
+        <li>Single cps detector covers all power ranges (real reactors use SR/IR/PR instruments).</li>
+        <li>Dose assumes a fictional shielded position near primary piping; real detector positions vary by orders of magnitude.</li>
+        <li>Fission product pool is a single bucket, not an isotope-by-isotope inventory.</li>
+        <li>Activation products (Co-60, Fe-59) not modeled — real plants retain residual dose for years.</li>
+        <li>Fixed 20 MWth residual heat allowance at zero power.</li>
+        <li>33% thermal-to-electric conversion; 5% station service (real plants vary).</li>
+        <li>No departure from nucleate boiling (DNB), critical heat flux, or DNBR.</li>
+        <li>All warning, hold, and failure limits are game parameters — not real plant settings.</li>
+      </ol>
+    </details>
+    <details open>
+      <summary>DISCLAIMERS</summary>
+      <p>This is an educational model, not a validated plant simulator. It is not suitable for real-plant operation, operator training, licensing, or safety analysis. All numbers are illustrative. Dose values assume a fictional detector position and are not representative of any actual installation. The project is provided under the GNU Affero General Public License v3.0 with no warranty.</p>
+    </details>
+    <details>
+      <summary>AI ASSISTANCE DISCLOSURE</summary>
+      <p><strong>PWR Simulation is conceived and authored by Emmanuel Calderon.</strong> AI language models — primarily DeepSeek and Claude — were used as development tools for code implementation, initial physics parameter proposals, code review, and documentation drafting. Every architectural decision, pedagogical choice, physics validation against published reference literature (IAPWS-95, Keepin's six-group data, standard one-group diffusion theory), every ship decision, and all user testing remain with the author. AI-assisted does not mean AI-authored — every AI-suggested change was reviewed and either kept, adjusted, or rejected by the author before adoption. Full detail in the standalone documentation (<code>about.html</code> §9).</p>
+    </details>
+    <details>
+      <summary>PHYSICS, VERSION HISTORY &amp; CREDITS</summary>
+      <p>Full physics references, version changelog, and credits are included in the standalone documentation at <code>about.html</code>.</p>
+    </details>
+    <div class="about-footer">
+      <a href="about.html" target="_blank" rel="noopener" class="btn" id="aboutDownload">📄 OPEN FULL DOCUMENTATION</a>
+      <p class="sub">License: GNU AGPLv3 · <a href="https://github.com/calderonemmanuel314/pwr-sim" target="_blank" rel="noopener" style="color:var(--c)">github.com/calderonemmanuel314/pwr-sim</a></p>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

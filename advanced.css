@@ -1,0 +1,515 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+#modeBadge{display:none}
+body.adv #top{grid-template-columns:repeat(3,1fr) auto}
+body.adv #modeBadge{display:flex;align-items:center;justify-content:center;padding:0 .6vw;color:var(--c);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;opacity:.85}
+
+#instrStrip{display:none}
+body.adv #instrStrip{
+  display:flex;flex-direction:column;gap:.3vh;
+  padding:.5vh .7vw;background:var(--pn);
+  border:1px solid var(--ln);border-radius:12px;flex-shrink:0;
+}
+body.adv #instrHeader{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:.62rem;color:var(--dim);letter-spacing:.04em;
+}
+body.adv #instrRow{display:grid;grid-template-columns:repeat(4,1fr);gap:.5vw}
+body.adv .instr-cell{display:flex;flex-direction:column;gap:2px;padding:.2vh .4vw;border-left:1px solid var(--ln)}
+body.adv .instr-cell:first-child{border-left:0}
+body.adv .instr-label{font-size:.55rem;color:var(--dim);letter-spacing:.04em}
+body.adv .instr-value.ok{color:var(--g);text-shadow:0 0 10px #39ff1455}
+body.adv .instr-value.wn{color:var(--y);text-shadow:0 0 10px #ffd40055}
+body.adv .instr-value.cr{color:var(--r);text-shadow:0 0 12px #ff2a2a88;animation:blink .6s steps(2) infinite}
+body.adv .instr-value.off{color:var(--dim)}
+body.adv .instr-sub{font-size:.52rem;color:var(--dim);opacity:.7}
+
+/* Flat layout on desktop */
+body.adv #hud{grid-template-columns:1fr;grid-template-rows:1fr auto}
+body.adv #right{flex-direction:row;overflow-x:hidden;gap:.6vw}
+body.adv #right .pn{flex:1 1 0;min-height:0;min-width:0;padding:.8vh .7vw}
+body.adv #timerBox{display:none}
+
+/* Phase 2: Recorder panel */
+#recPanel{display:none}
+body.adv #recPanel{
+  display:flex;align-items:center;gap:.8vw;
+  padding:.4vh .8vw;
+  background:#050805;border:1px solid var(--ln);border-radius:10px;
+  flex-shrink:0;font-size:.7rem;
+}
+body.adv .rec-dot{width:10px;height:10px;border-radius:50%;background:#555;flex-shrink:0}
+body.adv .rec-dot-on{background:var(--g);animation:recPulse 1s ease-in-out infinite}
+@keyframes recPulse{50%{opacity:.35}}
+body.adv #recTime{color:var(--y);font-weight:700;font-family:var(--f);min-width:45px}
+body.adv #recRows{color:var(--dim);font-size:.65rem;flex:1}
+body.adv .rec-actions{display:flex;gap:.4vw}
+body.adv .btn-rec{
+  background:transparent;color:var(--tx);border:1px solid var(--ln);
+  border-radius:6px;padding:.2em .7em;font-size:.65rem;font-family:var(--f);
+  cursor:pointer;letter-spacing:.03em;
+}
+body.adv .btn-rec:hover:not(:disabled){border-color:var(--g);color:var(--g)}
+body.adv .btn-rec:disabled{opacity:.35;cursor:not-allowed}
+body.adv #recStart{color:var(--g);border-color:var(--g)}
+body.adv #recStop{color:var(--r);border-color:var(--r)}
+body.adv #recCSV{color:var(--c);border-color:var(--c)}
+
+/* Phase 3: About screen + corner link */
+#bAbout{
+  position:fixed;bottom:calc(var(--bar-h) + 8px);right:8px;z-index:50;
+  padding:4px 10px;
+  background:#000a;border:1px solid var(--ln);border-radius:6px;
+  color:var(--dim);font-family:var(--f);font-size:.7rem;
+  letter-spacing:.04em;cursor:pointer;
+  transition:color .15s,border-color .15s;
+}
+#hud:not(.hide) ~ #bAbout,
+#cl:not(.hide) ~ #bAbout,
+#join:not(.hide) ~ #bAbout{display:none}
+
+#aboutScreen{
+  position:fixed;inset:0;z-index:65;
+  background:#000e;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:4vh 4vw;overflow-y:auto;
+}
+.about-content{
+  background:var(--pn);border:1px solid var(--ln);border-radius:18px;
+  padding:4vh 4vw;max-width:800px;width:100%;
+  color:var(--tx);font-size:.95rem;line-height:1.55;
+  display:flex;flex-direction:column;gap:1.5vh;
+}
+.about-content h1{font-size:1.6rem;color:var(--g);margin:0}
+.about-header{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.about-version{color:var(--y);font-size:.85rem;font-family:var(--f);letter-spacing:.04em}
+.about-warn{
+  background:#2a0a0a;border-left:3px solid var(--r);
+  padding:.8em 1em;color:#ff9a9a;font-weight:600;border-radius:6px;
+}
+.about-content details{
+  background:#0b100c;border:1px solid var(--ln);
+  border-radius:8px;padding:.6em .8em;
+}
+.about-content details summary{
+  cursor:pointer;color:var(--y);font-weight:600;
+  letter-spacing:.03em;padding:.2em 0;
+}
+.about-content details[open] summary{margin-bottom:.5em}
+.about-content details ul,.about-content details ol{padding-left:1.4em}
+.about-content details li{margin-bottom:.3em}
+.about-content details p{color:var(--tx)}
+.about-content code{background:#000;padding:1px 4px;border-radius:3px;font-size:.85em}
+.about-footer{margin-top:1em;display:flex;flex-direction:column;gap:.5em;align-items:center}
+.about-footer a{text-decoration:none;display:inline-block}
+.about-footer .sub{font-size:.8rem;color:var(--dim);text-align:center}
+.about-footer a.btn{font-size:.9rem;padding:.6em 1.2em;color:var(--g);border-color:var(--g)}
+
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  body.adv #top{grid-template-columns:repeat(3,1fr)}
+  body.adv #modeBadge{display:none}
+  body.adv #instrRow{grid-template-columns:repeat(2,1fr);gap:3px}
+  body.adv .instr-value{font-size:.8rem}
+  body.adv #instrStrip{padding:4px 6px}
+  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.5rem}
+  body.adv #recTime{font-size:.55rem;min-width:35px}
+  body.adv #recRows{font-size:.5rem}
+  body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
+  #bar:not(.hide) ~ #bAbout{top:8px;bottom:auto;right:8px}
+  body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
+  body.adv .about-content h1{font-size:1.2rem}
+}
+
+
+/* ── Phase 4: Experiment Library shell ── */
+
+#ctr { position: relative; }
+
+/* ── Library screen ── */
+#advLibrary:not(.hide) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  padding: 2vh 3vw;
+  gap: 12px;
+}
+
+#advLibrary .libhead {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 4px;
+}
+#advLibrary .libhead #libBack { justify-self: start; }
+#advLibrary .libhead h1 {
+  grid-column: 2;
+  text-align: center;
+  margin: 0;
+}
+#advLibrary #libSub {
+  text-align: center;
+  margin: 0 0 12px;
+  max-width: none;
+  width: 100%;
+}
+
+#advLibrary .libgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.libcard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  border: 2px solid var(--c);
+  background: rgba(0,0,0,.35);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  border-radius: 4px;
+  min-height: 110px;
+}
+.libcard b { font-size: 1rem; color: var(--y); }
+.libcard i { font-style: normal; font-size: .85rem; color: var(--dim); }
+.libcard small { font-size: .7rem; color: var(--c); letter-spacing: .05em; }
+.libcard:hover:not(:disabled) { border-color: var(--y); }
+.libcard:disabled, .libcard-off { opacity: .45; cursor: not-allowed; }
+
+@media (max-width: 900px), (max-aspect-ratio: 1/1) {
+  #advLibrary .libgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  #advLibrary .libgrid { grid-template-columns: 1fr; }
+  #advLibrary:not(.hide) { padding: 1.5vh 3vw; }
+}
+
+/* ── Briefing & completion modals ── */
+#expBrief, #expComplete {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,.85);
+  padding: 5vh 4vw;
+  overflow-y: auto;
+}
+#expBrief:not(.hide), #expComplete:not(.hide) {
+  display: block;
+}
+#expBrief .cfb, #expComplete .cfb {
+  width: min(92vw, 900px);
+  max-width: min(92vw, 900px);
+  margin: 0 auto;
+  background: #0c120d;
+  border: 2px solid var(--c);
+  border-radius: 6px;
+  padding: 20px;
+}
+
+#expBrief h1, #expComplete h1 {
+  color: var(--g);
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  text-align: left;
+}
+#expBrief h3 {
+  color: var(--y);
+  margin: 12px 0 4px;
+  font-size: .95rem;
+  letter-spacing: .06em;
+  text-align: left;
+}
+#expBrief p { text-align: left; }
+#expBrief ol { padding-left: 20px; margin: 4px 0 12px; text-align: left; }
+#expBrief ol li { margin: 4px 0; }
+#expBrief .row, #expComplete .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#ecMetrics { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.ec-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid var(--c);
+  border-radius: 4px;
+}
+.ec-metric b { font-size: 1.4rem; color: var(--y); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 5 UI rework
+   Rules: (1) nothing is ever positioned over the reactor schematic,
+          (2) the priority graph gets its own slot next to it,
+          (3) phone controls live in a dock that is a grid row, not an overlay.
+   ═══════════════════════════════════════════════════════════════ */
+
+#mobileFabs{display:none}
+
+/* ── Procedure card: docked inside #expCol ── */
+#expCol{display:none}
+#procCard{
+  display:flex;flex-direction:column;flex:0 1 auto;min-height:0;
+  background:rgba(12,18,13,.96);border:2px solid var(--y);border-radius:10px;
+  overflow:hidden;font-size:.8rem;
+}
+#procCard .pc-head{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:6px 10px;cursor:pointer;flex-shrink:0;border-bottom:1px solid var(--ln);
+}
+#procCard .pc-head b{color:var(--y);font-size:.8rem;letter-spacing:.06em}
+#procCard .pc-toggle{
+  background:transparent;border:1px solid var(--y);color:var(--y);font:inherit;cursor:pointer;
+  padding:2px 10px;border-radius:4px;min-width:40px;min-height:30px;
+}
+#procCard #pcSteps{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 10px 6px 28px;margin:0}
+#procCard #pcSteps li{margin:2px 0;line-height:1.3}
+#procCard #pcRodCal{flex:1 1 auto;min-height:64px;overflow-y:auto;padding:6px 10px}
+#procCard .pc-hint{color:var(--dim);font-size:.7rem;line-height:1.3;margin:0 0 6px}
+#procCard #pcEnd{flex-shrink:0;width:auto;margin:4px 10px 8px;font-size:.75rem;padding:5px 6px;min-height:32px}
+#procCard .pc-hint:has(+ #pcLog:not(.hide)){display:none}
+
+/* Experiment actions: always visible, outside the collapsible card */
+#pcActions{display:none;flex:0 0 auto;background:var(--bg)}
+body.exp-rodcal #pcActions{display:block}
+#pcActions .pc-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#pcActions .btn{width:100%;font-size:.85rem;padding:8px 6px;min-height:42px}
+#pcActions #pcWarn{color:var(--y);font-size:.72rem;line-height:1.3;margin-bottom:6px}
+#pcActions #pcPred{
+  margin-top:6px;padding:8px 10px;font-size:.78rem;line-height:1.45;
+  background:#0c120d;border:1px solid var(--g);border-radius:10px;
+}
+#pcActions #pcPred .btn{width:auto;font-size:.8rem;padding:6px 14px;min-height:34px}
+#procCard.pc-collapsed #pcRodCal,
+#procCard.pc-collapsed #pcSteps,
+#procCard.pc-collapsed #pcEnd{display:none}
+#pcLog{max-height:130px;overflow-y:auto;margin:4px 0}
+
+/* ── Priority graph slot (rod-cal): 1/M while k_eff is blinded, k_eff after DONE ── */
+#gslot{display:none}
+.gwrap{
+  position:relative;flex:1 1 0;min-height:72px;
+  background:#050805;border:1px solid var(--ln);border-radius:10px;overflow:hidden;
+}
+.gwrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ghead{
+  position:absolute;top:5px;left:10px;right:10px;z-index:1;pointer-events:none;
+  display:flex;justify-content:space-between;gap:8px;
+  font-size:.72rem;color:var(--dim);letter-spacing:.05em;
+}
+#gKVal{color:var(--tx);font-weight:700}
+#gK{display:none}
+
+/* ── k_eff blindness during rod-cal logging ── */
+body.k-blind #kv,
+body.k-blind #kst,
+body.k-blind #kg,
+body.k-blind #kLo,
+body.k-blind #kHi{visibility:hidden}
+body.k-blind #kcol{position:relative}
+body.k-blind #kcol::after{
+  content:'k hidden until DONE';
+  position:absolute;inset:auto 4px 50% 4px;transform:translateY(50%);
+  color:var(--y);font-size:.6rem;line-height:1.3;text-align:center;pointer-events:none;
+}
+
+/* ── Locked divisions (rod-cal only uses rods) ── */
+.pn.pc-locked{position:relative;opacity:.45;filter:grayscale(.7)}
+.pn.pc-locked *{pointer-events:none}
+.pn.pc-locked::after{
+  content:'LOCKED';position:absolute;right:8px;bottom:4px;
+  font-size:.55rem;letter-spacing:.08em;color:var(--y);
+}
+
+/* ═══ Desktop / laptop: experiment layout ═══
+   schematic | k_eff strip | graph slot + procedure, divisions in the bottom row */
+body.adv #top .big{font-size:clamp(1.3rem,2.4vw,2.3rem)}
+body.exp-run #recPanel{display:none}
+body.exp-run #mainRow{
+  display:grid;gap:.6vw;
+  grid-template-columns:88px minmax(0,1.05fr) minmax(300px,1fr);
+  grid-template-rows:minmax(0,1fr);
+}
+body.exp-run #expCol{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
+body.exp-run #ctr{min-height:0}
+body.exp-rodcal #gslot{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
+body.exp-run #procCard{max-height:40%}
+body.exp-revealed #gK{display:block;flex:2.2 1 0;min-height:110px}
+body.exp-revealed #procCard{max-height:32%}
+body.exp-run #kcol{padding:6px}
+body.exp-run .kvert-hd{font-size:.9rem}
+body.exp-run .kscale{font-size:.65rem}
+body.exp-run #kv{font-size:1.05rem}
+body.exp-run #kst{font-size:.65rem}
+body.exp-rodcal #instrRow{grid-template-columns:1.6fr 1fr 1fr 1fr}
+/* only the rods division is live in rod-cal: show it as one slim row, drop the dimmed ones */
+body.exp-run #thermalReadout{display:none}
+body.exp-run #top .pn{padding:.4vh .8vw}
+body.exp-run #top .big{font-size:clamp(1.2rem,2vw,1.9rem)}
+body.exp-run .instr-sub{display:none}
+@media (min-width:901px) and (min-aspect-ratio:1/1) and (min-height:521px){
+  body.exp-rodcal #right .pn:not([data-role="rods"]){display:none}
+  body.exp-rodcal #right .pn[data-role="rods"]{
+    display:grid;grid-template-columns:minmax(150px,200px) minmax(100px,1fr) minmax(260px,2fr);
+    align-items:center;gap:10px;padding:.6vh .8vw;
+  }
+  body.exp-rodcal #right .pn[data-role="rods"] .lnk,
+  body.exp-rodcal #right .pn[data-role="rods"] .pn-ovr{display:none}
+}
+body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
+
+/* ═══ Phones and short screens: dock layout ═══
+   Applies to sandbox AND advanced (both carry body.sbx).
+   #hud rows: [ schematic area ][ tab row ][ one active control panel ]
+   The dock is a grid row, so the schematic shrinks instead of being covered. */
+@media (max-width:900px),(max-aspect-ratio:1/1),(max-height:520px){
+  body.sbx #hud{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr) auto auto;
+    gap:4px;overflow:hidden;
+  }
+  body.sbx #left{grid-row:1;grid-column:1;min-height:0}
+
+  /* compact readouts */
+  body.sbx #top{gap:3px;grid-template-columns:repeat(3,1fr)}
+  body.adv #modeBadge{display:none}
+  body.sbx #top .pn{padding:3px 6px;flex-direction:row;align-items:baseline;gap:4px}
+  body.sbx #top h3{font-size:.55rem}
+  body.sbx #top .big,body.adv #top .big{font-size:clamp(.95rem,4vw,1.3rem)}
+  body.sbx #top .lnk{display:none}
+  body.adv #instrRow{grid-template-columns:repeat(4,1fr);gap:3px}
+  body.adv .instr-label{font-size:.5rem}
+  body.adv .instr-sub{font-size:.46rem}
+  body.adv .instr-value{font-size:.8rem}
+  body.adv #instrStrip{padding:4px 6px}
+  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.5rem}
+  body.adv #recTime{font-size:.55rem;min-width:35px}
+  body.adv #recRows{font-size:.5rem}
+  body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
+  body.exp-rodcal #instrRow{grid-template-columns:1.4fr 1fr 1fr 1fr}
+  body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.85rem}
+  body.exp-run #instrHeader{display:none}
+  body.exp-run .instr-value{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem}
+  body.exp-run #right{max-height:150px}
+
+  /* schematic row */
+  body.sbx #mainRow{flex-direction:row;gap:4px;min-height:0}
+  body.sbx #kcol{flex:0 0 44px;flex-direction:column;padding:2px;gap:1px;min-height:0}
+  body.sbx #kcol .kvert-hd{display:block;font-size:.55rem}
+  body.sbx #kcol .kscale{display:flex;font-size:.5rem}
+  body.sbx #kw{flex:1;min-height:0;max-height:none;width:100%}
+  body.sbx #kcol #kv{font-size:.62rem}
+  body.sbx #kcol #kst{font-size:.5rem}
+  body.sbx #ctr{min-height:0}
+  body.sbx #svgw{min-height:0}
+  body.sbx #timerBox{display:none}
+
+  /* the dock: tab row … */
+  body.sbx #mobileFabs{
+    display:flex;grid-row:2;grid-column:1;position:static;
+    flex-direction:row;align-items:center;gap:6px;padding:2px 0 0;
+  }
+  body.sbx #mobileFabs .sbx-tabs{display:flex;flex:1;gap:4px;padding:0;background:transparent;border-radius:0}
+  body.sbx #mobileFabs .sbx-tabs button{
+    flex:1;min-height:42px;padding:6px 3px;font-size:.7rem;font-weight:600;
+    border:1px solid var(--ln);background:#0b100c;color:var(--dim);border-radius:8px;letter-spacing:.03em;
+  }
+  body.sbx #mobileFabs .sbx-tabs button.on{border-color:var(--y);color:var(--y);background:#ffd40022;box-shadow:0 0 8px #ffd40066}
+  body.sbx #bpmMobile{
+    display:block;flex:0 0 44px;width:44px;height:42px;border-radius:10px;padding:0;
+    background:#0b100c;color:var(--c);border:1px solid var(--c);font-size:.7rem;font-weight:700;
+  }
+  body.sbx #bar #bpm{display:none}
+
+  /* … and the one active control panel */
+  body.sbx #right{
+    grid-row:3;grid-column:1;display:flex;flex-direction:column;
+    overflow:hidden;gap:0;padding:0;min-height:0;
+    max-height:clamp(120px,24dvh,210px);
+  }
+  body.adv:not(.sbx-sheet-open) #right{display:none}   /* advanced: tap the active tab again to collapse */
+  body.sbx #right .pn{
+    display:none;flex:1;min-height:0;padding:6px 10px 8px;flex-direction:column;
+    justify-content:flex-start;align-items:stretch;gap:6px;border-radius:10px;overflow:hidden;
+    border:1px solid var(--y);
+  }
+  body.sbx #right .pn.sbx-active{display:flex}
+  body.sbx #right .lnk,body.sbx #right .bm{display:none}
+  body.sbx #right .bar{height:6px;flex-shrink:0}
+  body.sbx #right .pn-val{font-size:1rem}
+  body.sbx #right .pn-hd h3{font-size:.8rem}
+  body.sbx #right .pn-ctl{flex:1;align-items:center;gap:8px;min-height:0}
+  body.sbx #right .pn-ctl input[type=range]{height:44px}
+  body.sbx #right .pn-ctl input[type=range]::-webkit-slider-thumb{width:32px;height:32px;margin-top:-13px}
+  body.sbx #right .pn-ctl input[type=range]::-moz-range-thumb{width:32px;height:32px}
+  body.sbx #right .pn-ctl .pm{width:44px;height:44px;font-size:1.3rem;opacity:1;pointer-events:auto}
+  body.sbx #right .pn-ctl .tb{flex:1;padding:14px 0;font-size:.9rem;opacity:1;pointer-events:auto;min-height:44px}
+
+  /* experiments: only the rods division is live, so only its tab shows */
+  body.exp-rodcal #sbxTabs button:not([data-sbx="rods"]){display:none}
+
+  /* experiment body: schematic strip on top, graph + procedure scroll underneath */
+  body.exp-run #mainRow{
+    display:grid;gap:4px;
+    grid-template-columns:44px minmax(0,1fr);
+    grid-template-rows:clamp(150px,27dvh,280px) minmax(0,1fr);
+  }
+  body.exp-run #kcol{display:flex;grid-column:1;grid-row:1}
+  body.exp-run #ctr{grid-column:2;grid-row:1}
+  body.exp-run #expCol{grid-column:1 / -1;grid-row:2;overflow-y:auto;overscroll-behavior:contain}
+  body.exp-run #kcol{padding:2px}
+  body.exp-run .kvert-hd{font-size:.55rem}
+  body.exp-run .kscale{font-size:.5rem}
+  body.exp-run #kv{font-size:.62rem}
+  body.exp-run #kst{font-size:.5rem}
+  body.exp-run #expCol > *{flex-shrink:0}
+  body.exp-rodcal #pcActions{order:-2;position:sticky;top:0;z-index:5;padding:2px 0 6px;background:#070b08}
+  body.exp-rodcal #gslot{flex:0 0 auto}
+  body.exp-rodcal .gwrap{flex:none;height:clamp(120px,24dvh,190px)}
+  body.exp-revealed #gK{flex:none;height:clamp(150px,30dvh,230px)}
+  body.exp-run #procCard,body.exp-revealed #procCard{max-height:none;flex:0 0 auto}
+  body.exp-run #procCard #pcRodCal{overflow:visible}
+
+  #bar:not(.hide) ~ #bAbout{top:8px;bottom:auto;right:8px}
+  body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
+  body.adv .about-content h1{font-size:1.2rem}
+}
+
+/* ═══ Landscape phones: schematic left, graphs scroll in the middle, dock on the right ═══ */
+@media (orientation:landscape) and (max-height:520px){
+  body.sbx #hud{
+    grid-template-columns:minmax(0,1fr) clamp(200px,27vw,260px);
+    grid-template-rows:auto minmax(0,1fr);
+  }
+  body.sbx #left{grid-row:1 / 3;grid-column:1}
+  body.sbx #mobileFabs{grid-row:1;grid-column:2}
+  body.sbx #right{grid-row:2;grid-column:2;max-height:none;align-self:start}
+  body.sbx #right .pn{flex:0 0 auto}
+  body.sbx #right .pn-ctl{flex:0 0 auto;padding:6px 0}
+  body.sbx #top .pn{padding:1px 6px}
+  body.sbx #top h3{font-size:.5rem}
+  body.sbx #top .big,body.adv #top .big{font-size:.95rem}
+  body.adv #instrHeader{display:none}
+  body.adv #instrStrip{padding:2px 6px}
+  body.adv .instr-sub{display:none}
+  body.adv .instr-label{font-size:.45rem}
+  body.adv .instr-value,body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.85rem}
+  body.exp-run #mainRow{
+    grid-template-columns:44px minmax(0,1fr) minmax(0,1.1fr);
+    grid-template-rows:minmax(0,1fr);
+  }
+  body.exp-run #expCol{grid-column:3;grid-row:1}
+  body.exp-rodcal .gwrap{flex:none;height:150px}
+  body.exp-revealed #gK{flex:none;height:180px}
+}
