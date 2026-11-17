@@ -108,7 +108,9 @@ export const LEARN = {
 export const EXPERIMENTS = [
   // ── Tier 1 ──
 { id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'rod-calibration-1m.pdf',
-    objective: 'Predict the exact rod % where the reactor reaches critical (k_eff = 1) without actually crossing into supercritical power, by tracking how 1/M drops toward 0.',
+    concept: 'As you withdraw control rods, fewer neutrons are absorbed, so each fission triggers more follow-up fissions (subcritical multiplication, M). As the reactor approaches critical (k_eff = 1), M grows toward infinity—meaning its inverse 1/M drops toward 0. Plotting 1/M against rod % lets you extend a line down to 0 and predict the critical rod position safely before crossing critical.',
+    goal: 'Collect subcritical 1/M measurements at your own pace, extrapolate where 1/M hits 0, and verify your prediction lands near k_eff = 1.000 without tripping Auto-SCRAM.',
+    objective: 'Extrapolate the critical rod position from a 1/M plot using near-critical subcritical steps.',
     criteria: [
       'Log a baseline at 100% rods, plus at least 3 more distinct subcritical rod positions (4+ total steps).',
       'Pull rods close enough to critical that 1/M drops to 0.50 or lower (without triggering Auto-SCRAM).',
@@ -117,11 +119,10 @@ export const EXPERIMENTS = [
     ],
     procedure: [
       'Setup: auto-coolant holds ~307 °C, auto-pressurizer holds ~15.5 MPa, boron is locked at 1500 ppm, and xenon is frozen at 0.',
-      'Step 1 (Baseline): Keep rods at 100% and press SETTLE & LOG (records 1/M = 1.00).',
-      'Steps 2–4: Pull rods out in 10% steps — e.g., 90%, 80%, 70% — pressing SETTLE & LOG at each stop.',
-      'Approaching critical: Once 1/M drops noticeably, take smaller 2–5% steps (or move only halfway toward where the line points at 0).',
-      'Safety limit: Stay subcritical. If power rises above 25 MWth, Auto-SCRAM resets rods to 100%.',
-      'Finish: When you have 4+ steps and 1/M ≤ 0.50, click DONE to reveal k_eff, then click TEST PREDICTION.',
+      'Start at 100% rods and press SETTLE & LOG to record your baseline (1/M = 1.00).',
+      'Withdraw rods at your own pace and press SETTLE & LOG at each stop (larger steps early on; smaller 2–5% steps once 1/M falls fast).',
+      'Stay subcritical: if power rises above 25 MWth, Auto-SCRAM resets rods to 100%.',
+      'When you have 4+ distinct steps and 1/M has dropped clearly (ideally ≤ 0.50), press DONE to reveal k_eff and fit your line, then press TEST PREDICTION.',
     ],
     record: 'Step CSV: step, rod_pct, sim_t, s1–s5 (five cps samples), avg_cps, inv_M, k_eff.',
     limitations: 'Rod worth follows an S-curve, so 1/M vs. rod % bends across wide travel; points closer to criticality give a much better straight-line prediction. Settling is slower near k_eff = 1, and a 25 MWth Auto-SCRAM protects the core during this lab. See about.html §5.' },
