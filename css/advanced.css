@@ -64,6 +64,7 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   transition:color .15s,border-color .15s;
 }
 #hud:not(.hide) ~ #bAbout,
+#lobby:not(.hide) ~ #bAbout,
 #cl:not(.hide) ~ #bAbout,
 #join:not(.hide) ~ #bAbout{display:none}
 
@@ -190,6 +191,8 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 @media (max-width: 600px) {
   #advLibrary .libgrid { grid-template-columns: 1fr; }
   #advLibrary:not(.hide) { padding: 1.5vh 3vw; }
+  #advLibrary .libhead { grid-template-columns: auto 1fr; gap: 10px; }
+  #advLibrary .libhead h1 { text-align: left; font-size: 1.35rem; }
 }
 
 /* ── Briefing & completion modals ── */
@@ -228,8 +231,9 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   text-align: left;
 }
 #expBrief p { text-align: left; }
-#expBrief ol { padding-left: 20px; margin: 4px 0 12px; text-align: left; }
-#expBrief ol li { margin: 4px 0; }
+#expBrief ol, #expBrief ul { padding-left: 20px; margin: 4px 0 12px; text-align: left; }
+#expBrief ol li, #expBrief ul li { margin: 4px 0; }
+#ebCriteriaWrap li { color: var(--tx); }
 #expBrief .row, #expComplete .row {
   display: flex;
   flex-wrap: wrap;
@@ -237,7 +241,25 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   margin-top: 16px;
 }
 
-#ecMetrics { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.ec-verdict {
+  margin: 10px 0 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--ln);
+  background: #070b08;
+  text-align: left;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+.ec-verdict b { display: block; font-size: 1rem; margin-bottom: 4px; letter-spacing: .04em; }
+.ec-verdict.ec-pass { border-color: var(--g); }
+.ec-verdict.ec-pass b { color: var(--g); }
+.ec-verdict.ec-close { border-color: var(--y); }
+.ec-verdict.ec-close b { color: var(--y); }
+.ec-verdict.ec-fail { border-color: var(--r); }
+.ec-verdict.ec-fail b { color: var(--r); }
+
+#ecMetrics { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
 .ec-metric {
   display: flex;
   flex-direction: column;
@@ -247,6 +269,39 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
   border-radius: 4px;
 }
 .ec-metric b { font-size: 1.4rem; color: var(--y); }
+
+.ec-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 36dvh;
+  border: 1px solid var(--ln);
+  border-radius: 6px;
+  margin: 8px 0;
+  -webkit-overflow-scrolling: touch;
+}
+.ec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--f);
+  font-size: .76rem;
+  white-space: nowrap;
+}
+.ec-table th, .ec-table td {
+  padding: 5px 8px;
+  text-align: right;
+  border-bottom: 1px solid #182818;
+}
+.ec-table th:first-child, .ec-table td:first-child { text-align: left; }
+.ec-table thead th {
+  position: sticky;
+  top: 0;
+  background: #0c120d;
+  color: var(--y);
+  border-bottom: 1px solid var(--c);
+  font-size: .7rem;
+}
+.ec-table tbody tr:nth-child(even) { background: rgba(255,255,255,.025); }
 
 /* ═══════════════════════════════════════════════════════════════
    Phase 5 UI rework
@@ -283,9 +338,17 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 /* Experiment actions: always visible, outside the collapsible card */
 #pcActions{display:none;flex:0 0 auto;background:var(--bg)}
 body.exp-rodcal #pcActions{display:block}
+#pcActions .pc-guide{
+  background:#0c150e;border-left:3px solid var(--c);border-radius:6px;
+  padding:6px 9px;margin-bottom:6px;font-size:.76rem;line-height:1.38;color:var(--tx);
+}
+#pcActions .pc-guide b{color:var(--c)}
 #pcActions .pc-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 #pcActions .btn{width:100%;font-size:.85rem;padding:8px 6px;min-height:42px}
-#pcActions #pcWarn{color:var(--y);font-size:.72rem;line-height:1.3;margin-bottom:6px}
+#pcActions #pcWarn{
+  background:#241a06;border-left:3px solid var(--y);border-radius:6px;
+  padding:6px 9px;color:var(--y);font-size:.74rem;line-height:1.35;margin-bottom:6px;
+}
 #pcActions #pcPred{
   margin-top:6px;padding:8px 10px;font-size:.78rem;line-height:1.45;
   background:#0c120d;border:1px solid var(--g);border-radius:10px;
@@ -294,7 +357,7 @@ body.exp-rodcal #pcActions{display:block}
 #procCard.pc-collapsed #pcRodCal,
 #procCard.pc-collapsed #pcSteps,
 #procCard.pc-collapsed #pcEnd{display:none}
-#pcLog{max-height:130px;overflow-y:auto;margin:4px 0}
+#pcLog{max-height:150px;overflow-y:auto;margin:2px 0}
 
 /* ── Priority graph slot (rod-cal): 1/M while k_eff is blinded, k_eff after DONE ── */
 #gslot{display:none}
@@ -344,9 +407,9 @@ body.exp-run #mainRow{
 body.exp-run #expCol{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
 body.exp-run #ctr{min-height:0}
 body.exp-rodcal #gslot{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
-body.exp-run #procCard{max-height:40%}
-body.exp-revealed #gK{display:block;flex:2.2 1 0;min-height:110px}
-body.exp-revealed #procCard{max-height:32%}
+body.exp-run #procCard{max-height:36%}
+body.exp-revealed #gK{display:block;flex:1.8 1 0;min-height:105px}
+body.exp-revealed #procCard{max-height:34%}
 body.exp-run #kcol{padding:6px}
 body.exp-run .kvert-hd{font-size:.9rem}
 body.exp-run .kscale{font-size:.65rem}
@@ -388,20 +451,20 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.sbx #top h3{font-size:.55rem}
   body.sbx #top .big,body.adv #top .big{font-size:clamp(.95rem,4vw,1.3rem)}
   body.sbx #top .lnk{display:none}
-  body.adv #instrRow{grid-template-columns:repeat(4,1fr);gap:3px}
-  body.adv .instr-label{font-size:.5rem}
-  body.adv .instr-sub{font-size:.46rem}
-  body.adv .instr-value{font-size:.8rem}
+  body.adv #instrRow{grid-template-columns:repeat(2,1fr);gap:3px}
+  body.adv .instr-label{font-size:.52rem}
+  body.adv .instr-sub{font-size:.48rem}
+  body.adv .instr-value{font-size:.85rem}
   body.adv #instrStrip{padding:4px 6px}
-  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.5rem}
-  body.adv #recTime{font-size:.55rem;min-width:35px}
-  body.adv #recRows{font-size:.5rem}
-  body.adv .btn-rec{padding:2px 5px;font-size:.55rem}
-  body.exp-rodcal #instrRow{grid-template-columns:1.4fr 1fr 1fr 1fr}
-  body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.85rem}
+  body.adv #recPanel{padding:3px 5px;gap:4px;font-size:.55rem}
+  body.adv #recTime{font-size:.6rem;min-width:35px}
+  body.adv #recRows{font-size:.55rem}
+  body.adv .btn-rec{padding:3px 7px;font-size:.6rem}
+  body.exp-rodcal #instrRow{grid-template-columns:repeat(2,1fr)}
+  body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.88rem}
   body.exp-run #instrHeader{display:none}
-  body.exp-run .instr-value{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem}
-  body.exp-run #right{max-height:150px}
+  body.exp-run .instr-value{font-size:.82rem}
+  body.exp-run #right{max-height:112px}
 
   /* schematic row */
   body.sbx #mainRow{flex-direction:row;gap:4px;min-height:0}
@@ -411,8 +474,7 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.sbx #kw{flex:1;min-height:0;max-height:none;width:100%}
   body.sbx #kcol #kv{font-size:.62rem}
   body.sbx #kcol #kst{font-size:.5rem}
-  body.sbx #ctr{min-height:0}
-  body.sbx #svgw{min-height:0}
+  body.sbx #ctr,body.sbx #svgw,body.exp-run #ctr,body.exp-run #svgw{min-height:0}
   body.sbx #timerBox{display:none}
 
   /* the dock: tab row … */
@@ -459,25 +521,23 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   /* experiments: only the rods division is live, so only its tab shows */
   body.exp-rodcal #sbxTabs button:not([data-sbx="rods"]){display:none}
 
-  /* experiment body: schematic strip on top, graph + procedure scroll underneath */
+ /* experiment body: schematic strip on top, guide + actions + graph + log scroll underneath */
   body.exp-run #mainRow{
     display:grid;gap:4px;
     grid-template-columns:44px minmax(0,1fr);
-    grid-template-rows:clamp(150px,27dvh,280px) minmax(0,1fr);
+    grid-template-rows:clamp(136px,24dvh,240px) minmax(0,1fr);
   }
   body.exp-run #kcol{display:flex;grid-column:1;grid-row:1}
   body.exp-run #ctr{grid-column:2;grid-row:1}
-  body.exp-run #expCol{grid-column:1 / -1;grid-row:2;overflow-y:auto;overscroll-behavior:contain}
+  body.exp-run #expCol{grid-column:1 / -1;grid-row:2;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   body.exp-run #kcol{padding:2px}
   body.exp-run .kvert-hd{font-size:.55rem}
   body.exp-run .kscale{font-size:.5rem}
   body.exp-run #kv{font-size:.62rem}
   body.exp-run #kst{font-size:.5rem}
   body.k-blind #kcol::after{content:'k hidden';font-size:.48rem;inset:auto 2px 50% 2px}
-  body.exp-run #kv{font-size:.62rem}
-  body.exp-run #kst{font-size:.5rem}
   body.exp-run #expCol > *{flex-shrink:0}
-  body.exp-rodcal #pcActions{order:-2;position:sticky;top:0;z-index:5;padding:2px 0 6px;background:#070b08}
+  body.exp-rodcal #pcActions{order:-2;padding:2px 0 6px;background:#070b08}
   body.exp-rodcal #gslot{flex:0 0 auto}
   body.exp-rodcal .gwrap{flex:none;height:clamp(120px,24dvh,190px)}
   body.exp-revealed #gK{flex:none;height:clamp(150px,30dvh,230px)}
@@ -503,11 +563,12 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.sbx #top .pn{padding:1px 6px}
   body.sbx #top h3{font-size:.5rem}
   body.sbx #top .big,body.adv #top .big{font-size:.95rem}
-  body.adv #instrHeader{display:none}
+ body.adv #instrHeader{display:none}
   body.adv #instrStrip{padding:2px 6px}
+  body.adv #instrRow,body.exp-rodcal #instrRow{grid-template-columns:repeat(4,1fr)}
   body.adv .instr-sub{display:none}
   body.adv .instr-label{font-size:.45rem}
-  body.adv .instr-value,body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.85rem}
+  body.adv .instr-value,body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.82rem}
   body.exp-run #mainRow{
     grid-template-columns:44px minmax(0,1fr) minmax(0,1.1fr);
     grid-template-rows:minmax(0,1fr);
