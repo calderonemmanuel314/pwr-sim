@@ -395,3 +395,107 @@ body.k-blind #kcol::after {
     margin: 8px 12px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 5 polish: procCard constraint, mobile FABs + drawer
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Desktop: constrain #procCard so DONE never clips plot ── */
+#procCard {
+  max-height: calc(100% - 16px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#procCard .pc-head { flex-shrink: 0; }
+#procCard #pcRodCal { flex: 1; min-height: 0; overflow-y: auto; }
+#procCard ol { flex: 1; min-height: 0; overflow-y: auto; }
+#procCard #pcEnd { flex-shrink: 0; }
+
+/* ── Floating FAB cluster (hidden on desktop) ── */
+#mobileFabs { display: none; }
+
+@media (max-width: 900px), (max-aspect-ratio: 1/1) {
+
+  /* ── Replace #bpm-in-bar with floating FAB ── */
+  body.adv #bar #bpm { display: none; }
+  body.adv #mobileFabs {
+    display: flex;
+    position: fixed;
+    bottom: calc(4.8vh + 8px);
+    right: 8px;
+    z-index: 70;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+  }
+  body.adv #mobileFabs .sbx-tabs {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  body.adv #mobileFabs .sbx-tabs button {
+    padding: 8px 10px;
+    font-size: .65rem;
+    font-weight: 600;
+    border: 1px solid var(--ln);
+    background: #0b100c;
+    color: var(--dim);
+    border-radius: 6px;
+    min-width: 44px;
+    letter-spacing: .03em;
+  }
+  body.adv #mobileFabs .sbx-tabs button.on {
+    border-color: var(--y);
+    color: var(--y);
+    background: #ffd40022;
+    box-shadow: 0 0 8px #ffd40088;
+  }
+  body.adv #mobileFabs #bpmMobile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #0b100c;
+    color: var(--c);
+    border: 1px solid var(--c);
+    font-size: .7rem;
+    font-weight: 700;
+    padding: 0;
+  }
+
+  /* ── #right becomes a bottom sheet, closed by default ── */
+  body.adv #hud { grid-template-rows: 1fr; }
+  body.adv #right {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(4.8vh);
+    top: auto;
+    height: auto;
+    max-height: 55vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    background: var(--pn);
+    border-top: 2px solid var(--y);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -10px 30px #000a;
+    z-index: 65;
+  }
+  body.adv.sbx-sheet-open #right { display: flex; }
+  body.adv #right .pn { min-height: 0; padding: 8px 10px; }
+  body.adv #right .pn.sbx-active { display: flex; }
+
+  /* ── procCard floats above sheet; sits above FABs on mobile ── */
+  body.adv #procCard {
+    bottom: calc(4.8vh + 56px);
+    max-height: 55%;
+    z-index: 70;
+  }
+}
