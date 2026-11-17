@@ -357,7 +357,13 @@ export function host(mode, diff) {
     if (S.mode !== 'group') {
       const tabsEl = document.getElementById('sbxTabs');
       if (tabsEl) tabsEl.querySelectorAll('button').forEach(btn => {
-        btn.onclick = () => { S.sbxTab = btn.dataset.sbx; renderSbxTabs(S); };
+        btn.onclick = () => {
+          const wasActive = S.sbxTab === btn.dataset.sbx;
+          const wasOpen = document.body.classList.contains('sbx-sheet-open');
+          S.sbxTab = btn.dataset.sbx;
+          renderSbxTabs(S);
+          document.body.classList.toggle('sbx-sheet-open', !(wasActive && wasOpen));
+        };
       });
     }
 
@@ -380,6 +386,8 @@ export function host(mode, diff) {
 
   const pmt = o => show('#pm', o === undefined ? $('#pm').classList.contains('hide') : o);
   $('#bpm').onclick = () => pmt();
+  const bpmFloatEl = $('#bpmMobile');
+  if (bpmFloatEl) bpmFloatEl.onclick = () => pmt();
   $('#pmx').onclick = () => pmt(false);
   $('#phase').onclick = () => pmt(true);
   const onKeyDown = e => {
