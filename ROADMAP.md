@@ -4,7 +4,7 @@ Only unfinished work is listed here, **with the detail needed to build it**. Wha
 
 Rough sizing from the original plan: Phase 5 about 300 lines; Phase 6 about 250; Phases 7 and 8 about 250 combined; Phase 9 about 250.
 
-## 0. Before Phase 5
+## 0. Before Phase 6
 
 - [ ] **Classroom stress test.** Four physical phones on one Wi-Fi router for at least 2 minutes in Group Mode, and a full Hard playthrough (win attempt, heat failure, xenon lockout).
 - [ ] **Confirm the `check-docs` workflow passes** on GitHub (Actions tab).
@@ -22,32 +22,20 @@ Rough sizing from the original plan: Phase 5 about 300 lines; Phase 6 about 250;
 
 ## 2. Phase 4: Experiment Library shell (ACCOMPLISHED)
 
-## 3. Phase 5: Rod calibration by 1/M (first experiment)
+## 3. Phase 5: Rod calibration by 1/M (MECHANICS SHIPPED — DOCS PENDING)
 
-Chosen first because it is short (about 15 minutes), self-verifying, and introduces the settle-and-log workflow.
+Code is complete and testable on the live site: 1/M method, settle-and-log,
+Poisson samples, per-session detector efficiency, k_eff blindness during
+logging, linear fit on DONE, TEST PREDICTION, log table in procedure card,
+CSV download, mobile drawer, auto-coolant + auto-pressurizer (so the
+experiment completes rather than tripping `end()`).
 
-**Fixed setup**
-- Only the rod slider is live. Pump locked at 50%, boron at 1500 ppm, xenon starts at 0 and stays 0 (no fission means no iodine, so no xenon).
-- Auto-pressurizer holds pressure in 15.3 to 15.7 MPa.
-- Start state: rods 100%, deep subcritical (fission power about 1e-4 MWth), normal hot-standby temperature and pressure.
+Remaining before this phase closes:
 
-**Procedure.** The student steps rods DOWN toward criticality (for example in 5% steps), presses SETTLE & LOG at each step, and the app plots 1/count-rate against rod position to extrapolate to criticality.
-
-**Settle-and-log**
-- Runs internal 1 Hz ticks until `detectSettle()` passes, then captures 5 Poisson-sampled count-rate readings, averages them, and logs the step.
-- Near criticality the slowest delayed-neutron group (time constant about 80 s) can need more than 500 simulated seconds to settle. Use a fast-forward safety cap of at least 1000 simulated seconds, or an explicit asymptotic slope tolerance.
-
-**Detector noise.** Displayed count rate is `Poisson(cps_true x detEff)` with a per-session `detEff = 1 +/- 0.03`. Add a small noise helper; the physics stays deterministic.
-
-**Step CSV:** `step,rod_pct,sim_t,s1,s2,s3,s4,s5,avg_cps,inv_cps,k_eff`
-
-**Finish.** After the last step, DONE shows a linear fit on the last 4 to 5 points of 1/cps vs rod position (a tangent approximation along the S-curve). An optional TEST PREDICTION button moves the rods to the extrapolated position and reports subcritical, critical or supercritical.
-
-**Layouts.** Desktop: a floating card (about 380 x 260 px) bottom-right of the schematic. Mobile: a bottom-anchored collapsible drawer (about 60 px peeking, about 200 px expanded). Both share one state model.
-
-### Variant: rod worth by period (inhour)
-
-Shares the settle-and-log code. The student sets a rod position, waits for a stable period, and converts it to reactivity through the inhour equation to build an integral worth curve. **The model's stretched prompt generation time changes the reactivity-period relation by an amount that depends on the period** (about 2x at very long periods, several times larger at short ones). Do not use one correction factor. Either solve the inhour equation with the model's own generation time (`LAMBDA_PROMPT_MODEL`) or reduce it in experiment mode.
+- [ ] `about.html` §7 changelog row for 2.4.0
+- [ ] `APP_VERSION = '2.4.0'` in `js/config.js`; `?v=2.4.0` on `css/advanced.css` in `index.html`
+- [ ] `node tools/check-docs.mjs` passes on push
+- [ ] Worksheet PDF `worksheets/rod-calibration-1m.pdf` (not blocking — link stays hidden until present)
 
 ## 4. Experiment catalogue (Phases 6 to 9)
 
@@ -75,7 +63,7 @@ Decide these before building, and state them in the briefing and worksheet.
 | Experiment | Caveat |
 |---|---|
 | Rod calibration by 1/M | Steady-state multiplication does not depend on the generation time, so it is safe. Settling is slow near criticality. |
-| Rod worth by period | Requires an inhour solution that uses the model's own generation time (see Phase 5). |
+| Rod worth by period | Requires an inhour solution that uses the model's own generation time (`LAMBDA_PROMPT_MODEL`). Do not use one correction factor — the reactivity-period relation shifts by an amount that depends on the period (about 2× at very long periods, several times larger at short ones). Either solve the inhour equation with the model's own generation time, or reduce it in experiment mode. |
 | Delayed neutron counting | The long-time decay is correct. The source floor sets the lowest count rate. |
 | SCRAM transient | The prompt drop is visible at 1 Hz only because the generation time is stretched. Teach it qualitatively, not as a measurement of real prompt behavior. |
 | Xenon experiments | Xenon timescales are compressed unevenly, so the post-trip peak is small and early. Decide on the fix in section 6 first. |
@@ -125,8 +113,10 @@ These came out of a code review. Each is a choice, not necessarily a bug. If you
 - Worksheet format: static PDFs under `worksheets/`. Worksheet links are HEAD-checked at briefing open and hidden if the PDF is missing.
 - Catalogue source: one `EXPERIMENTS` array in `js/config.js`. Card, briefing text, and worksheet link all derive from `id`; adding an experiment is a data change.
 - Experiment shell state machine: idle → briefing → running → complete, in `js/experiments.js`. The procedure card is a floating overlay inside `#ctr` (reactor-priority rule).
-- Completion screen CSV button is present but disabled until Phase 5, when an experiment produces rows.
-- Unbuilt experiments carry `enabled: false` in `EXPERIMENTS` and appear greyed out in the library. A dev-only `shell-test` card exercises the shell and is removed when Phase 5's first experiment is stable.
+- Unbuilt experiments carry `enabled: false` in `EXPERIMENTS` and appear greyed out in the library.
+- Rod calibration plots **1/M**, not raw 1/cps. 1/M = cps_first / cps_current (first log is the reference). Detector efficiency cancels in the ratio, so a mis-calibrated detector does not bias the extrapolated critical position.
+- k_eff readout is **blinded** during rod-calibration logging (shown as "— BLINDED DURING CALIBRATION"). Revealed at DONE so students must extrapolate by hand before checking their answer with TEST PREDICTION.
+- Auto-coolant (pump tracks fission power) and auto-pressurizer run during Phase 5 experiments via `_experimentActive` gate in `host.js` helpers. Free Exploration untouched — helpers early-return.
 
 ## 10. Decisions still open
 
