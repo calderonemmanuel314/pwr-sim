@@ -43,8 +43,8 @@ function updatePlotNote() {
     : 'goal: track 1/M toward 0';
 }
 
-const SETTLE_MAX_TICKS = 1000;
-const SETTLE_DELTA_EPS = 0.005;
+const SETTLE_MAX_TICKS = 1500;
+const SETTLE_DELTA_EPS = 0.0005;
 const SETTLE_CONSEC    = 5;
 const CPS_SCALE        = 1e6;   // cps_true ≈ Nf(MWth) × 1e6; floor applies to subcritical
 const CPS_FLOOR        = 100;   // source-level detector background
@@ -153,7 +153,7 @@ function setupRodCal(handle) {
 
   S.in.rods  = 100;
   S.in.pump  = 50;
-  S.in.boron = 1500;
+  S.in.boron = 1800;
   S.in.heat  = 0;
   S.in.spray = 0;
 S.xe = 0;
@@ -187,7 +187,7 @@ S.xe = 0;
   };
   sync('#oRods', 100, false);
   sync('#oPump', 50, true);
-  sync('#oBor', 1500, true);
+  sync('#oBor', 1800, true);
   sync('#oHeat', undefined, true);
   sync('#oSpr', undefined, true);
   sync('#oHold', undefined, true);
@@ -253,7 +253,7 @@ function settleAndLog() {
 
     renderProcCard();
     if (!lastWarned && log.length === 1 && S.in.rods < 95) {
-      showWarn('Note: Step 1 was logged at ' + S.in.rods + '% instead of 100%, so 1/M = 1.00 uses ' + S.in.rods + '% as its baseline.');
+      showWarn('Note: Step 1 was logged at ' + S.in.rods + '% instead of 100%. For standard 1/M (1.00 → 0), start at 100% rods and step down.');
     }
     updatePlotNote();
     drawPlot(false);
@@ -349,7 +349,7 @@ function testPrediction() {
 // ── Procedure-card updates ──
 function renderProcCard() {
   if (lastWarned) {
-    showWarn('⚠ This step didn\'t settle in 1000 s. Near critical, power takes longer to stabilize — try 2–3% steps instead of 5%.');
+    showWarn('⚠ This step didn\'t settle in 1500 s. Near critical, power takes longer to stabilize — try 2–3% steps instead of 5%.');
   } else {
     showWarn('');
   }
@@ -432,7 +432,7 @@ function drawPlot(showFit) {
   }
   const yMin = 0;
   const rawMaxY = Math.max(...yVals, 1.0);
-  const yStep = rawMaxY <= 0.65 ? 0.1 : rawMaxY <= 1.35 ? 0.25 : rawMaxY <= 2.4 ? 0.5 : 1.0;
+  const yStep = [0.1, 0.25, 0.5, 1, 2, 5, 10].find(s => (rawMaxY * 1.1) / s <= 6) || Math.ceil((rawMaxY * 1.1) / 5);
   const yMax = Math.ceil((rawMaxY * 1.1) / yStep) * yStep;
 
   const sx = r => pad.l + ((r - xMin) / Math.max(1e-9, xMax - xMin)) * plotW;
@@ -440,7 +440,7 @@ function drawPlot(showFit) {
 
   // ── Y gridlines and tick labels ──
   ctx.font = '10px monospace';
-  const yDecimals = yStep < 0.25 ? 2 : yStep < 1 ? 2 : 1;
+  const yDecimals = yStep < 0.5 ? 2 : yStep < 2 ? 1 : 0;
   for (let y = 0; y <= yMax + 1e-9; y += yStep) {
     const py = sy(y);
     ctx.strokeStyle = y === 0 ? '#2a4a2a' : '#142214';
