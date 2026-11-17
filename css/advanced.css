@@ -338,11 +338,6 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 /* Experiment actions: always visible, outside the collapsible card */
 #pcActions{display:none;flex:0 0 auto;background:var(--bg)}
 body.exp-rodcal #pcActions{display:block}
-#pcActions .pc-guide{
-  background:#0c150e;border-left:3px solid var(--c);border-radius:6px;
-  padding:6px 9px;margin-bottom:6px;font-size:.76rem;line-height:1.38;color:var(--tx);
-}
-#pcActions .pc-guide b{color:var(--c)}
 #pcActions .pc-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 #pcActions .btn{width:100%;font-size:.85rem;padding:8px 6px;min-height:42px}
 #pcActions #pcWarn{
@@ -362,17 +357,16 @@ body.exp-rodcal #pcActions{display:block}
 /* ── Priority graph slot (rod-cal): 1/M while k_eff is blinded, k_eff after DONE ── */
 #gslot{display:none}
 .gwrap{
-  position:relative;flex:1 1 0;min-height:72px;
+  display:flex;flex-direction:column;flex:1 1 0;min-height:110px;
   background:#050805;border:1px solid var(--ln);border-radius:10px;overflow:hidden;
 }
-.gwrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .ghead{
-  position:absolute;top:5px;left:10px;right:10px;z-index:1;pointer-events:none;
-  display:flex;justify-content:space-between;gap:8px;
+  flex:0 0 auto;display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  padding:6px 10px 3px;border-bottom:1px solid #132113;
   font-size:.72rem;color:var(--dim);letter-spacing:.05em;
 }
-#gKVal{color:var(--tx);font-weight:700}
-#gK{display:none}
+#gMNote{color:var(--c)}
+.gwrap canvas{flex:1 1 0;min-height:0;width:100%;height:100%;display:block}
 
 /* ── k_eff blindness during rod-cal logging ── */
 body.k-blind #kv,
@@ -407,9 +401,7 @@ body.exp-run #mainRow{
 body.exp-run #expCol{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
 body.exp-run #ctr{min-height:0}
 body.exp-rodcal #gslot{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
-body.exp-run #procCard{max-height:36%}
-body.exp-revealed #gK{display:block;flex:1.8 1 0;min-height:105px}
-body.exp-revealed #procCard{max-height:34%}
+body.exp-run #procCard{max-height:38%}
 body.exp-run #kcol{padding:6px}
 body.exp-run .kvert-hd{font-size:.9rem}
 body.exp-run .kscale{font-size:.65rem}
@@ -539,9 +531,8 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.exp-run #expCol > *{flex-shrink:0}
   body.exp-rodcal #pcActions{order:-2;padding:2px 0 6px;background:#070b08}
   body.exp-rodcal #gslot{flex:0 0 auto}
-  body.exp-rodcal .gwrap{flex:none;height:clamp(120px,24dvh,190px)}
-  body.exp-revealed #gK{flex:none;height:clamp(150px,30dvh,230px)}
-  body.exp-run #procCard,body.exp-revealed #procCard{max-height:none;flex:0 0 auto}
+  body.exp-rodcal .gwrap{flex:none;height:clamp(165px,30dvh,240px)}
+  body.exp-run #procCard{max-height:none;flex:0 0 auto}
   body.exp-run #procCard #pcRodCal{overflow:visible}
 
   #bar:not(.hide) ~ #bAbout{top:8px;bottom:auto;right:8px}
@@ -574,6 +565,5 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
     grid-template-rows:minmax(0,1fr);
   }
   body.exp-run #expCol{grid-column:3;grid-row:1}
-  body.exp-rodcal .gwrap{flex:none;height:150px}
-  body.exp-revealed #gK{flex:none;height:180px}
+  body.exp-rodcal .gwrap{flex:none;height:190px}
 }
