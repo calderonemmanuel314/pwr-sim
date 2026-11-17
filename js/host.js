@@ -4,7 +4,7 @@ import { ROLES, ROLE_KEYS, DEF, DIFF, ES } from './config.js';
 import { AU, chime } from './audio.js';
 import { qrMake, loadPeer } from './qr.js';
 import {
-  BETA_GROUPS, H_FUEL_COOLANT, TAU_FUEL, tsat,
+  BETA_GROUPS, H_FUEL_COOLANT, TAU_FUEL, tsat, gridPowerMWe,
   neutronBalance, equilibriumPrecursors, advancePointKinetics,
   coolantHeatRemovalFactor, pmSVG,
 } from './physics.js';
@@ -74,6 +74,9 @@ export function experimentalPostTick(S) {
   const maxPow = S._experimentMaxPower;
   if (maxPow && (!isFinite(S.Nf) || S.Nf > maxPow)) {
     const safeRods = S._experimentSafeRods ?? 100;
+    const tripRod = S.in.rods;
+    S._experimentTripRod = tripRod;
+    S._experimentEverTripped = true;
     S.in.rods = safeRods;
     S._experimentTripped = true;
     S.Nf = Math.min(isFinite(S.Nf) ? S.Nf : maxPow, maxPow);
@@ -82,7 +85,7 @@ export function experimentalPostTick(S) {
     const oR = typeof document !== 'undefined' && document.getElementById('oRods');
     if (oR) oR.value = safeRods;
     if (!S._experimentInSettle) AU.tone(660, .25, 'square', .12, 0, 330);
-    if (typeof S._onExperimentTrip === 'function') S._onExperimentTrip(S);
+    if (typeof S._onExperimentTrip === 'function') S._onExperimentTrip(S, tripRod);
   }
   // Soft clamps — kept below D.thermalHigh - 20 (330 °C) so no beep/failure fires.
   if (S.T > 328) S.T = 328;
@@ -156,11 +159,11 @@ export function host(mode, diff) {
     const i = S.in, N = S.N, T = S.T, P = S.P;
     if (P < (D.pressureLow || 13) + 0.5) return 'Div 3: pressure low — use ▲ HEAT.';
     if (P > (D.pressureHigh || 17.5) - 0.5) return 'Div 3: pressure high — use ▼ SPRAY.';
-    if (P < 22.064 && T >= tsat(P) - (D.subcoolMargin || 10)) return 'Margin low — coordinate cooling and pressure.';
-    if (T > (D.thermalHigh || 350) - 20 && i.pump < 70) return 'Coolant warm — Div 2: review pump.';
-    if (Math.abs(N - 1000) <= D.band) return 'On target — hold controls steady.';
-    if (N < 1000) return 'Below target — Div 1: withdraw rods; Div 4: dilute boron.';
-    return 'Above target — Div 1: insert rods; Div 4: add boron.';
+    if (P < 22.064 && T >= tsat(P) - (D.subcoolMargin || 10)) return 'Coolant close to boiling — Div 3: ▲ HEAT; Div 2: raise pump.';
+    if (T > (D.thermalHigh || 350) - 20 && i.pump < 70) return 'Coolant getting hot — Div 2: turn pump % up.';
+    if (Math.abs(N - 1000) <= D.band) return 'In target band — leave ALL controls untouched for ' + WH + 's!';
+    if (N < 1000) return 'Power too low — Div 1: pull rods out (lower %); Div 4: lower boron.';
+    return 'Power too high — Div 1: push rods in (higher %); Div 4: add boron.';
   };
 
   const apply = (r, v) => {
@@ -269,7 +272,11 @@ export function host(mode, diff) {
     const fin = () => {
       if (S.phase === 'lobby') return;
       $('#ovr').className = e.cls; $('#ot').style.color = '';
-      $('#ot').textContent = e.t; $('#om').textContent = e.x; show('#ovr', true);
+      $('#ot').textContent = e.t;
+      const summary = 'Final state: ' + S.T.toFixed(0) + ' °C · ' + S.P.toFixed(2) + ' MPa · ' +
+        gridPowerMWe(S.N).toFixed(0) + ' MWe · k_eff ' + (S.k ?? 1).toFixed(4);
+      $('#om').innerHTML = e.x + '<br><small style="opacity:.85">' + summary + '</small>';
+      show('#ovr', true);
     };
     if (e.res === 'win') { chime(); return fin(); }
     if (!e.m) {
