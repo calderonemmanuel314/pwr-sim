@@ -3,7 +3,7 @@
 // Renders the library grid from EXPERIMENTS; drives idle → briefing → running → complete.
 // For rod-calibration-1m: runs a fast-forward settle loop, logs 5 Poisson samples per
 // step, plots 1/cps vs rod %, fits the last 4–5 points, extrapolates to criticality.
-import { $, show, setHTML, fmt } from './dom.js';
+import { $, show, setHTML, fmt, ask } from './dom.js';
 import { EXPERIMENTS } from './config.js';
 import { host, advanceOneSecond, experimentalPreTick, experimentalPostTick } from './host.js';
 import { equilibriumPrecursors, neutronBalance } from './physics.js';
@@ -14,7 +14,7 @@ let state = 'idle'; // idle | briefing | running | complete
 let hostHandle = null;
 
 // ── Phase 5: per-experiment session state (reset in beginExperiment) ──
-let log = [];              // [{ step, rodPct, simT, samples:[s1..s5], avgCps, invCps, kEff, capped }]
+let log = [];              // [{ step, rodPct, simT, samples:[s1..s5], avgCps, invM, kEff, capped }]
 let detEff = 1;            // detector efficiency offset, rolled once per session (1 ± 0.03)
 let cpsFirst = null;       // reference count rate for 1/M = cpsFirst / cps_current
 let settling = false;      // re-entry guard
@@ -22,6 +22,54 @@ let lastWarned = false;    // whether the last log hit the 1000 s cap
 let predictedRodPct = null; // extrapolated critical rod position from DONE fit
 let testPoint = null;       // { rod, k } after TEST PREDICTION, drawn on the k_eff plot
 let plotShowFit = false;    // last showFit passed to drawPlot (so resize can redraw the same view)
+let trippedWhileLogging = false;
+let testTripped = false;
+let earlyDoneAck = false;
+
+function showWarn(msg) {
+  const w = $('#pcWarn');
+  if (!w) return;
+  if (!msg) { w.textContent = ''; w.classList.add('hide'); return; }
+  w.textContent = msg;
+  w.classList.remove('hide');
+}
+
+function renderGuide() {
+  const g = $('#pcGuide');
+  const note = $('#gMNote');
+  if (!g || !current || current.id !== 'rod-calibration-1m') return;
+  const distinctRods = new Set(log.map(p => p.rodPct)).size;
+  const minInvM = log.length ? Math.min(...log.map(p => p.invM)) : 1;
+  if (note) note.textContent = log.length ? ('min 1/M: ' + minInvM.toFixed(2) + ' · goal ≤ 0.50') : 'goal: 1/M → 0';
+
+  let html;
+  if (testPoint !== null) {
+    html = '<b>Check complete!</b> Review the <code>k_eff</code> graph and verdict below, then press <b>END EXPERIMENT</b> (in Procedure) for your final debrief &amp; CSV.';
+  } else if (predictedRodPct !== null) {
+    const target = Math.round(Math.max(0, Math.min(100, predictedRodPct)));
+    html = '<b>Final check:</b> Press <b>TEST PREDICTION</b> below to move rods to <b>' + target + '%</b> and verify <code>k_eff</code>.';
+  } else if (log.length === 0) {
+    html = '<b>Step 1 (Baseline):</b> Rods are at <b>100%</b>. Press <b>SETTLE &amp; LOG</b> to record your starting count rate (1/M = 1.00).';
+  } else {
+    const lastRod = log[log.length - 1].rodPct;
+    if (distinctRods < 4 && lastRod >= 75 && minInvM > 0.65) {
+      const nextRod = Math.max(0, lastRod - 10);
+      html = '<b>Step ' + (log.length + 1) + ':</b> Pull rods out 10% (move to <b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b>.';
+    } else if (minInvM > 0.65) {
+      const nextRod = Math.max(0, lastRod - 5);
+      html = '<b>Step ' + (log.length + 1) + ':</b> Keep stepping out carefully (try <b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b> until 1/M drops clearly (now ' + minInvM.toFixed(2) + ').';
+    } else if (distinctRods < 4 || minInvM > 0.50) {
+      const nextRod = Math.max(0, lastRod - 3);
+      const need = Math.max(0, 4 - distinctRods);
+      html = '<b>Step ' + (log.length + 1) + ':</b> Getting close (1/M = ' + minInvM.toFixed(2) + '). Take a small 2–5% step (try ~<b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b>' +
+        (need > 0 ? ' (' + need + ' more distinct step' + (need > 1 ? 's' : '') + ' needed).' : ' to drop 1/M ≤ 0.50.');
+    } else {
+      html = '<b>Ready to fit!</b> You logged ' + log.length + ' steps (lowest 1/M = ' + minInvM.toFixed(2) + '). Press <b>DONE</b> to fit your line and reveal <code>k_eff</code>.';
+    }
+  }
+  g.innerHTML = html;
+  g.classList.remove('hide');
+}
 
 const SETTLE_MAX_TICKS = 1000;
 const SETTLE_DELTA_EPS = 0.005;
@@ -142,11 +190,12 @@ S.xe = 0;
   S._experimentFreezeXe = true;
   S._experimentMaxPower = 25;
   S._experimentSafeRods = 100;
-  S._onExperimentTrip = () => {
-    const w = $('#pcWarn');
-    if (w && !S._experimentInSettle) {
-      w.textContent = '⚠ AUTO-SCRAM: Power exceeded 25 MWth (supercritical)! Rods reinserted to 100% — keep steps subcritical.';
-      w.classList.remove('hide');
+  S._onExperimentTrip = (_S, tripRod) => {
+    if (!S._experimentInSettle) {
+      trippedWhileLogging = true;
+      const at = tripRod !== undefined ? (' near ' + tripRod + '% rods') : '';
+      const stopHint = tripRod !== undefined ? (tripRod + '%') : 'that position';
+      showWarn('⚠ AUTO-SCRAM' + at + ': power passed 25 MWth (supercritical)! Rods reset to 100% — stop short of ' + stopHint + ' next time.');
     }
   };
   S.precursors = equilibriumPrecursors(S.Nf);
@@ -186,20 +235,19 @@ function settleAndLog() {
   try {
     const S = hostHandle.state;
     const D = hostHandle.diff;
-    const w = $('#pcWarn');
-    if (S.k >= 1.0) {
-      if (w) {
-        w.textContent = '⚠ Reactor is supercritical (k_eff ≥ 1) — insert rods back into the subcritical range before logging 1/M.';
-        w.classList.remove('hide');
-      }
+    if (log.some(p => p.rodPct === S.in.rods)) {
+      showWarn('Already logged at ' + S.in.rods + '% rods. Move the rods to a new position before pressing SETTLE & LOG.');
       return;
     }
+    if (S.k >= 1.0) {
+      showWarn('⚠ Reactor is supercritical (k_eff ≥ 1) at ' + S.in.rods + '% — push rods back in to stay subcritical before logging 1/M.');
+      return;
+    }
+    const rodAtStart = S.in.rods;
     const result = runSettleLoop(S, D);
     if (result.tripped || result.runaway || S.k >= 1.0) {
-      if (w) {
-        w.textContent = '⚠ Supercritical excursion during settle — Auto-SCRAM reinserted rods to 100%. Step back slightly and log subcritical points only.';
-        w.classList.remove('hide');
-      }
+      trippedWhileLogging = true;
+      showWarn('⚠ Crossed critical near ' + rodAtStart + '% during settle — Auto-SCRAM reset rods to 100%. Stop short of ' + rodAtStart + '% and log subcritical points only.');
       return;
     }
 
@@ -224,12 +272,18 @@ function settleAndLog() {
       capped: !result.settled,
     });
     lastWarned = !result.settled;
+    earlyDoneAck = false;
     predictedRodPct = null;
+    testPoint = null;
 
     const predEl = $('#pcPred');
     if (predEl) { predEl.innerHTML = ''; predEl.classList.add('hide'); }
 
     renderProcCard();
+    if (!lastWarned && log.length === 1 && S.in.rods < 95) {
+      showWarn('Note: Step 1 was logged at ' + S.in.rods + '% instead of 100%, so 1/M = 1.00 uses ' + S.in.rods + '% as its baseline.');
+    }
+    renderGuide();
     drawPlot(false);
     drawKPlot();
   } finally {
@@ -241,28 +295,28 @@ function settleAndLog() {
 function finishExperiment() {
   const distinctRods = new Set(log.map(p => p.rodPct)).size;
   if (log.length < 4 || distinctRods < 3) {
-    const w = $('#pcWarn');
-    if (w) {
-      w.textContent = 'Need at least 4 logged steps across 3+ distinct rod positions to fit.';
-      w.classList.remove('hide');
-    }
+    showWarn('Need at least 4 logged steps across 3+ different rod positions before clicking DONE (currently ' + log.length + ' step(s), ' + distinctRods + ' position(s)).');
     return;
   }
   const fit = linearFit(nearCriticalPts(log, 3));
-  if (!fit || Math.abs(fit.m) < 1e-15) {
-    const w = $('#pcWarn');
-    if (w) {
-      w.textContent = 'Fit failed — data too noisy or too few points. Log more near-critical steps.';
-      w.classList.remove('hide');
-    }
+  if (!fit || Math.abs(fit.m) < 1e-15 || fit.m <= 0) {
+    showWarn('Your 1/M values have not started trending downward yet. Pull rods further out and log closer steps before clicking DONE.');
     return;
   }
+  const minInvM = Math.min(...log.map(p => p.invM));
+  if (minInvM > 0.65 && !earlyDoneAck) {
+    earlyDoneAck = true;
+    showWarn('Stopping early? Your lowest 1/M is ' + minInvM.toFixed(2) + ' (still on the flat part of the S-curve). Log closer steps until 1/M ≤ 0.65 for an accurate line, or click DONE again to fit anyway.');
+    return;
+  }
+  showWarn('');
   predictedRodPct = -fit.b / fit.m;
   const outOfRange = predictedRodPct < 0 || predictedRodPct > 100;
 
   // Reveal k_eff — the student's manual extrapolation is now checkable.
   blindKeff(false);
   document.body.classList.add('exp-revealed');
+  renderGuide();
 
   const predEl = $('#pcPred');
   if (predEl) {
@@ -293,12 +347,20 @@ function testPrediction() {
   const balAtTarget = neutronBalance(S.in, S.xe, S.T, S.P, S.Tfuel, D.alphaDoppler);
   const result = runSettleLoop(S, D);
   const kMeasured = (result.tripped || result.runaway) ? balAtTarget.kEff : S.k;
+  testTripped = !!(result.tripped || result.runaway);
   testPoint = { rod: targetRod, k: kMeasured };
 
-  let verdict;
-  if (result.tripped || result.runaway || kMeasured > 1.002) verdict = 'SUPERCRITICAL';
-  else if (kMeasured < 0.998)                                 verdict = 'SUBCRITICAL';
-  else                                                        verdict = 'CRITICAL';
+  let verdict, why;
+  if (testTripped || kMeasured > 1.002) {
+    verdict = 'SUPERCRITICAL';
+    why = 'Your line overshot past k_eff = 1.000 — points taken further out on the S-curve can under-predict how steeply reactivity climbs near critical.';
+  } else if (kMeasured < 0.998) {
+    verdict = 'SUBCRITICAL';
+    why = 'Your line stopped slightly short of k_eff = 1.000 — S-curve bending earlier in the pull made the line cross 0 too soon.';
+  } else {
+    verdict = 'CRITICAL';
+    why = 'Spot on! Your near-critical points matched the critical rod position (0.998 ≤ k_eff ≤ 1.002).';
+  }
 
   const predEl = $('#pcPred');
   if (predEl) {
@@ -307,22 +369,20 @@ function testPrediction() {
       '<br><b>Rods tested at:</b> ' + targetRod + '%' +
       '<br><b>k_eff at target:</b> ' + kMeasured.toFixed(4) +
       '<br><b>Verdict:</b> <span style="color:' + (verdict === 'CRITICAL' ? 'var(--c)' : verdict === 'SUBCRITICAL' ? 'var(--y)' : 'var(--r)') + '">' + verdict + '</span>' +
-      (result.tripped ? '<br><span style="color:var(--y);font-size:.85em">Auto-SCRAM reinserted rods to 100% for lab safety.</span>' : '');
+      '<br><span style="color:var(--tx);font-size:.85em">' + why + '</span>' +
+      (result.tripped ? '<br><span style="color:var(--y);font-size:.85em">Auto-SCRAM reset rods to 100% for lab safety.</span>' : '');
     predEl.classList.remove('hide');
   }
+  renderGuide();
   drawKPlot();
 }
 // ── Procedure-card updates ──
 // ── Procedure-card updates ──
 function renderProcCard() {
-  const warnEl = $('#pcWarn');
-  if (warnEl) {
-    if (lastWarned) {
-      warnEl.textContent = '⚠ This step didn\'t settle in 1000 s. Near critical, power takes longer to stabilize — try 2–3% steps instead of 5%.';
-      warnEl.classList.remove('hide');
-    } else {
-      warnEl.classList.add('hide');
-    }
+  if (lastWarned) {
+    showWarn('⚠ This step didn\'t settle in 1000 s. Near critical, power takes longer to stabilize — try 2–3% steps instead of 5%.');
+  } else {
+    showWarn('');
   }
   const logEl = $('#pcLog');
   if (!logEl) return;
@@ -428,6 +488,7 @@ function drawPlot(showFit) {
   ctx.fillStyle = '#6b8f6b';
   ctx.font = '11px monospace';
   ctx.fillText('1/M', 6, pad.t + 8);
+  ctx.fillText('0', pad.l - 14, H - pad.b + 3);
   ctx.fillText('rod %', W - pad.r - 40, H - 4);
   ctx.textAlign = 'center';
   ctx.fillText(xMin.toFixed(0), pad.l, H - pad.b + 10);
@@ -738,6 +799,9 @@ function openBriefing(id) {
   $('#ebTitle').textContent = e.title;
   $('#ebMeta').textContent = fmtDuration(e.duration) + ' · ' + (e.phase === 4 ? 'SHELL TEST' : 'PHASE ' + e.phase);
   $('#ebObj').textContent = e.objective || '';
+  const hasCrit = Array.isArray(e.criteria) && e.criteria.length > 0;
+  setHTML('#ebCriteria', hasCrit ? e.criteria.map(s => '<li>' + s + '</li>').join('') : '');
+  show('#ebCriteriaWrap', hasCrit);
   setHTML('#ebProc', (e.procedure || []).map(s => '<li>' + s + '</li>').join(''));
   $('#ebRecord').textContent = e.record || '';
   $('#ebLimits').textContent = e.limitations || '';
@@ -767,6 +831,9 @@ function beginExperiment() {
   plotShowFit = false;
   lastWarned = false;
   settling = false;
+  trippedWhileLogging = false;
+  testTripped = false;
+  earlyDoneAck = false;
   // Clear any stale lock classes from a previous run
   document.querySelectorAll('.pn.pc-locked').forEach(p => p.classList.remove('pc-locked'));
 
@@ -796,17 +863,28 @@ function beginExperiment() {
   if (stepsEl) stepsEl.classList.toggle('hide', isRodCal);
   const rodCalEl = $('#pcRodCal');
   if (rodCalEl) rodCalEl.classList.toggle('hide', !isRodCal);
-  const warnEl = $('#pcWarn');
-  if (warnEl) warnEl.classList.add('hide');
+  showWarn('');
+  const guideEl = $('#pcGuide');
+  if (guideEl) { guideEl.innerHTML = ''; guideEl.classList.add('hide'); }
   const predEl = $('#pcPred');
   if (predEl) { predEl.innerHTML = ''; predEl.classList.add('hide'); }
 
   show('#procCard', true);
-  if (isRodCal) requestAnimationFrame(() => redrawPlots(false));   // after layout so the canvases have a size
+  if (isRodCal) {
+    renderGuide();
+    requestAnimationFrame(() => redrawPlots(false));   // after layout so the canvases have a size
+  }
 }
 
-function endExperiment() {
+async function endExperiment() {
   if (state !== 'running' || !current) return;
+  if (current.id === 'rod-calibration-1m') {
+    let confirmMsg = '';
+    if (log.length === 0) confirmMsg = 'You have not logged any steps yet. End the experiment anyway?';
+    else if (predictedRodPct === null) confirmMsg = 'You have not clicked DONE to predict the critical rod % yet. End the experiment early?';
+    else if (!testPoint) confirmMsg = 'You have not pressed TEST PREDICTION yet to verify k_eff. End the experiment anyway?';
+    if (confirmMsg && !await ask(confirmMsg)) return;
+  }
   state = 'complete';
   if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
   document.body.classList.remove('sbx-sheet-open');
@@ -816,13 +894,57 @@ function endExperiment() {
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
   $('#ecTitle').textContent = current.title;
 
+  const vEl = $('#ecVerdict');
+  if (vEl) {
+    if (current.id === 'rod-calibration-1m') {
+      const minInvM = log.length ? Math.min(...log.map(p => p.invM)) : 1;
+      let vCls = 'ec-fail', vHead = '', vBody = '';
+      if (predictedRodPct === null || !testPoint) {
+        vCls = 'ec-fail';
+        vHead = 'INCOMPLETE LAB';
+        vBody = log.length < 4
+          ? 'Only ' + log.length + ' step(s) were logged (need 4+ distinct steps, DONE, and TEST PREDICTION).'
+          : predictedRodPct === null
+            ? 'You logged ' + log.length + ' steps (lowest 1/M = ' + minInvM.toFixed(2) + '), but ended before clicking DONE to extrapolate critical rod %.'
+            : 'You extrapolated ' + predictedRodPct.toFixed(1) + '% rods, but ended before clicking TEST PREDICTION to check k_eff.';
+      } else {
+        const kErr = Math.abs(testPoint.k - 1);
+        if (kErr <= 0.002 && !testTripped && !trippedWhileLogging) {
+          vCls = 'ec-pass';
+          vHead = 'PASS · EXCELLENT CRITICAL PREDICTION';
+          vBody = 'Predicted ' + predictedRodPct.toFixed(1) + '% → tested at ' + testPoint.rod + '% with k_eff = ' + testPoint.k.toFixed(4) + ' (inside 0.998–1.002) and zero Auto-SCRAM trips.';
+        } else if (kErr <= 0.010 && !testTripped) {
+          vCls = trippedWhileLogging ? 'ec-close' : 'ec-pass';
+          vHead = trippedWhileLogging ? 'PASS (WITH SCRAM TRIP) · NEAR CRITICAL' : 'PASS · NEAR CRITICAL';
+          vBody = 'Tested k_eff = ' + testPoint.k.toFixed(4) + ' (within ±0.010 of critical).' +
+            (trippedWhileLogging ? ' Note: Auto-SCRAM tripped earlier while withdrawing rods—use smaller 2–5% steps near critical.' : ' Taking 1–2 closer steps below 1/M = 0.50 will sharpen the fit even further.');
+        } else {
+          vCls = 'ec-fail';
+          vHead = 'NEEDS IMPROVEMENT';
+          vBody = 'Tested k_eff = ' + testPoint.k.toFixed(4) + (testTripped ? ' (tripped Auto-SCRAM at ' + testPoint.rod + '%)' : '') +
+            ' was outside ±0.010 of critical. Lowest 1/M logged was ' + minInvM.toFixed(2) +
+            (minInvM > 0.50 ? ' — stepping closer until 1/M ≤ 0.50 avoids S-curve bias.' : ' — try smaller 2–3% steps right before critical.');
+        }
+      }
+      vEl.className = 'ec-verdict ' + vCls;
+      vEl.innerHTML = '<b>' + vHead + '</b>' + vBody;
+    } else {
+      vEl.className = 'ec-verdict hide';
+      vEl.innerHTML = '';
+    }
+  }
+
   let metrics =
     '<div class="ec-metric"><b>' + fmt(elapsed) + '</b>elapsed</div>' +
     '<div class="ec-metric"><b>' + (current.phase === 4 ? 'SHELL' : 'PHASE ' + current.phase) + '</b>status</div>';
-  if (log.length > 0) metrics += '<div class="ec-metric"><b>' + log.length + '</b>steps</div>';
+  if (log.length > 0) {
+    const minInvM = Math.min(...log.map(p => p.invM));
+    metrics += '<div class="ec-metric"><b>' + log.length + '</b>steps</div>';
+    metrics += '<div class="ec-metric"><b>' + minInvM.toFixed(2) + '</b>min 1/M</div>';
+  }
   if (predictedRodPct !== null) metrics += '<div class="ec-metric"><b>' + predictedRodPct.toFixed(1) + '%</b>predicted</div>';
+  if (testPoint !== null) metrics += '<div class="ec-metric"><b>' + testPoint.k.toFixed(4) + '</b>tested k_eff</div>';
   setHTML('#ecMetrics', metrics);
-
   setWorksheet('#ecWks', current);
 
   const csvBtn = $('#ecCSV');
@@ -859,7 +981,11 @@ function backToLibrary() {
   stopHost();
   log = [];
   predictedRodPct = null;
+  testPoint = null;
   lastWarned = false;
+  trippedWhileLogging = false;
+  testTripped = false;
+  earlyDoneAck = false;
   document.querySelectorAll('.pn.pc-locked').forEach(p => p.classList.remove('pc-locked'));
   show('#expComplete', false);
   show('#procCard', false);
