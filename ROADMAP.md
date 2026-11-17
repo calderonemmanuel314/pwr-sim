@@ -22,20 +22,9 @@ Rough sizing from the original plan: Phase 5 about 300 lines; Phase 6 about 250;
 
 ## 2. Phase 4: Experiment Library shell (ACCOMPLISHED)
 
-## 3. Phase 5: Rod calibration by 1/M (MECHANICS SHIPPED — DOCS PENDING)
+## 3. Phase 5: Rod calibration by 1/M (ACCOMPLISHED)
 
-Code is complete and testable on the live site: 1/M method, settle-and-log,
-Poisson samples, per-session detector efficiency, k_eff blindness during
-logging, linear fit on DONE, TEST PREDICTION, log table in procedure card,
-CSV download, mobile drawer, auto-coolant + auto-pressurizer (so the
-experiment completes rather than tripping `end()`).
-
-Remaining before this phase closes:
-
-- [ ] `about.html` §7 changelog row for 2.4.0
-- [ ] `APP_VERSION = '2.4.0'` in `js/config.js`; `?v=2.4.0` on `css/advanced.css` in `index.html`
-- [ ] `node tools/check-docs.mjs` passes on push
-- [ ] Worksheet PDF `worksheets/rod-calibration-1m.pdf` (not blocking — link stays hidden until present)
+Remaining optional asset: `worksheets/rod-calibration-1m.pdf` (link stays hidden until present).
 
 ## 4. Experiment catalogue (Phases 6 to 9)
 
@@ -62,7 +51,7 @@ Decide these before building, and state them in the briefing and worksheet.
 
 | Experiment | Caveat |
 |---|---|
-| Rod calibration by 1/M | Steady-state multiplication does not depend on the generation time, so it is safe. Settling is slow near criticality. |
+| Rod calibration by 1/M | Steady-state multiplication does not depend on the generation time, so it is safe, though settling is slow near criticality. Rod worth follows an S-curve, so 1/M vs. rod % curves across wide travel (procedure teaches the halfway rule; DONE fits the 3 distinct near-critical points). Soft 25 MWth Auto-SCRAM and frozen xenon prevent runaways and poison drift. |
 | Rod worth by period | Requires an inhour solution that uses the model's own generation time (`LAMBDA_PROMPT_MODEL`). Do not use one correction factor — the reactivity-period relation shifts by an amount that depends on the period (about 2× at very long periods, several times larger at short ones). Either solve the inhour equation with the model's own generation time, or reduce it in experiment mode. |
 | Delayed neutron counting | The long-time decay is correct. The source floor sets the lowest count rate. |
 | SCRAM transient | The prompt drop is visible at 1 Hz only because the generation time is stretched. Teach it qualitatively, not as a measurement of real prompt behavior. |
@@ -115,8 +104,9 @@ These came out of a code review. Each is a choice, not necessarily a bug. If you
 - Experiment shell state machine: idle → briefing → running → complete, in `js/experiments.js`. The procedure card is a floating overlay inside `#ctr` (reactor-priority rule).
 - Unbuilt experiments carry `enabled: false` in `EXPERIMENTS` and appear greyed out in the library.
 - Rod calibration plots **1/M**, not raw 1/cps. 1/M = cps_first / cps_current (first log is the reference). Detector efficiency cancels in the ratio, so a mis-calibrated detector does not bias the extrapolated critical position.
-- k_eff readout is **blinded** during rod-calibration logging (shown as "— BLINDED DURING CALIBRATION"). Revealed at DONE so students must extrapolate by hand before checking their answer with TEST PREDICTION.
-- Auto-coolant (pump tracks fission power) and auto-pressurizer run during Phase 5 experiments via `_experimentActive` gate in `host.js` helpers. Free Exploration untouched — helpers early-return.
+- `k_eff` (plus `ρ · REACTIVITY`, `PERIOD`, and the `S.k > 1.01` status hint) is **blinded** during rod-calibration logging (`body.k-blind`), then revealed at DONE so students must extrapolate by hand before checking their answer with TEST PREDICTION.
+- Auto-coolant (holds ~307 °C), auto-pressurizer (holds 15.3–15.7 MPa), frozen xenon (`_experimentFreezeXe`), and a soft 25 MWth Auto-SCRAM (`_experimentMaxPower`) run during `rod-cal` via `_experimentActive` in `host.js`, suppressing `end()` so students cannot blow up the core. Free Exploration untouched.
+- DONE fits the 3 distinct near-critical logged points (`nearCriticalPts(log, 3)`) instead of a global regression across the S-curve, and `settleAndLog()` blocks supercritical points (`k_eff >= 1`).
 
 ## 10. Decisions still open
 
