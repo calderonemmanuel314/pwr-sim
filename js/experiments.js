@@ -34,41 +34,13 @@ function showWarn(msg) {
   w.classList.remove('hide');
 }
 
-function renderGuide() {
-  const g = $('#pcGuide');
+function updatePlotNote() {
   const note = $('#gMNote');
-  if (!g || !current || current.id !== 'rod-calibration-1m') return;
-  const distinctRods = new Set(log.map(p => p.rodPct)).size;
+  if (!note) return;
   const minInvM = log.length ? Math.min(...log.map(p => p.invM)) : 1;
-  if (note) note.textContent = log.length ? ('min 1/M: ' + minInvM.toFixed(2) + ' · goal ≤ 0.50') : 'goal: 1/M → 0';
-
-  let html;
-  if (testPoint !== null) {
-    html = '<b>Check complete!</b> Review the <code>k_eff</code> graph and verdict below, then press <b>END EXPERIMENT</b> (in Procedure) for your final debrief &amp; CSV.';
-  } else if (predictedRodPct !== null) {
-    const target = Math.round(Math.max(0, Math.min(100, predictedRodPct)));
-    html = '<b>Final check:</b> Press <b>TEST PREDICTION</b> below to move rods to <b>' + target + '%</b> and verify <code>k_eff</code>.';
-  } else if (log.length === 0) {
-    html = '<b>Step 1 (Baseline):</b> Rods are at <b>100%</b>. Press <b>SETTLE &amp; LOG</b> to record your starting count rate (1/M = 1.00).';
-  } else {
-    const lastRod = log[log.length - 1].rodPct;
-    if (distinctRods < 4 && lastRod >= 75 && minInvM > 0.65) {
-      const nextRod = Math.max(0, lastRod - 10);
-      html = '<b>Step ' + (log.length + 1) + ':</b> Pull rods out 10% (move to <b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b>.';
-    } else if (minInvM > 0.65) {
-      const nextRod = Math.max(0, lastRod - 5);
-      html = '<b>Step ' + (log.length + 1) + ':</b> Keep stepping out carefully (try <b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b> until 1/M drops clearly (now ' + minInvM.toFixed(2) + ').';
-    } else if (distinctRods < 4 || minInvM > 0.50) {
-      const nextRod = Math.max(0, lastRod - 3);
-      const need = Math.max(0, 4 - distinctRods);
-      html = '<b>Step ' + (log.length + 1) + ':</b> Getting close (1/M = ' + minInvM.toFixed(2) + '). Take a small 2–5% step (try ~<b>' + nextRod + '%</b>) and press <b>SETTLE &amp; LOG</b>' +
-        (need > 0 ? ' (' + need + ' more distinct step' + (need > 1 ? 's' : '') + ' needed).' : ' to drop 1/M ≤ 0.50.');
-    } else {
-      html = '<b>Ready to fit!</b> You logged ' + log.length + ' steps (lowest 1/M = ' + minInvM.toFixed(2) + '). Press <b>DONE</b> to fit your line and reveal <code>k_eff</code>.';
-    }
-  }
-  g.innerHTML = html;
-  g.classList.remove('hide');
+  note.textContent = log.length
+    ? (log.length + ' step' + (log.length > 1 ? 's' : '') + ' · min 1/M: ' + minInvM.toFixed(2))
+    : 'goal: track 1/M toward 0';
 }
 
 const SETTLE_MAX_TICKS = 1000;
@@ -283,9 +255,8 @@ function settleAndLog() {
     if (!lastWarned && log.length === 1 && S.in.rods < 95) {
       showWarn('Note: Step 1 was logged at ' + S.in.rods + '% instead of 100%, so 1/M = 1.00 uses ' + S.in.rods + '% as its baseline.');
     }
-    renderGuide();
+    updatePlotNote();
     drawPlot(false);
-    drawKPlot();
   } finally {
     settling = false;
   }
@@ -315,8 +286,7 @@ function finishExperiment() {
 
   // Reveal k_eff — the student's manual extrapolation is now checkable.
   blindKeff(false);
-  document.body.classList.add('exp-revealed');
-  renderGuide();
+  updatePlotNote();
 
   const predEl = $('#pcPred');
   if (predEl) {
@@ -373,8 +343,7 @@ function testPrediction() {
       (result.tripped ? '<br><span style="color:var(--y);font-size:.85em">Auto-SCRAM reset rods to 100% for lab safety.</span>' : '');
     predEl.classList.remove('hide');
   }
-  renderGuide();
-  drawKPlot();
+  updatePlotNote();
 }
 // ── Procedure-card updates ──
 // ── Procedure-card updates ──
@@ -410,11 +379,9 @@ function renderProcCard() {
   logEl.classList.remove('hide');
 }
 
-// ── Plot: 1/cps vs rod %, with fit line and zero crossing ──
-// Axes always accommodate: all data points, the fit-line endpoints, and rCrit
-// (if the fit produced one in [0,100]). Drawing is clipped to the plot rect
-// so nothing spills into labels or off-canvas. A minimum x-span of 20% keeps
-// a single point at rod=100 (or any edge) from hugging the border.
+// ── Plot: 1/M vs rod %, with labeled increments, gridlines, fit line, and zero crossing ──
+// Keeps generous margins around [0, 100] and above 1.00 so edge points (like 100%, 1.00)
+// are never clipped by the axes or canvas frame.
 function drawPlot(showFit) {
   plotShowFit = !!showFit;
   const c = $('#pcPlot');
@@ -427,106 +394,128 @@ function drawPlot(showFit) {
   if (log.length === 0) {
     ctx.fillStyle = '#6b8f6b';
     ctx.font = '12px monospace';
-    ctx.fillText('Press SETTLE & LOG to begin.', 16, H / 2 + 8);
+    ctx.fillText('Press SETTLE & LOG at 100% to record your baseline.', 16, H / 2 + 4);
     return;
   }
 
-  const pad = { l: 44, r: 16, t: 26, b: 24 };
+  const pad = { l: 48, r: 22, t: 16, b: 28 };
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
 
-// Fit computed first so its endpoints can influence axis ranges
   const fitPoints = nearCriticalPts(log, 3);
   const distinctRods = new Set(log.map(p => p.rodPct)).size;
   const fit = (showFit && log.length >= 4 && distinctRods >= 3) ? linearFit(fitPoints) : null;
   const rCrit = (fit && Math.abs(fit.m) > 1e-15) ? (-fit.b / fit.m) : null;
 
-  // ── X-range ──
+  // ── X-range with outer margin so 0% and 100% points never touch the border ──
   const xRods = log.map(p => p.rodPct);
   if (rCrit !== null && rCrit >= 0 && rCrit <= 100) xRods.push(rCrit);
   const rawMinX = Math.min(...xRods);
   const rawMaxX = Math.max(...xRods);
   const spanX = Math.max(rawMaxX - rawMinX, 1);
-  const padX = Math.max(5, spanX * 0.15);
-  let xMin = Math.max(0, rawMinX - padX);
-  let xMax = Math.min(100, rawMaxX + padX);
-  // Enforce a minimum visible span of 20%, anchored so data stays in view
-  if (xMax - xMin < 20) {
-    if (rawMaxX >= 100 - 0.5) { xMin = Math.max(0, 100 - 20); xMax = 100; }
-    else if (rawMinX <= 0.5) { xMin = 0; xMax = Math.min(100, 20); }
-    else {
-      const mid = (rawMinX + rawMaxX) / 2;
-      xMin = Math.max(0, mid - 10);
-      xMax = Math.min(100, mid + 10);
-    }
+  const padX = Math.max(6, spanX * 0.14);
+  let xMin = rawMinX - padX;
+  let xMax = rawMaxX + padX;
+  if (xMax - xMin < 24) {
+    const mid = (rawMinX + rawMaxX) / 2;
+    xMin = mid - 12;
+    xMax = mid + 12;
   }
+  xMin = Math.max(-6, xMin);
+  xMax = Math.min(106, xMax);
 
-  // ── Y-range ──
+  // ── Y-range snapped to clean tick increments ──
   const yVals = log.map(p => p.invM);
   if (fit) {
-    yVals.push(fit.m * xMin + fit.b);
-    yVals.push(fit.m * xMax + fit.b);
+    yVals.push(fit.m * Math.max(0, xMin) + fit.b);
+    yVals.push(fit.m * Math.min(100, xMax) + fit.b);
   }
   const yMin = 0;
-  const rawMaxY = Math.max(...yVals, 1e-15);
-  const padY = Math.max(rawMaxY * 0.15, 1e-15);
-  const yMax = rawMaxY + padY;
+  const rawMaxY = Math.max(...yVals, 1.0);
+  const yStep = rawMaxY <= 0.65 ? 0.1 : rawMaxY <= 1.35 ? 0.25 : rawMaxY <= 2.4 ? 0.5 : 1.0;
+  const yMax = Math.ceil((rawMaxY * 1.1) / yStep) * yStep;
 
   const sx = r => pad.l + ((r - xMin) / Math.max(1e-9, xMax - xMin)) * plotW;
   const sy = v => pad.t + (1 - (v - yMin) / Math.max(1e-15, yMax - yMin)) * plotH;
 
-  // Axes
+  // ── Y gridlines and tick labels ──
+  ctx.font = '10px monospace';
+  const yDecimals = yStep < 0.25 ? 2 : yStep < 1 ? 2 : 1;
+  for (let y = 0; y <= yMax + 1e-9; y += yStep) {
+    const py = sy(y);
+    ctx.strokeStyle = y === 0 ? '#2a4a2a' : '#142214';
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(W - pad.r, py); ctx.stroke();
+    ctx.fillStyle = '#6b8f6b';
+    ctx.textAlign = 'right';
+    ctx.fillText(y.toFixed(yDecimals), pad.l - 6, py + 3);
+  }
+
+  // Subtle dashed reference at 1/M = 0.50 (suggested fit threshold)
+  if (0.5 < yMax) {
+    ctx.strokeStyle = '#39ff1433';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(pad.l, sy(0.5)); ctx.lineTo(W - pad.r, sy(0.5)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // ── X gridlines and tick labels (clean 10% or 20% steps inside 0..100) ──
+  const xStep = (xMax - xMin) > 55 ? 20 : 10;
+  const xStart = Math.max(0, Math.ceil(xMin / xStep) * xStep);
+  const xEnd = Math.min(100, Math.floor(xMax / xStep) * xStep);
+  for (let x = xStart; x <= xEnd + 1e-9; x += xStep) {
+    const px = sx(x);
+    ctx.strokeStyle = '#142214';
+    ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, H - pad.b); ctx.stroke();
+    ctx.fillStyle = '#6b8f6b';
+    ctx.textAlign = 'center';
+    ctx.fillText(x.toFixed(0) + '%', px, H - pad.b + 13);
+  }
+
+  // Main axes
   ctx.strokeStyle = '#2a4a2a';
-  ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(pad.l, pad.t);
   ctx.lineTo(pad.l, H - pad.b);
   ctx.lineTo(W - pad.r, H - pad.b);
   ctx.stroke();
 
-  // Axis labels
+  // Axis captions
   ctx.fillStyle = '#6b8f6b';
-  ctx.font = '11px monospace';
+  ctx.textAlign = 'left';
   ctx.fillText('1/M', 6, pad.t + 8);
-  ctx.fillText('0', pad.l - 14, H - pad.b + 3);
-  ctx.fillText('rod %', W - pad.r - 40, H - 4);
-  ctx.textAlign = 'center';
-  ctx.fillText(xMin.toFixed(0), pad.l, H - pad.b + 10);
-  ctx.fillText(xMax.toFixed(0), W - pad.r, H - pad.b + 10);
+  ctx.textAlign = 'right';
+  ctx.fillText('rod %', W - 6, H - 4);
   ctx.textAlign = 'left';
 
-  // ── Clip drawing to the plot rect ──
+  // ── Clip drawing with a 6px margin so points on 0% / 100% / 1.00 are never sliced ──
   ctx.save();
   ctx.beginPath();
-  ctx.rect(pad.l, pad.t, plotW, plotH);
+  ctx.rect(pad.l - 6, pad.t - 6, plotW + 12, plotH + 12);
   ctx.clip();
 
-  // Data points
-  ctx.fillStyle = '#f2c94c';
-  log.forEach(p => {
-    const x = sx(p.rodPct);
-    const y = sy(p.invM);
+  // Connect points lightly in rod order
+  if (log.length >= 2) {
+    const sorted = log.slice().sort((a, b) => a.rodPct - b.rodPct);
+    ctx.strokeStyle = '#f2c94c55';
+    ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
-    if (p.capped) {
-      ctx.strokeStyle = '#e8324a';
-      ctx.beginPath();
-      ctx.arc(x, y, 5, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  });
+    sorted.forEach((p, idx) => {
+      const x = sx(p.rodPct), y = sy(p.invM);
+      if (idx) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+    ctx.lineWidth = 1;
+  }
 
   // Fit line
   if (fit && Math.abs(fit.m) > 1e-15) {
     ctx.strokeStyle = '#35c8ff';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.75;
     ctx.beginPath();
     ctx.moveTo(sx(xMin), sy(fit.m * xMin + fit.b));
     ctx.lineTo(sx(xMax), sy(fit.m * xMax + fit.b));
     ctx.stroke();
 
-    // rCrit vertical dashed marker
     if (rCrit !== null && rCrit >= 0 && rCrit <= 100) {
       ctx.strokeStyle = '#e8324a';
       ctx.setLineDash([3, 3]);
@@ -538,16 +527,34 @@ function drawPlot(showFit) {
     }
   }
 
+  // Data points (drawn on top of lines)
+  log.forEach(p => {
+    const x = sx(p.rodPct);
+    const y = sy(p.invM);
+    ctx.fillStyle = '#f2c94c';
+    ctx.strokeStyle = '#050805';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    if (p.capped) {
+      ctx.strokeStyle = '#e8324a';
+      ctx.beginPath();
+      ctx.arc(x, y, 6.5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  });
+
   ctx.restore();
 
-  // rCrit label outside the clip, right-aligned near the edge so it stays visible
   if (fit && rCrit !== null && rCrit >= 0 && rCrit <= 100) {
     ctx.fillStyle = '#e8324a';
     ctx.font = '11px monospace';
     const lx = sx(rCrit);
-    const labelW = 44;
-    const drawX = (lx + labelW + 4 > W - pad.r) ? lx - labelW - 2 : lx + 2;
-    ctx.fillText(rCrit.toFixed(1) + '%', drawX, pad.t + 10);
+    const labelW = 46;
+    const drawX = (lx + labelW + 4 > W - pad.r) ? lx - labelW - 2 : lx + 4;
+    ctx.fillText(rCrit.toFixed(1) + '%', drawX, pad.t + 12);
   }
 }
 
@@ -569,115 +576,6 @@ function fitCanvas(c) {
 
 function redrawPlots(showFit) {
   drawPlot(showFit === undefined ? plotShowFit : showFit);
-  drawKPlot();
-}
-
-// ── Plot: k_eff vs rod % (revealed after DONE) ──
-// Uses the kEff recorded at every logged step, the extrapolated rod position as a dashed
-// marker, and the TEST PREDICTION result as a ring. The green band is |k − 1| < 0.002.
-function drawKPlot() {
-  const c = $('#pcKPlot');
-  const g = fitCanvas(c);
-  if (!g) return;
-  const { ctx, W, H } = g;
-  ctx.clearRect(0, 0, W, H);
-  ctx.lineWidth = 1; ctx.setLineDash([]);
-
-  const pts = log.map(p => ({ x: p.rodPct, y: p.kEff }));
-  if (testPoint) pts.push({ x: testPoint.rod, y: testPoint.k, test: true });
-  if (pts.length === 0) {
-    ctx.fillStyle = '#6b8f6b'; ctx.font = '12px monospace';
-    ctx.fillText('No steps logged yet.', 16, H / 2 + 8);
-    return;
-  }
-
-  const roomy = H >= 190;                               // legend row only when there is height for it
-  const pad = { l: 52, r: 16, t: roomy ? 46 : 28, b: 24 };
-  const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
-
-  const xs = pts.map(p => p.x);
-  const hasPred = predictedRodPct !== null && predictedRodPct >= 0 && predictedRodPct <= 100;
-  if (hasPred) xs.push(predictedRodPct);
-  let xMin = Math.max(0, Math.min(...xs) - 5), xMax = Math.min(100, Math.max(...xs) + 5);
-  if (xMax - xMin < 20) {
-    const mid = (xMin + xMax) / 2;
-    xMin = mid - 10; xMax = mid + 10;
-    if (xMin < 0) { xMax -= xMin; xMin = 0; }
-    if (xMax > 100) { xMin -= xMax - 100; xMax = 100; }
-    xMin = Math.max(0, xMin);
-  }
-
-  const ys = pts.map(p => p.y).concat([0.998, 1.002]);
-  const rawMin = Math.min(...ys), rawMax = Math.max(...ys);
-  const padY = Math.max((rawMax - rawMin) * 0.12, 0.002);
-  const yMin = rawMin - padY, yMax = rawMax + padY;
-
-  const sx = r => pad.l + ((r - xMin) / Math.max(1e-9, xMax - xMin)) * plotW;
-  const sy = v => pad.t + (1 - (v - yMin) / Math.max(1e-12, yMax - yMin)) * plotH;
-
-  // grid + y labels
-  const dec = (yMax - yMin) > 0.05 ? 2 : 3;
-  ctx.font = '11px monospace';
-  const nTick = plotH < 80 ? 2 : 3;
-  for (let i = 0; i <= nTick; i++) {
-    const v = yMin + (yMax - yMin) * (i / nTick), y = sy(v);
-    ctx.strokeStyle = '#142014';
-    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
-    ctx.fillStyle = '#6b8f6b'; ctx.textAlign = 'right';
-    ctx.fillText(v.toFixed(dec), pad.l - 5, y + 4);
-  }
-  ctx.textAlign = 'left';
-
-  // axes
-  ctx.strokeStyle = '#2a4a2a';
-  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke();
-  ctx.fillStyle = '#6b8f6b';
-  ctx.fillText('rod %', W - pad.r - 40, H - 4);
-  ctx.textAlign = 'center';
-  ctx.fillText(xMin.toFixed(0), pad.l, H - pad.b + 14);
-  ctx.fillText(xMax.toFixed(0), W - pad.r, H - pad.b + 14);
-  ctx.textAlign = 'left';
-
-  ctx.save();
-  ctx.beginPath(); ctx.rect(pad.l, pad.t, plotW, plotH); ctx.clip();
-
-  // critical band and k = 1 line
-  ctx.fillStyle = 'rgba(57,255,20,.14)';
-  ctx.fillRect(pad.l, sy(1.002), plotW, Math.max(2, sy(0.998) - sy(1.002)));
-  ctx.strokeStyle = '#39ff14'; ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(pad.l, sy(1)); ctx.lineTo(W - pad.r, sy(1)); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // data: line in rod order, then points
-  const logged = log.map(p => ({ x: p.rodPct, y: p.kEff })).sort((a, b) => a.x - b.x);
-  ctx.strokeStyle = '#f2c94c'; ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  logged.forEach((p, i) => { const X = sx(p.x), Y = sy(p.y); if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); });
-  ctx.stroke(); ctx.lineWidth = 1;
-  ctx.fillStyle = '#f2c94c';
-  logged.forEach(p => { ctx.beginPath(); ctx.arc(sx(p.x), sy(p.y), 3.5, 0, Math.PI * 2); ctx.fill(); });
-
-  if (hasPred) {
-    ctx.strokeStyle = '#e8324a'; ctx.setLineDash([3, 3]);
-    ctx.beginPath(); ctx.moveTo(sx(predictedRodPct), pad.t); ctx.lineTo(sx(predictedRodPct), H - pad.b); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-  if (testPoint) {
-    ctx.strokeStyle = '#35c8ff'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(sx(testPoint.rod), sy(testPoint.k), 7, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = 1;
-  }
-  ctx.restore();
-
-  // legend: second line under the title, only when the plot is tall enough
-  if (roomy) {
-    ctx.font = '11px monospace';
-    let lx = pad.l;
-    const leg = (col, txt) => { ctx.fillStyle = col; ctx.fillText('● ' + txt, lx, 38); lx += ctx.measureText('● ' + txt).width + 12; };
-    leg('#f2c94c', 'logged');
-    if (hasPred) leg('#e8324a', 'predicted ' + predictedRodPct.toFixed(1) + '%');
-    if (testPoint) leg('#35c8ff', 'tested k=' + testPoint.k.toFixed(4));
-  }
 }
 
 // ── Completion screen table ──
@@ -798,6 +696,10 @@ function openBriefing(id) {
   state = 'briefing';
   $('#ebTitle').textContent = e.title;
   $('#ebMeta').textContent = fmtDuration(e.duration) + ' · ' + (e.phase === 4 ? 'SHELL TEST' : 'PHASE ' + e.phase);
+ $('#ebConcept').textContent = e.concept || '';
+  show('#ebConceptWrap', !!e.concept);
+  $('#ebGoal').textContent = e.goal || '';
+  show('#ebGoalWrap', !!e.goal);
   $('#ebObj').textContent = e.objective || '';
   const hasCrit = Array.isArray(e.criteria) && e.criteria.length > 0;
   setHTML('#ebCriteria', hasCrit ? e.criteria.map(s => '<li>' + s + '</li>').join('') : '');
@@ -864,15 +766,13 @@ function beginExperiment() {
   const rodCalEl = $('#pcRodCal');
   if (rodCalEl) rodCalEl.classList.toggle('hide', !isRodCal);
   showWarn('');
-  const guideEl = $('#pcGuide');
-  if (guideEl) { guideEl.innerHTML = ''; guideEl.classList.add('hide'); }
   const predEl = $('#pcPred');
   if (predEl) { predEl.innerHTML = ''; predEl.classList.add('hide'); }
 
   show('#procCard', true);
   if (isRodCal) {
-    renderGuide();
-    requestAnimationFrame(() => redrawPlots(false));   // after layout so the canvases have a size
+    updatePlotNote();
+    requestAnimationFrame(() => redrawPlots(false));   // after layout so the canvas has a size
   }
 }
 
@@ -1013,7 +913,7 @@ export function initExperiments() {
   if (settleBtn) settleBtn.onclick = settleAndLog;
   if (typeof ResizeObserver !== 'undefined') {
     const ro = new ResizeObserver(() => { if (state === 'running') redrawPlots(); });
-    ['#gM', '#gK'].forEach(sel => { const el = $(sel); if (el) ro.observe(el); });
+    const gM = $('#gM'); if (gM) ro.observe(gM);
   }
   addEventListener('orientationchange', () => setTimeout(() => { if (state === 'running') redrawPlots(); }, 200));
   const doneBtn = $('#pcDone');
