@@ -315,3 +315,83 @@ body.k-blind #kcol::after {
   line-height: 1.3;
   pointer-events: none;
 }
+
+/* Phase 5 final: unified collapse + mobile drawer for procedure card */
+
+/* Unified: pc-collapsed hides the entire body (head-only peek).
+   Earlier desktop-only rule hid ol + #pcEnd but left the plot + buttons visible;
+   that was inconsistent with the mobile drawer design and looked broken. */
+#procCard.pc-collapsed #pcRodCal,
+#procCard.pc-collapsed ol,
+#procCard.pc-collapsed #pcEnd { display: none; }
+
+@media (max-width: 720px) {
+  #procCard {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    width: auto;
+    max-width: none;
+    border-radius: 10px;
+    padding: 0;
+    max-height: 60%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 60;
+  }
+  #procCard .pc-head {
+    padding: 10px 14px;
+    background: rgba(12,18,13,.98);
+    border-bottom: 1px solid var(--ln);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+  #procCard .pc-head b { font-size: .9rem; }
+  #procCard .pc-toggle {
+    padding: 4px 12px;
+    font-size: 1.1rem;
+    min-width: 44px;
+    min-height: 32px;
+    border-radius: 4px;
+  }
+  #procCard #pcRodCal {
+    padding: 8px 12px 10px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  #procCard #pcPlot {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 6px;
+  }
+  #procCard #pcLog { max-height: 80px; }
+  #procCard .pc-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 6px 0;
+  }
+  #procCard .pc-btns .btn {
+    width: 100%;
+    padding: 8px 4px;
+    font-size: .8rem;
+    min-height: 38px;
+  }
+  #procCard #pcEnd {
+    margin: 0 12px 12px;
+    padding: 10px;
+    min-height: 40px;
+  }
+  #procCard ol {
+    padding-left: 20px;
+    padding-right: 12px;
+    overflow-y: auto;
+    max-height: 30vh;
+    margin: 8px 12px;
+  }
+}
