@@ -180,7 +180,6 @@ export function render(S, D, WH, coachText) {
     const kclipEl = $('#kclip'); if (kclipEl) { kclipEl.textContent = clip; kclipEl.classList.toggle('hide', !clip); }
     const kx = v => 5 + (clamp(v, 1 - kHalf, 1 + kHalf) - (1 - kHalf)) / (2 * kHalf) * 30;
     setText('#kLo', (1 - kHalf).toFixed(2)); setText('#kHi', (1 + kHalf).toFixed(2));
-    setHTML('#gKVal', '<span style="color:' + color + '">' + k.toFixed(4) + ' · ' + label + '</span>');
     const klEl = $('#kl'); if (klEl) klEl.setAttribute('points', arr.map((v, j) => kx(v).toFixed(1) + ',' + ky(j).toFixed(1)).join(' '));
 
     setText('#lPump', i.pump + '% · hot leg ' + T.toFixed(0) + ' °C');
