@@ -411,15 +411,15 @@ function drawPlot(showFit) {
   const fit = (showFit && log.length >= 4 && distinctRods >= 3) ? linearFit(fitPoints) : null;
   const rCrit = (fit && Math.abs(fit.m) > 1e-15) ? (-fit.b / fit.m) : null;
 
-  // ── X-range: 0% (withdrawn, left) → 100% (inserted, right), matching the RODS slider ──
-  const xMin = -5;
-  const xMax = 105;
+  // ── X-range: 100% (inserted, left) → 0% (withdrawn, right) ──
+  const xLeft = 105;
+  const xRight = -5;
 
   // ── Y-range: strictly bounded 0.0 → 1.0 (0.08 headroom so 1.0 dot is never clipped) ──
   const yMin = 0;
   const yMax = 1.08;
 
-  const sx = r => pad.l + ((r - xMin) / (xMax - xMin)) * plotW;
+  const sx = r => pad.l + ((xLeft - r) / (xLeft - xRight)) * plotW;
   const sy = v => pad.t + (1 - (v - yMin) / (yMax - yMin)) * plotH;
 
   // ── Y gridlines and tick labels (0.0, 0.2, 0.4, 0.6, 0.8, 1.0) ──
@@ -439,8 +439,8 @@ function drawPlot(showFit) {
   ctx.beginPath(); ctx.moveTo(pad.l, sy(0.5)); ctx.lineTo(W - pad.r, sy(0.5)); ctx.stroke();
   ctx.setLineDash([]);
 
-  // ── X gridlines and tick labels (0%, 20%, 40%, 60%, 80%, 100% inserted) ──
-  for (let x = 0; x <= 100; x += 20) {
+  // ── X gridlines and tick labels (100% inserted on left → 0% withdrawn on right) ──
+  for (let x = 100; x >= 0; x -= 20) {
     const px = sx(x);
     ctx.strokeStyle = '#142214';
     ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, H - pad.b); ctx.stroke();
@@ -460,7 +460,6 @@ function drawPlot(showFit) {
   // Axis captions
   ctx.fillStyle = '#6b8f6b';
   ctx.textAlign = 'left';
-  ctx.fillText('1/M', 6, pad.t + 8);
   ctx.textAlign = 'right';
   ctx.fillText('rod %', W - 6, H - 4);
   ctx.textAlign = 'left';
@@ -490,8 +489,8 @@ function drawPlot(showFit) {
     ctx.strokeStyle = '#35c8ff';
     ctx.lineWidth = 1.75;
     ctx.beginPath();
-    ctx.moveTo(sx(xMin), sy(fit.m * xMin + fit.b));
-    ctx.lineTo(sx(xMax), sy(fit.m * xMax + fit.b));
+    ctx.moveTo(sx(xLeft), sy(fit.m * xLeft + fit.b));
+    ctx.lineTo(sx(xRight), sy(fit.m * xRight + fit.b));
     ctx.stroke();
 
     if (rCrit !== null && rCrit >= 0 && rCrit <= 100) {
