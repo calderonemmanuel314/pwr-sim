@@ -117,7 +117,7 @@ export const EXPERIMENTS = [
       'Log at least 4–5 subcritical steps (stay below critical — an Auto-SCRAM will trip if power spikes).',
       'Press DONE to reveal k_eff and fit the near-critical points, then press TEST PREDICTION to check your result.',
     ],
-    record: 'Step CSV: step, rod_pct, sim_t, s1–s5 (five cps samples), avg_cps, inv_cps, k_eff.',
+    record: 'Step CSV: step, rod_pct, sim_t, s1–s5 (five cps samples), avg_cps, inv_M, k_eff.',
     limitations: 'Rod worth follows an S-curve, so 1/M vs. rod % is curved across wide travel; extrapolations using points closer to criticality are more accurate. Settling is slow near k_eff = 1, and a low-power Auto-SCRAM protects the core during this lab. See about.html §5.' },
   
   { id: 'rod-worth-inhour', title: 'ROD WORTH BY PERIOD', tier: 1, duration: 900, phase: 7, enabled: false, worksheet: 'rod-worth-inhour.pdf',
