@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-export const APP_VERSION = '2.3.0';
-export const APP_BUILD = '2026-11-16';
+export const APP_VERSION = '2.4.0';
+export const APP_BUILD = '2026-11-17';
 
 export const ROLES = {
   rods: { n: 'DIV 1 · CONTROL RODS', k: ['rods'] },
