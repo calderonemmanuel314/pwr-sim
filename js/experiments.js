@@ -585,6 +585,7 @@ function beginExperiment() {
   if (hostHandle && hostHandle.state) {
     hostHandle.state._experimentActive = true;
   }
+  document.body.classList.remove('sbx-sheet-open');
   cpsFirst = null;
   blindKeff(isRodCal);
   if (isRodCal && hostHandle && hostHandle.state) {
@@ -610,6 +611,7 @@ function endExperiment() {
   if (state !== 'running' || !current) return;
   state = 'complete';
   if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
+  document.body.classList.remove('sbx-sheet-open');
   blindKeff(false);
   stopHost();
   show('#procCard', false);
@@ -654,6 +656,7 @@ function rerunExperiment() {
 
 function backToLibrary() {
   if (hostHandle && hostHandle.state) hostHandle.state._experimentActive = false;
+  document.body.classList.remove('sbx-sheet-open');
   blindKeff(false);
   stopHost();
   log = [];
