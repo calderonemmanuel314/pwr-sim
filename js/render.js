@@ -137,7 +137,7 @@ export function render(S, D, WH, coachText) {
     else if (T > tCritHigh) { msg = 'COOLANT TOO HOT — near temperature limit. Increase heat removal.'; level = 2; }
     else if (P < pLowWarn) { msg = 'PRESSURE LOW — less room before boiling. Check the pressurizer.'; level = 1; }
     else if (P > pHighWarn) { msg = 'PRESSURE HIGH — above usual range. Use spray to lower it.'; level = 1; }
-    else if (sub < (D.subcoolMargin || 10)) { msg = 'COOLING MARGIN LOW — coolant near boiling. Improve cooling.'; level = 1; }
+    else if (sub < (D.subcoolMargin || 10)) { msg = 'COOLANT CLOSE TO BOILING — raise pressure or increase pump speed.'; level = 1; }
     else if (T > tWarm) { msg = 'COOLANT WARM — heat removal may lag. Check pump speed.'; level = 1; }
   else if (!document.body.classList.contains('k-blind')) {
       if (S.k > 1.01) { msg = 'CHAIN REACTION GROWING — more neutrons each generation. Watch power.'; level = 1; }
@@ -171,13 +171,13 @@ export function render(S, D, WH, coachText) {
     else { label = 'GROWING'; color = '#ffd400'; }
     const kvEl = $('#kv'); if (kvEl) { kvEl.textContent = k.toFixed(4); kvEl.style.color = color; }
     const kstEl = $('#kst'); if (kstEl) { kstEl.textContent = label; kstEl.style.color = color; }
-    const clip = k < .98 ? '▼' : k > 1.02 ? '▲' : '';
-    const kclipEl = $('#kclip'); if (kclipEl) { kclipEl.textContent = clip; kclipEl.classList.toggle('hide', !(k < .98 || k > 1.02)); }
     // Auto-scaled k axis, always centred on k = 1. The window is the smallest "nice" half-width that
     // holds the history, so a deeply subcritical core (e.g. rods in, 1500 ppm) no longer pins to the edge.
     const arr = S.kh || [], arrLen = arr.length, ky = j => arrLen <= 1 ? 150 : 295 - (j / (arrLen - 1)) * 290;
     let dev = 0; arr.forEach(v => { dev = Math.max(dev, Math.abs(v - 1)); });
     const kHalf = [.02, .05, .1, .2, .5, 1].find(h => h >= dev * 1.1) || 1;
+    const clip = k < 1 - kHalf ? '▼' : k > 1 + kHalf ? '▲' : '';
+    const kclipEl = $('#kclip'); if (kclipEl) { kclipEl.textContent = clip; kclipEl.classList.toggle('hide', !clip); }
     const kx = v => 5 + (clamp(v, 1 - kHalf, 1 + kHalf) - (1 - kHalf)) / (2 * kHalf) * 30;
     setText('#kLo', (1 - kHalf).toFixed(2)); setText('#kHi', (1 + kHalf).toFixed(2));
     setHTML('#gKVal', '<span style="color:' + color + '">' + k.toFixed(4) + ' · ' + label + '</span>');
@@ -193,7 +193,7 @@ export function render(S, D, WH, coachText) {
     const hlEl = $('#hl');
     if (hlEl) {
       hlEl.style.color = holdActive ? '#39ff14' : 'var(--dim)';
-      hlEl.textContent = S.mode === 'sandbox' ? 'SANDBOX' : (holdActive ? '● ' + S.hold + '/' + WH + 's' : S.hold + '/' + WH + 's');
+      hlEl.textContent = S.mode === 'sandbox' ? 'SANDBOX' : (holdActive ? '● HOLD ' + S.hold + '/' + WH + 's' : 'HOLD ' + S.hold + '/' + WH + 's');
     }
 
     const coachEl = $('#coach');
