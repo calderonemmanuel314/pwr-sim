@@ -31,9 +31,11 @@ export function advanceOneSecond(S, D) {
   S.kh = (S.kh || []).concat(S.k).slice(-90);
   const n = S.Nf + 20; S.N = n;
 
-  const f = Math.min(1.2, S.Nf / 1500), xi0 = S.xi, xe0 = S.xe;
-  S.xi = Math.max(0, xi0 + .0077 * f - .0167 * xi0);
-  S.xe = Math.max(0, xe0 + .0167 * xi0 + .0007 * f - (.002 + .01 * f) * xe0);
+if (!S._experimentFreezeXe) {
+    const f = Math.min(1.2, S.Nf / 1500), xi0 = S.xi, xe0 = S.xe;
+    S.xi = Math.max(0, xi0 + .0077 * f - .0167 * xi0);
+    S.xe = Math.max(0, xe0 + .0167 * xi0 + .0007 * f - (.002 + .01 * f) * xe0);
+  }
 
   recordAdvTick(S);
 
@@ -58,7 +60,7 @@ export function experimentalPreTick(S) {
   if (!S._experimentActive) return;
   // Auto-coolant: pump tracks fission power to hold hot-leg T ≈ 307 °C
   const feedforward = 2 + S.Nf * 0.117;
-  const feedback = (S.T - 307) * 0.5;
+  const feedback = (S.T - 307) * 2.0;
   S.in.pump = Math.round(Math.max(2, Math.min(95, feedforward + feedback)));
   // Auto-pressurizer: hold P in [15.3, 15.7]
   if (S.P < 15.3)      { S.in.heat = 1; S.in.spray = 0; }
@@ -68,8 +70,21 @@ export function experimentalPreTick(S) {
 
 export function experimentalPostTick(S) {
   if (!S._experimentActive) return;
-  // Soft clamps — set just below alarm thresholds so no beep/failure fires.
-  if (S.T > 335) S.T = 335;
+  // Soft Auto-SCRAM for low-power experiments (e.g. rod-cal) before power runs away
+  const maxPow = S._experimentMaxPower;
+  if (maxPow && (!isFinite(S.Nf) || S.Nf > maxPow)) {
+    const safeRods = S._experimentSafeRods ?? 100;
+    S.in.rods = safeRods;
+    S.Nf = Math.min(isFinite(S.Nf) ? S.Nf : maxPow, maxPow);
+    S.N = S.Nf + 20;
+    S.Tfuel = S.T + S.N / H_FUEL_COOLANT;
+    const oR = typeof document !== 'undefined' && document.getElementById('oRods');
+    if (oR) oR.value = safeRods;
+    if (!S._experimentInSettle) AU.tone(660, .25, 'square', .12, 0, 330);
+    if (typeof S._onExperimentTrip === 'function') S._onExperimentTrip(S);
+  }
+  // Soft clamps — kept below D.thermalHigh - 20 (330 °C) so no beep/failure fires.
+  if (S.T > 328) S.T = 328;
   if (S.P < 15.0) S.P = 15.0;
   if (S.P > 17.0) S.P = 17.0;
   if (!isFinite(S.Nf) || S.Nf > 1e7) S.Nf = 1e7;
@@ -317,14 +332,16 @@ export function host(mode, diff) {
       if (lv === 1) AU.tone(880, .12, 'square', .07);
       if (S.rem <= 10 && S.rem > 0) AU.tone(1300, .06, 'square', .07);
 
-      if (S.P >= (D.failOver || 24)) return end('over');
-      if (S.T > 800 && S.P < (D.failDepr || 10)) return end('boil');
-      if (S.mode === 'group' && D.k === 'hard' && S.lockoutHold >= 10) return end('xenonLockout');
-      if (S.T > 1200) {
-        const dil = Math.max.apply(null, S.bh) - i.boron >= 400;
-        return end(i.rods <= 15 && (dil || i.boron < 300) ? 'spike' : 'heat');
+if (!S._experimentActive) {
+        if (S.P >= (D.failOver || 24)) return end('over');
+        if (S.T > 800 && S.P < (D.failDepr || 10)) return end('boil');
+        if (S.mode === 'group' && D.k === 'hard' && S.lockoutHold >= 10) return end('xenonLockout');
+        if (S.T > 1200) {
+          const dil = Math.max.apply(null, S.bh) - i.boron >= 400;
+          return end(i.rods <= 15 && (dil || i.boron < 300) ? 'spike' : 'heat');
+        }
+        if (S.P < (D.failDepr || 10)) return end('depr');
       }
-      if (S.P < (D.failDepr || 10)) return end('depr');
       if (S.mode === 'group' && S.hold >= WH) return end('win');
 
       S.prev = { N: S.N, T: S.T, P: S.P, Nf: S.Nf };
