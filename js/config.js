@@ -107,18 +107,18 @@ export const LEARN = {
 // phase:  which roadmap phase builds the mechanics. duration is seconds (approx).
 export const EXPERIMENTS = [
   // ── Tier 1 ──
-  { id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'rod-calibration-1m.pdf',
-    objective: 'Extrapolate critical rod position from a 1/count-rate plot.',
+{ id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'rod-calibration-1m.pdf',
+    objective: 'Extrapolate the critical rod position from a 1/M (inverse subcritical multiplication) plot without going supercritical.',
     procedure: [
-      'Fixed setup: pump locked at 50%, boron 1500 ppm, xenon 0, auto-pressurizer holds 15.3–15.7 MPa.',
-      'Start with rods at 100% (deeply subcritical). Press SETTLE & LOG.',
-      'Step rods down by 5%. Press SETTLE & LOG. Record the row.',
-      'Repeat until you have at least 5 rows, including 1–2 close to critical.',
-      'Press DONE. Read the predicted critical rod position from the fit.',
-      '(Optional) Press TEST PREDICTION. Record k_eff at that position.',
+      'Setup: auto-coolant holds ~307 °C, auto-pressurizer holds 15.3–15.7 MPa, boron 1500 ppm, xenon 0 (frozen).',
+      'Start with rods at 100% (deeply subcritical). Press SETTLE & LOG for your baseline (1/M = 1.00).',
+      'Withdraw rods by 10–15% for your second step, then press SETTLE & LOG.',
+      'Use the 1/M plot trend to estimate criticality, then move only HALFWAY toward that estimate before each next log.',
+      'Log at least 4–5 subcritical steps (stay below critical — an Auto-SCRAM will trip if power spikes).',
+      'Press DONE to reveal k_eff and fit the near-critical points, then press TEST PREDICTION to check your result.',
     ],
     record: 'Step CSV: step, rod_pct, sim_t, s1–s5 (five cps samples), avg_cps, inv_cps, k_eff.',
-    limitations: 'Steady-state multiplication does not depend on generation time, so 1/M is safe here. Settling is slow near criticality — use smaller rod steps as k_eff approaches 1. Real reactors need correction factors. See about.html §5.' },
+    limitations: 'Rod worth follows an S-curve, so 1/M vs. rod % is curved across wide travel; extrapolations using points closer to criticality are more accurate. Settling is slow near k_eff = 1, and a low-power Auto-SCRAM protects the core during this lab. See about.html §5.' },
   
   { id: 'rod-worth-inhour', title: 'ROD WORTH BY PERIOD', tier: 1, duration: 900, phase: 7, enabled: false, worksheet: 'rod-worth-inhour.pdf',
     objective: 'Convert stable period to reactivity via the inhour equation; build an integral-worth curve.',
