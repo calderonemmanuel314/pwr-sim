@@ -118,7 +118,7 @@ export const EXPERIMENTS = [
       'Pass target: tested k_eff in 0.998–1.002 (CRITICAL), or within ±0.010 without Auto-SCRAM (CLOSE).',
     ],
     procedure: [
-      'Setup: auto-coolant holds ~307 °C, auto-pressurizer holds ~15.5 MPa, boron is locked at 1500 ppm, and xenon is frozen at 0.',
+      'Setup: auto-coolant holds ~307 °C, auto-pressurizer holds ~15.5 MPa, boron is locked at 1800 ppm, and xenon is frozen at 0.',
       'Start at 100% rods and press SETTLE & LOG to record your baseline (1/M = 1.00).',
       'Withdraw rods at your own pace and press SETTLE & LOG at each stop (larger steps early on; smaller 2–5% steps once 1/M falls fast).',
       'Stay subcritical: if power rises above 25 MWth, Auto-SCRAM resets rods to 100%.',
