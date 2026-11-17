@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
 <title>PWR SIMULATION · Educational Model</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="css/base.css?v=2.4.0">
-<link rel="stylesheet" href="css/hud.css?v=2.4.0">
-<link rel="stylesheet" href="css/client.css?v=2.4.0">
-<link rel="stylesheet" href="css/advanced.css?v=2.4.0">
+<link rel="stylesheet" href="css/base.css?v=2.4.1">
+<link rel="stylesheet" href="css/hud.css?v=2.4.1">
+<link rel="stylesheet" href="css/client.css?v=2.4.1">
+<link rel="stylesheet" href="css/advanced.css?v=2.4.1">
 </head>
 <body>
 
@@ -56,6 +56,7 @@
   <h1 id="ebTitle"></h1>
   <p id="ebMeta" class="sub"></p>
   <h3>OBJECTIVE</h3><p id="ebObj"></p>
+  <div id="ebCriteriaWrap" class="hide"><h3>SUCCESS CRITERIA</h3><ul id="ebCriteria"></ul></div>
   <h3>PROCEDURE</h3><ol id="ebProc"></ol>
   <h3>WHAT TO RECORD</h3><p id="ebRecord"></p>
   <p id="ebLimits" class="sub" style="color:var(--y)"></p>
@@ -69,8 +70,9 @@
 <div id="expComplete" class="hide"><div class="cfb">
   <h1>EXPERIMENT COMPLETE</h1>
   <p id="ecTitle" class="sub"></p>
+  <div id="ecVerdict" class="ec-verdict hide"></div>
   <div id="ecMetrics"></div>
-  <div id="ecTable" class="hide"></div>
+  <div id="ecTable" class="ec-table-wrap hide"></div>
   <div class="row">
     <button class="btn" id="ecCSV" type="button" disabled>💾 CSV</button>
     <a class="btn" id="ecWks" href="#" download hidden>📄 WORKSHEET</a>
@@ -153,9 +155,16 @@
       </div>
       <div id="ctr">
         <div id="statusStrip">
-          <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
-          <div id="coach" class="hide"></div>
-          <div id="phase">--</div>
+          <div id="statusMain">
+            <div id="studentStatus" class="student-status">CHECKING REACTOR CONDITIONS…</div>
+            <div id="coach" class="hide"></div>
+            <div id="phase">--</div>
+          </div>
+          <div id="timerBox">
+            <div id="tv">10:00</div>
+            <div class="bar"><i id="hold"></i></div>
+            <div id="hl">0/10s</div>
+          </div>
         </div>
         <div id="svgw">
 <svg viewBox="0 0 640 500" xmlns="http://www.w3.org/2000/svg" font-family="monospace" fill="none" stroke-width="2.5" stroke-linecap="round">
@@ -205,11 +214,6 @@
  <ellipse id="molten" cx="120" cy="450" rx="110" ry="30" fill="#ff5a00" stroke="none" opacity=".9"/>
 </svg>
         </div>
-        <div id="timerBox">
-          <div id="tv">10:00</div>
-          <div class="bar"><i id="hold"></i></div>
-          <div id="hl">0/10s</div>
-        </div>
       </div>
       <div id="expCol">
         <div id="gslot">
@@ -223,6 +227,7 @@
           </div>
         </div>
         <div id="pcActions">
+          <div id="pcGuide" class="pc-guide hide"></div>
           <div id="pcWarn" class="hide"></div>
           <div class="pc-btns">
             <button class="btn y" id="pcSettle" type="button">SETTLE &amp; LOG</button>
@@ -234,7 +239,6 @@
           <div class="pc-head"><b id="pcTitle">PROCEDURE</b><button id="pcToggle" class="pc-toggle" type="button">▾</button></div>
           <ol id="pcSteps"></ol>
           <div id="pcRodCal" class="hide">
-            <p class="pc-hint">Move the rods, press SETTLE &amp; LOG (4+ steps), then DONE.</p>
             <div id="pcLog" class="hide"></div>
           </div>
           <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
@@ -326,7 +330,7 @@
   <div class="about-content">
     <div class="about-header">
       <h1>ABOUT PWR SIMULATION</h1>
-      <span class="about-version" id="aboutVersion">v2.4.0</span>
+      <span class="about-version" id="aboutVersion">v2.4.1</span>
       <button class="btn y" id="aboutClose">◄ BACK</button>
     </div>
     <div class="about-warn">
