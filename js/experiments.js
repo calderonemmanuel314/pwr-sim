@@ -674,9 +674,11 @@ export function initExperiments() {
   $('#ebCancel').onclick = cancelBriefing;
   $('#ebBegin').onclick = beginExperiment;
   $('#pcEnd').onclick = endExperiment;
-  $('#pcToggle').onclick = () => {
+  const pcHeadEl = document.querySelector('#procCard .pc-head');
+  if (pcHeadEl) pcHeadEl.onclick = () => {
     const collapsed = $('#procCard').classList.toggle('pc-collapsed');
-    $('#pcToggle').textContent = collapsed ? '▸' : '▾';
+    const t = $('#pcToggle');
+    if (t) t.textContent = collapsed ? '▸' : '▾';
   };
   $('#ecRerun').onclick = rerunExperiment;
   $('#ecLib').onclick = backToLibrary;
