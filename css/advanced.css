@@ -473,6 +473,9 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.exp-run .kscale{font-size:.5rem}
   body.exp-run #kv{font-size:.62rem}
   body.exp-run #kst{font-size:.5rem}
+  body.k-blind #kcol::after{content:'k hidden';font-size:.48rem;inset:auto 2px 50% 2px}
+  body.exp-run #kv{font-size:.62rem}
+  body.exp-run #kst{font-size:.5rem}
   body.exp-run #expCol > *{flex-shrink:0}
   body.exp-rodcal #pcActions{order:-2;position:sticky;top:0;z-index:5;padding:2px 0 6px;background:#070b08}
   body.exp-rodcal #gslot{flex:0 0 auto}
