@@ -383,6 +383,7 @@ body.k-blind #kcol::after {
     min-height: 38px;
   }
   #procCard #pcEnd {
+    width: calc(100% - 24px);
     margin: 0 12px 12px;
     padding: 10px;
     min-height: 40px;
