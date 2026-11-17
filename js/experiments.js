@@ -78,34 +78,52 @@ function linearFit(points) {
 
 
 
+// Pick the N distinct rod positions closest to criticality (smallest 1/M)
+// so S-curve curvature far from criticality doesn't skew the tangent fit.
+function nearCriticalPts(points, count = 3) {
+  const byRod = new Map();
+  points.forEach(p => byRod.set(p.rodPct, p));
+  return Array.from(byRod.values())
+    .sort((a, b) => a.invM - b.invM)
+    .slice(0, Math.max(2, count));
+}
+
 // ── Run settle loop until |ΔNf/Nf| < ε for K consecutive ticks, or 1000 s ──
-// Returns { settled, simT, runaway }.
+// Returns { settled, simT, runaway, tripped }.
 function runSettleLoop(S, D) {
   const khBefore = (S.kh || []).slice();   // the 1 Hz history must not be flooded by up to 1000 fast-forward ticks
   let prevNf = S.Nf;
   let consecutive = 0;
   let settled = false;
   let runaway = false;
+  let tripped = false;
   let simT = 0;
-  for (let t = 0; t < SETTLE_MAX_TICKS; t++) {
-    experimentalPreTick(S);
-    advanceOneSecond(S, D);
-    experimentalPostTick(S);
-    simT = t + 1;
-    const denom = Math.max(Math.abs(prevNf), 1e-12);
-    const delta = Math.abs(S.Nf - prevNf) / denom;
-    prevNf = S.Nf;
-    if (delta < SETTLE_DELTA_EPS) consecutive++;
-    else consecutive = 0;
-    if (consecutive >= SETTLE_CONSEC) { settled = true; break; }
-    if (S.Nf > 1e6) { runaway = true; break; }  // safety: supercritical runaway
+  S._experimentInSettle = true;
+  S._experimentTripped = false;
+  try {
+    for (let t = 0; t < SETTLE_MAX_TICKS; t++) {
+      experimentalPreTick(S);
+      advanceOneSecond(S, D);
+      experimentalPostTick(S);
+      simT = t + 1;
+      if (S._experimentTripped) { tripped = true; runaway = true; break; }
+      const denom = Math.max(Math.abs(prevNf), 1e-12);
+      const delta = Math.abs(S.Nf - prevNf) / denom;
+      prevNf = S.Nf;
+      if (delta < SETTLE_DELTA_EPS) consecutive++;
+      else consecutive = 0;
+      if (consecutive >= SETTLE_CONSEC) { settled = true; break; }
+      if (S.Nf > 1e6) { runaway = true; break; }  // safety: supercritical runaway
+    }
+  } finally {
+    S._experimentInSettle = false;
   }
   S.kh = khBefore.concat(S.k).slice(-90);
   // Release pressurizer after loop
   S.in.heat = 0; S.in.spray = 0;
   // Refresh drift baseline so the host's next normal tick is clean
   S.prev = { N: S.N, T: S.T, P: S.P, Nf: S.Nf };
-  return { settled, simT, runaway };
+  return { settled, simT, runaway, tripped };
 }
 
 // ── Rod-cal specific fixed setup: rod 100%, pump 50%, boron 1500, xenon 0 ──
@@ -118,9 +136,19 @@ function setupRodCal(handle) {
   S.in.boron = 1500;
   S.in.heat  = 0;
   S.in.spray = 0;
-  S.xe = 0;
+S.xe = 0;
   S.xi = 0;
   S.Nf = 1e-4;
+  S._experimentFreezeXe = true;
+  S._experimentMaxPower = 25;
+  S._experimentSafeRods = 100;
+  S._onExperimentTrip = () => {
+    const w = $('#pcWarn');
+    if (w && !S._experimentInSettle) {
+      w.textContent = '⚠ AUTO-SCRAM: Power exceeded 25 MWth (supercritical)! Rods reinserted to 100% — keep steps subcritical.';
+      w.classList.remove('hide');
+    }
+  };
   S.precursors = equilibriumPrecursors(S.Nf);
   S.Tfuel = S.T + (S.Nf + 20) / 16;  // approximate initial; settle loop corrects
   const bal = neutronBalance(S.in, S.xe, S.T, S.P, S.Tfuel, D.alphaDoppler);
@@ -158,7 +186,22 @@ function settleAndLog() {
   try {
     const S = hostHandle.state;
     const D = hostHandle.diff;
+    const w = $('#pcWarn');
+    if (S.k >= 1.0) {
+      if (w) {
+        w.textContent = '⚠ Reactor is supercritical (k_eff ≥ 1) — insert rods back into the subcritical range before logging 1/M.';
+        w.classList.remove('hide');
+      }
+      return;
+    }
     const result = runSettleLoop(S, D);
+    if (result.tripped || result.runaway || S.k >= 1.0) {
+      if (w) {
+        w.textContent = '⚠ Supercritical excursion during settle — Auto-SCRAM reinserted rods to 100%. Step back slightly and log subcritical points only.';
+        w.classList.remove('hide');
+      }
+      return;
+    }
 
     const cpsTrue = Math.max(CPS_FLOOR, Math.max(0, S.Nf) * CPS_SCALE * detEff);
     const samples = [];
@@ -194,17 +237,18 @@ function settleAndLog() {
   }
 }
 
-// ── DONE: fit last 4–5 points, show extrapolated position ──
+// ── DONE: fit the 3 distinct near-critical points, show extrapolated position ──
 function finishExperiment() {
-  if (log.length < 4) {
+  const distinctRods = new Set(log.map(p => p.rodPct)).size;
+  if (log.length < 4 || distinctRods < 3) {
     const w = $('#pcWarn');
     if (w) {
-      w.textContent = 'Need at least 4 logged steps to fit. Log more steps.';
+      w.textContent = 'Need at least 4 logged steps across 3+ distinct rod positions to fit.';
       w.classList.remove('hide');
     }
     return;
   }
-  const fit = linearFit(log.slice(-5));
+  const fit = linearFit(nearCriticalPts(log, 3));
   if (!fit || Math.abs(fit.m) < 1e-15) {
     const w = $('#pcWarn');
     if (w) {
@@ -214,6 +258,7 @@ function finishExperiment() {
     return;
   }
   predictedRodPct = -fit.b / fit.m;
+  const outOfRange = predictedRodPct < 0 || predictedRodPct > 100;
 
   // Reveal k_eff — the student's manual extrapolation is now checkable.
   blindKeff(false);
@@ -223,6 +268,7 @@ function finishExperiment() {
   if (predEl) {
     predEl.innerHTML =
       '<b>Your extrapolation:</b> critical at ' + predictedRodPct.toFixed(1) + '% rod' +
+      (outOfRange ? '<br><span style="color:var(--y);font-size:.85em">Outside 0–100%: points were too far from critical on the S-curve.</span>' : '') +
       '<br><span style="color:var(--dim);font-size:.85em">k_eff is now live — press TEST PREDICTION to check.</span>' +
       '<br><button class="btn" id="pcTest" type="button" style="margin-top:6px">TEST PREDICTION</button>';
     predEl.classList.remove('hide');
@@ -232,7 +278,7 @@ function finishExperiment() {
   redrawPlots(true);
 }
 
-// ── TEST PREDICTION: move rods to predicted position, settle, report k_eff ──
+// ── TEST PREDICTION: evaluate k_eff at predicted position safely (Auto-SCRAM if supercritical) ──
 function testPrediction() {
   if (!hostHandle || !hostHandle.state || predictedRodPct === null) return;
   const S = hostHandle.state;
@@ -243,26 +289,29 @@ function testPrediction() {
   const oRods = $('#oRods');
   if (oRods) oRods.value = targetRod;
 
+  // Capture k_eff at targetRod before any safety Auto-SCRAM reinserts rods
+  const balAtTarget = neutronBalance(S.in, S.xe, S.T, S.P, S.Tfuel, D.alphaDoppler);
   const result = runSettleLoop(S, D);
-  testPoint = { rod: targetRod, k: S.k };
+  const kMeasured = (result.tripped || result.runaway) ? balAtTarget.kEff : S.k;
+  testPoint = { rod: targetRod, k: kMeasured };
 
   let verdict;
-  if (result.runaway || S.k > 1.002)      verdict = 'SUPERCRITICAL';
-  else if (S.k < 0.998)                    verdict = 'SUBCRITICAL';
-  else                                     verdict = 'CRITICAL';
+  if (result.tripped || result.runaway || kMeasured > 1.002) verdict = 'SUPERCRITICAL';
+  else if (kMeasured < 0.998)                                 verdict = 'SUBCRITICAL';
+  else                                                        verdict = 'CRITICAL';
 
   const predEl = $('#pcPred');
   if (predEl) {
     predEl.innerHTML =
       '<b>Predicted:</b> ' + predictedRodPct.toFixed(1) + '%' +
-      '<br><b>Rods moved to:</b> ' + targetRod + '%' +
-      '<br><b>k_eff after settle:</b> ' + S.k.toFixed(4) +
-      '<br><b>Verdict:</b> <span style="color:' + (verdict === 'CRITICAL' ? 'var(--c)' : verdict === 'SUBCRITICAL' ? 'var(--y)' : 'var(--r)') + '">' + verdict + '</span>';
+      '<br><b>Rods tested at:</b> ' + targetRod + '%' +
+      '<br><b>k_eff at target:</b> ' + kMeasured.toFixed(4) +
+      '<br><b>Verdict:</b> <span style="color:' + (verdict === 'CRITICAL' ? 'var(--c)' : verdict === 'SUBCRITICAL' ? 'var(--y)' : 'var(--r)') + '">' + verdict + '</span>' +
+      (result.tripped ? '<br><span style="color:var(--y);font-size:.85em">Auto-SCRAM reinserted rods to 100% for lab safety.</span>' : '');
     predEl.classList.remove('hide');
   }
   drawKPlot();
 }
-
 // ── Procedure-card updates ──
 // ── Procedure-card updates ──
 function renderProcCard() {
@@ -326,9 +375,10 @@ function drawPlot(showFit) {
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
 
-  // Fit computed first so its endpoints can influence axis ranges
-  const fitPoints = log.slice(-5);
-  const fit = (showFit && log.length >= 4) ? linearFit(fitPoints) : null;
+// Fit computed first so its endpoints can influence axis ranges
+  const fitPoints = nearCriticalPts(log, 3);
+  const distinctRods = new Set(log.map(p => p.rodPct)).size;
+  const fit = (showFit && log.length >= 4 && distinctRods >= 3) ? linearFit(fitPoints) : null;
   const rCrit = (fit && Math.abs(fit.m) > 1e-15) ? (-fit.b / fit.m) : null;
 
   // ── X-range ──
@@ -352,7 +402,7 @@ function drawPlot(showFit) {
   }
 
   // ── Y-range ──
-  const yVals = fitPoints.map(p => p.invM);
+  const yVals = log.map(p => p.invM);
   if (fit) {
     yVals.push(fit.m * xMin + fit.b);
     yVals.push(fit.m * xMax + fit.b);
