@@ -75,6 +75,7 @@ export function experimentalPostTick(S) {
   if (maxPow && (!isFinite(S.Nf) || S.Nf > maxPow)) {
     const safeRods = S._experimentSafeRods ?? 100;
     S.in.rods = safeRods;
+    S._experimentTripped = true;
     S.Nf = Math.min(isFinite(S.Nf) ? S.Nf : maxPow, maxPow);
     S.N = S.Nf + 20;
     S.Tfuel = S.T + S.N / H_FUEL_COOLANT;
