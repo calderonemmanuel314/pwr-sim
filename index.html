@@ -221,9 +221,9 @@
             <div class="pc-btns">
               <button class="btn y" id="pcSettle" type="button">SETTLE &amp; LOG</button>
               <button class="btn" id="pcDone" type="button">DONE</button>
+            </div>
+            <div id="pcPred" class="hide"></div>
           </div>
-          <div id="pcPred" class="hide"></div>
-        </div>
           <button class="btn y" id="pcEnd" type="button">END EXPERIMENT</button>
         </div>
       </div>
@@ -244,12 +244,6 @@
   </div>
 
   <div id="right">
-    <div class="sbx-tabs" id="sbxTabs">
-      <button data-sbx="rods">RODS</button>
-      <button data-sbx="coolant">PUMP</button>
-      <button data-sbx="pressure">PRESS</button>
-      <button data-sbx="xenon">BORON</button>
-    </div>
     <div class="pn" data-role="rods">
       <div class="pn-hd"><h3>DIV 1 · RODS</h3><span class="pn-val" id="rRods">--</span></div>
       <div class="bar"><i id="bRods"></i></div>
@@ -278,6 +272,16 @@
       <div class="pn-ctl" data-key="boron"><button class="pm" data-d="-1" data-step="50">−</button><input type="range" id="oBor" min="0" max="2000" step="10" disabled><button class="pm" data-d="1" data-step="50">+</button></div>
       <div class="pn-ovr"><span class="pn-status" id="os-xenon">● LINK OK</span><button class="ovr-btn" id="ob-xenon" data-r="xenon">OVERRIDE</button></div>
     </div>
+  </div>
+
+  <div id="mobileFabs">
+    <div class="sbx-tabs" id="sbxTabs">
+      <button data-sbx="rods">RODS</button>
+      <button data-sbx="coolant">PUMP</button>
+      <button data-sbx="pressure">PRESS</button>
+      <button data-sbx="xenon">BORON</button>
+    </div>
+    <button id="bpmMobile" type="button" title="Phase Map">PM</button>
   </div>
 </div>
 
