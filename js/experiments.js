@@ -47,7 +47,7 @@ const SETTLE_MAX_TICKS = 1500;
 const SETTLE_DELTA_EPS = 0.0005;
 const SETTLE_CONSEC    = 5;
 const CPS_SCALE        = 1e6;   // cps_true ≈ Nf(MWth) × 1e6; floor applies to subcritical
-const CPS_FLOOR        = 100;   // source-level detector background
+const CPS_FLOOR        = 20;    // source-level detector background
 
 function stopHost() {
   if (hostHandle && typeof hostHandle.stop === 'function') hostHandle.stop();
@@ -228,20 +228,24 @@ function settleAndLog() {
     for (let i = 0; i < 5; i++) samples.push(poissonSample(cpsTrue));
     const avgCps = samples.reduce((a, b) => a + b, 0) / 5;
 
-    // 1/M: reference is the first logged avgCps. detEff cancels in the ratio,
-    // so detector calibration does not bias the extrapolated critical position.
-    if (log.length === 0) cpsFirst = avgCps;
-    const invM = (cpsFirst > 0 && avgCps > 0) ? (cpsFirst / avgCps) : 1;
-
     log.push({
       step: log.length + 1,
       rodPct: S.in.rods,
       simT: result.simT,
       samples,
       avgCps,
-      invM,
+      invM: 1,
       kEff: S.k,
       capped: !result.settled,
+    });
+
+    // Anchor CR_0 to the most-inserted (highest rodPct) logged step and clamp 1/M to [0.0, 1.0].
+    // detEff cancels in the ratio, so detector calibration does not bias the critical intercept.
+    const baseline = log.reduce((best, p) => (p.rodPct > best.rodPct ? p : best), log[0]);
+    cpsFirst = baseline.avgCps;
+    log.forEach(p => {
+      const raw = (cpsFirst > 0 && p.avgCps > 0) ? (cpsFirst / p.avgCps) : 1;
+      p.invM = Math.max(0, Math.min(1, raw));
     });
     lastWarned = !result.settled;
     earlyDoneAck = false;
@@ -398,7 +402,7 @@ function drawPlot(showFit) {
     return;
   }
 
-  const pad = { l: 48, r: 22, t: 16, b: 28 };
+  const pad = { l: 42, r: 20, t: 16, b: 26 };
   const plotW = W - pad.l - pad.r;
   const plotH = H - pad.t - pad.b;
 
@@ -407,70 +411,44 @@ function drawPlot(showFit) {
   const fit = (showFit && log.length >= 4 && distinctRods >= 3) ? linearFit(fitPoints) : null;
   const rCrit = (fit && Math.abs(fit.m) > 1e-15) ? (-fit.b / fit.m) : null;
 
-  // ── X-range with outer margin so 0% and 100% points never touch the border ──
-  const xRods = log.map(p => p.rodPct);
-  if (rCrit !== null && rCrit >= 0 && rCrit <= 100) xRods.push(rCrit);
-  const rawMinX = Math.min(...xRods);
-  const rawMaxX = Math.max(...xRods);
-  const spanX = Math.max(rawMaxX - rawMinX, 1);
-  const padX = Math.max(6, spanX * 0.14);
-  let xMin = rawMinX - padX;
-  let xMax = rawMaxX + padX;
-  if (xMax - xMin < 24) {
-    const mid = (rawMinX + rawMaxX) / 2;
-    xMin = mid - 12;
-    xMax = mid + 12;
-  }
-  xMin = Math.max(-6, xMin);
-  xMax = Math.min(106, xMax);
+  // ── X-range: 0% (withdrawn, left) → 100% (inserted, right), matching the RODS slider ──
+  const xMin = -5;
+  const xMax = 105;
 
-  // ── Y-range snapped to clean tick increments ──
-  const yVals = log.map(p => p.invM);
-  if (fit) {
-    yVals.push(fit.m * Math.max(0, xMin) + fit.b);
-    yVals.push(fit.m * Math.min(100, xMax) + fit.b);
-  }
+  // ── Y-range: strictly bounded 0.0 → 1.0 (0.08 headroom so 1.0 dot is never clipped) ──
   const yMin = 0;
-  const rawMaxY = Math.max(...yVals, 1.0);
-  const yStep = [0.1, 0.25, 0.5, 1, 2, 5, 10].find(s => (rawMaxY * 1.1) / s <= 6) || Math.ceil((rawMaxY * 1.1) / 5);
-  const yMax = Math.ceil((rawMaxY * 1.1) / yStep) * yStep;
+  const yMax = 1.08;
 
-  const sx = r => pad.l + ((r - xMin) / Math.max(1e-9, xMax - xMin)) * plotW;
-  const sy = v => pad.t + (1 - (v - yMin) / Math.max(1e-15, yMax - yMin)) * plotH;
+  const sx = r => pad.l + ((r - xMin) / (xMax - xMin)) * plotW;
+  const sy = v => pad.t + (1 - (v - yMin) / (yMax - yMin)) * plotH;
 
-  // ── Y gridlines and tick labels ──
+  // ── Y gridlines and tick labels (0.0, 0.2, 0.4, 0.6, 0.8, 1.0) ──
   ctx.font = '10px monospace';
-  const yDecimals = yStep < 0.5 ? 2 : yStep < 2 ? 1 : 0;
-  for (let y = 0; y <= yMax + 1e-9; y += yStep) {
+  for (let y = 0; y <= 1.0001; y += 0.2) {
     const py = sy(y);
     ctx.strokeStyle = y === 0 ? '#2a4a2a' : '#142214';
     ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(W - pad.r, py); ctx.stroke();
     ctx.fillStyle = '#6b8f6b';
     ctx.textAlign = 'right';
-    ctx.fillText(y.toFixed(yDecimals), pad.l - 6, py + 3);
+    ctx.fillText(y.toFixed(1), pad.l - 6, py + 3);
   }
 
   // Subtle dashed reference at 1/M = 0.50 (suggested fit threshold)
-  if (0.5 < yMax) {
-    ctx.strokeStyle = '#39ff1433';
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath(); ctx.moveTo(pad.l, sy(0.5)); ctx.lineTo(W - pad.r, sy(0.5)); ctx.stroke();
-    ctx.setLineDash([]);
-  }
+  ctx.strokeStyle = '#39ff1433';
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(pad.l, sy(0.5)); ctx.lineTo(W - pad.r, sy(0.5)); ctx.stroke();
+  ctx.setLineDash([]);
 
-  // ── X gridlines and tick labels (clean 10% or 20% steps inside 0..100) ──
-  const xStep = (xMax - xMin) > 55 ? 20 : 10;
-  const xStart = Math.max(0, Math.ceil(xMin / xStep) * xStep);
-  const xEnd = Math.min(100, Math.floor(xMax / xStep) * xStep);
-  for (let x = xStart; x <= xEnd + 1e-9; x += xStep) {
+  // ── X gridlines and tick labels (0%, 20%, 40%, 60%, 80%, 100% inserted) ──
+  for (let x = 0; x <= 100; x += 20) {
     const px = sx(x);
     ctx.strokeStyle = '#142214';
     ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, H - pad.b); ctx.stroke();
     ctx.fillStyle = '#6b8f6b';
     ctx.textAlign = 'center';
-    ctx.fillText(x.toFixed(0) + '%', px, H - pad.b + 13);
+    ctx.fillText(x + '%', px, H - pad.b + 14);
   }
-
+  
   // Main axes
   ctx.strokeStyle = '#2a4a2a';
   ctx.beginPath();
