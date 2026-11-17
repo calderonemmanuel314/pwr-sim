@@ -8,9 +8,14 @@ export function joinPage() {
   show('#menu', false);
   show('#join', true);
   let sel = '';
-  $('#jc').oninput = e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); };
+  $('#jc').oninput = e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    $('#je').textContent = '';
+  };
+  $('#jc').onkeydown = e => { if (e.key === 'Enter') $('#jb').click(); };
   document.querySelectorAll('.dv').forEach(b => b.onclick = () => {
     sel = b.dataset.r;
+    $('#je').textContent = '';
     document.querySelectorAll('.dv').forEach(x => x.classList.toggle('on', x === b));
   });
   $('#jb').onclick = () => {
