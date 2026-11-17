@@ -139,8 +139,10 @@ export function render(S, D, WH, coachText) {
     else if (P > pHighWarn) { msg = 'PRESSURE HIGH — above usual range. Use spray to lower it.'; level = 1; }
     else if (sub < (D.subcoolMargin || 10)) { msg = 'COOLING MARGIN LOW — coolant near boiling. Improve cooling.'; level = 1; }
     else if (T > tWarm) { msg = 'COOLANT WARM — heat removal may lag. Check pump speed.'; level = 1; }
-    else if (S.k > 1.01) { msg = 'CHAIN REACTION GROWING — more neutrons each generation. Watch power.'; level = 1; }
-    else if (S.k < .99 && S.Nf > 10) { msg = 'CHAIN REACTION WEAKENING — too few neutrons to sustain it.'; level = 1; }
+  else if (!document.body.classList.contains('k-blind')) {
+      if (S.k > 1.01) { msg = 'CHAIN REACTION GROWING — more neutrons each generation. Watch power.'; level = 1; }
+      else if (S.k < .99 && S.Nf > 10) { msg = 'CHAIN REACTION WEAKENING — too few neutrons to sustain it.'; level = 1; }
+    }
     const ssEl = $('#studentStatus');
     if (ssEl) { ssEl.textContent = msg; ssEl.className = 'student-status' + (level === 2 ? ' danger' : level === 1 ? ' warn' : ''); }
 
@@ -210,6 +212,7 @@ export function render(S, D, WH, coachText) {
       const period = stable ? Infinity : S.Nf / avgDP;
       const doubling = stable ? Infinity : Math.LN2 * period;
       const rhoPcm = (S.k - 1) / S.k * 1e5;
+const kBlind = document.body.classList.contains('k-blind');
       const setInstr = (sel, txt, c) => {
         const el = document.querySelector(sel);
         if (el) { el.textContent = txt; el.className = 'instr-value ' + c; }
@@ -217,9 +220,9 @@ export function render(S, D, WH, coachText) {
       setInstr('#vCps', nearNoise ? '—' : formatCps(cps), nearNoise ? 'off' : 'ok');
       setInstr('#vDose', formatDose(dose), dose > 16000 ? 'cr' : dose > 1000 ? 'wn' : 'ok');
       const perCls = nearNoise || stable ? 'ok' : Math.abs(period) < 60 ? 'cr' : Math.abs(period) < 300 ? 'wn' : 'ok';
-      setInstr('#vPeriod', nearNoise ? '—' : formatPeriod(period, stable), perCls);
-      setInstr('#vRho', formatRho(rhoPcm), Math.abs(rhoPcm) < 1000 ? 'ok' : Math.abs(rhoPcm) < 3000 ? 'wn' : 'cr');
-      setText('#vDoubling', nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling ' + doubling.toFixed(0) + 's'));
+      setInstr('#vPeriod', kBlind ? '—' : (nearNoise ? '—' : formatPeriod(period, stable)), kBlind ? 'off' : perCls);
+      setInstr('#vRho', kBlind ? 'BLINDED' : formatRho(rhoPcm), kBlind ? 'off' : (Math.abs(rhoPcm) < 1000 ? 'ok' : Math.abs(rhoPcm) < 3000 ? 'wn' : 'cr'));
+      setText('#vDoubling', kBlind ? 'hidden until DONE' : (nearNoise ? '—' : (stable ? 'doubling +∞' : 'doubling ' + doubling.toFixed(0) + 's')));
       setText('#vFlux2', 'n/cm²·s ' + flux.toExponential(2));
       renderRecorder(S);
     }
