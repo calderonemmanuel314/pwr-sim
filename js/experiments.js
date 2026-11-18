@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Experiment Library + Phase 5 rod-calibration mechanics.
+// Experiment Library + Phase 5 approach-to-criticality (1/M) mechanics.
 // Renders the library grid from EXPERIMENTS; drives idle → briefing → running → complete.
-// For rod-calibration-1m: runs a fast-forward settle loop, logs 5 Poisson samples per
-// step, plots 1/cps vs rod %, fits the last 4–5 points, extrapolates to criticality.
+// For approach-to-criticality-1m: runs a fast-forward settle loop, logs 5 Poisson samples per
+// step, plots 1/M vs rod %, fits the 3 near-critical points, extrapolates to criticality.
 import { $, show, setHTML, fmt, ask } from './dom.js';
 import { EXPERIMENTS } from './config.js';
 import { host, advanceOneSecond, experimentalPreTick, experimentalPostTick } from './host.js';
@@ -52,7 +52,7 @@ const CPS_FLOOR        = 20;    // source-level detector background
 function stopHost() {
   if (hostHandle && typeof hostHandle.stop === 'function') hostHandle.stop();
   hostHandle = null;
-  document.body.classList.remove('exp-run', 'exp-rodcal', 'exp-revealed', 'sbx-sheet-open');
+  document.body.classList.remove('exp-run', 'exp-approach', 'exp-revealed', 'sbx-sheet-open');
 }
 
 function blindKeff(on) {
@@ -146,8 +146,8 @@ function runSettleLoop(S, D) {
   return { settled, simT, runaway, tripped };
 }
 
-// ── Rod-cal specific fixed setup: rod 100%, pump 50%, boron 1500, xenon 0 ──
-function setupRodCal(handle) {
+// ── Approach-to-criticality fixed setup: rod 100%, pump 50%, boron 1800, xenon 0 ──
+function setupApproach1M(handle) {
   const S = handle.state;
   const D = handle.diff;
 
@@ -720,34 +720,34 @@ function beginExperiment() {
   stopHost();
   hostHandle = host('advanced');
 
-  const isRodCal = exp.id === 'rod-calibration-1m';
+  const isApproach = exp.id === 'approach-to-criticality-1m';
   if (hostHandle && hostHandle.state) {
     hostHandle.state._experimentActive = true;
   }
   // Layout hooks (see advanced.css): docked procedure card + graph slot; phones open the rods dock.
   document.body.classList.add('exp-run');
-  document.body.classList.toggle('exp-rodcal', isRodCal);
+  document.body.classList.toggle('exp-approach', isApproach);
   document.body.classList.remove('exp-revealed');
-  document.body.classList.toggle('sbx-sheet-open', isRodCal);
-  if (isRodCal && hostHandle && hostHandle.state) hostHandle.state.sbxTab = 'rods';
+  document.body.classList.toggle('sbx-sheet-open', isApproach);
+  if (isApproach && hostHandle && hostHandle.state) hostHandle.state.sbxTab = 'rods';
   cpsFirst = null;
-  blindKeff(isRodCal);
-  if (isRodCal && hostHandle && hostHandle.state) {
-    setupRodCal(hostHandle);
+  blindKeff(isApproach);
+  if (isApproach && hostHandle && hostHandle.state) {
+    setupApproach1M(hostHandle);
   }
 
   $('#pcTitle').textContent = exp.title;
   setHTML('#pcSteps', (exp.procedure || []).map(s => '<li>' + s + '</li>').join(''));
   const stepsEl = $('#pcSteps');
-  if (stepsEl) stepsEl.classList.toggle('hide', isRodCal);
-  const rodCalEl = $('#pcRodCal');
-  if (rodCalEl) rodCalEl.classList.toggle('hide', !isRodCal);
+  if (stepsEl) stepsEl.classList.toggle('hide', isApproach);
+  const approachEl = $('#pcApproach');
+  if (approachEl) approachEl.classList.toggle('hide', !isApproach);
   showWarn('');
   const predEl = $('#pcPred');
   if (predEl) { predEl.innerHTML = ''; predEl.classList.add('hide'); }
 
   show('#procCard', true);
-  if (isRodCal) {
+  if (isApproach) {
     updatePlotNote();
     requestAnimationFrame(() => redrawPlots(false));   // after layout so the canvas has a size
   }
@@ -755,7 +755,7 @@ function beginExperiment() {
 
 async function endExperiment() {
   if (state !== 'running' || !current) return;
-  if (current.id === 'rod-calibration-1m') {
+  if (current.id === 'approach-to-criticality-1m') {
     let confirmMsg = '';
     if (log.length === 0) confirmMsg = 'You have not logged any steps yet. End the experiment anyway?';
     else if (predictedRodPct === null) confirmMsg = 'You have not clicked DONE to predict the critical rod % yet. End the experiment early?';
@@ -773,7 +773,7 @@ async function endExperiment() {
 
   const vEl = $('#ecVerdict');
   if (vEl) {
-    if (current.id === 'rod-calibration-1m') {
+    if (current.id === 'approach-to-criticality-1m') {
       const minInvM = log.length ? Math.min(...log.map(p => p.invM)) : 1;
       let vCls = 'ec-fail', vHead = '', vBody = '';
       if (predictedRodPct === null || !testPoint) {
