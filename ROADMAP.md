@@ -22,15 +22,15 @@ Rough sizing from the original plan: Phase 5 about 300 lines; Phase 6 about 250;
 
 ## 2. Phase 4: Experiment Library shell (ACCOMPLISHED)
 
-## 3. Phase 5: Rod calibration by 1/M (ACCOMPLISHED)
+## 3. Phase 5: Approach to Criticality by 1/M (ACCOMPLISHED)
 
-Remaining optional asset: `worksheets/rod-calibration-1m.pdf` (link stays hidden until present).
+Remaining optional asset: `worksheets/approach-to-criticality-1m.pdf` (link stays hidden until present).
 
 ## 4. Experiment catalogue (Phases 6 to 9)
 
 | Tier | Experiment | What students do | Physics taught | Model changes |
 |---|---|---|---|---|
-| 1 | Rod calibration by 1/M | See Phase 5 | Subcritical multiplication, Poisson statistics, 1/M method | Noise helper (Phase 5) |
+| 1 | Approach to Criticality by 1/M | See Phase 5 | Subcritical multiplication, Poisson statistics, 1/M method | Noise helper (Phase 5) |
 | 1 | Rod worth by period (inhour) | Set rod, measure stable period, convert to reactivity | S-curve rod worth, inhour equation | None |
 | 1 | Delayed neutron counting (Phase 6) | Reach steady power, SCRAM, log the flux decay on a log scale, identify the longest-lived delayed group (about 55 s half-life) | Six delayed groups, effective delayed fraction | None |
 | 1 | SCRAM transient | Insert rods and watch the first seconds: prompt drop, then delayed tail | Prompt vs delayed response | None |
@@ -51,7 +51,7 @@ Decide these before building, and state them in the briefing and worksheet.
 
 | Experiment | Caveat |
 |---|---|
-| Rod calibration by 1/M | Steady-state multiplication does not depend on the generation time, so it is safe, though settling is slow near criticality. Rod worth follows an S-curve, so 1/M vs. rod % curves across wide travel (procedure teaches the halfway rule; DONE fits the 3 distinct near-critical points). Soft 25 MWth Auto-SCRAM and frozen xenon prevent runaways and poison drift. |
+| Approach to Criticality by 1/M | Steady-state multiplication does not depend on the generation time, so it is safe, though settling is slow near criticality. Rod worth follows an S-curve, so 1/M vs. rod % curves across wide travel (procedure teaches the halfway rule; DONE fits the 3 distinct near-critical points). Soft 25 MWth Auto-SCRAM and frozen xenon prevent runaways and poison drift. |
 | Rod worth by period | Requires an inhour solution that uses the model's own generation time (`LAMBDA_PROMPT_MODEL`). Do not use one correction factor — the reactivity-period relation shifts by an amount that depends on the period (about 2× at very long periods, several times larger at short ones). Either solve the inhour equation with the model's own generation time, or reduce it in experiment mode. |
 | Delayed neutron counting | The long-time decay is correct. The source floor sets the lowest count rate. |
 | SCRAM transient | The prompt drop is visible at 1 Hz only because the generation time is stretched. Teach it qualitatively, not as a measurement of real prompt behavior. |
@@ -80,7 +80,7 @@ These came out of a code review. Each is a choice, not necessarily a bug. If you
 **Learning goals**
 1. Read a neutron count rate and estimate the power level.
 2. Perform a delayed neutron counting experiment (Phase 6).
-3. Perform a rod calibration by 1/M plot (Phase 5).
+3. Perform an approach to criticality by 1/M plot (Phase 5).
 4. Read post-shutdown dose and describe its staged decay.
 5. Understand that dose persists after shutdown.
 
@@ -98,14 +98,14 @@ These came out of a code review. Each is a choice, not necessarily a bug. If you
 ## 9. Decisions already made
 
 - Experiment briefing UI: overlay.
-- First experiment: rod calibration by 1/M.
+- First experiment: approach to criticality by 1/M.
 - Worksheet format: static PDFs under `worksheets/`. Worksheet links are HEAD-checked at briefing open and hidden if the PDF is missing.
 - Catalogue source: one `EXPERIMENTS` array in `js/config.js`. Card, briefing text, and worksheet link all derive from `id`; adding an experiment is a data change.
 - Experiment shell state machine: idle → briefing → running → complete, in `js/experiments.js`. The procedure card is a floating overlay inside `#ctr` (reactor-priority rule).
 - Unbuilt experiments carry `enabled: false` in `EXPERIMENTS` and appear greyed out in the library.
-- Rod calibration plots **1/M**, not raw 1/cps. 1/M = cps_first / cps_current (first log is the reference). Detector efficiency cancels in the ratio, so a mis-calibrated detector does not bias the extrapolated critical position.
-- `k_eff` (plus `ρ · REACTIVITY`, `PERIOD`, and the `S.k > 1.01` status hint) is **blinded** during rod-calibration logging (`body.k-blind`), then revealed at DONE so students must extrapolate by hand before checking their answer with TEST PREDICTION.
-- Auto-coolant (holds ~307 °C), auto-pressurizer (holds 15.3–15.7 MPa), frozen xenon (`_experimentFreezeXe`), and a soft 25 MWth Auto-SCRAM (`_experimentMaxPower`) run during `rod-cal` via `_experimentActive` in `host.js`, suppressing `end()` so students cannot blow up the core. Free Exploration untouched.
+- Approach to Criticality plots **1/M**, not raw 1/cps. 1/M = cps_first / cps_current (first log is the reference). Detector efficiency cancels in the ratio, so a mis-calibrated detector does not bias the extrapolated critical position.
+- `k_eff` (plus `ρ · REACTIVITY`, `PERIOD`, and the `S.k > 1.01` status hint) is **blinded** during 1/M approach logging (`body.k-blind`), then revealed at DONE so students must extrapolate by hand before checking their answer with TEST PREDICTION.
+- Auto-coolant (holds ~307 °C), auto-pressurizer (holds 15.3–15.7 MPa), frozen xenon (`_experimentFreezeXe`), and a soft 25 MWth Auto-SCRAM (`_experimentMaxPower`) run during `approach-to-criticality-1m` via `_experimentActive` in `host.js`, suppressing `end()` so students cannot blow up the core. Free Exploration untouched.
 - DONE fits the 3 distinct near-critical logged points (`nearCriticalPts(log, 3)`) instead of a global regression across the S-curve, and `settleAndLog()` blocks supercritical points (`k_eff >= 1`).
 
 ## 10. Decisions still open
