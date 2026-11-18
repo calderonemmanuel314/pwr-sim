@@ -330,14 +330,14 @@ body.adv #recCSV{color:var(--c);border-color:var(--c)}
 }
 #procCard #pcSteps{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 10px 6px 28px;margin:0}
 #procCard #pcSteps li{margin:2px 0;line-height:1.3}
-#procCard #pcRodCal{flex:1 1 auto;min-height:64px;overflow-y:auto;padding:6px 10px}
+#procCard #pcApproach{flex:1 1 auto;min-height:64px;overflow-y:auto;padding:6px 10px}
 #procCard .pc-hint{color:var(--dim);font-size:.7rem;line-height:1.3;margin:0 0 6px}
 #procCard #pcEnd{flex-shrink:0;width:auto;margin:4px 10px 8px;font-size:.75rem;padding:5px 6px;min-height:32px}
 #procCard .pc-hint:has(+ #pcLog:not(.hide)){display:none}
 
 /* Experiment actions: always visible, outside the collapsible card */
 #pcActions{display:none;flex:0 0 auto;background:var(--bg)}
-body.exp-rodcal #pcActions{display:block}
+body.exp-approach #pcActions{display:block}
 #pcActions .pc-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 #pcActions .btn{width:100%;font-size:.85rem;padding:8px 6px;min-height:42px}
 #pcActions #pcWarn{
@@ -349,12 +349,12 @@ body.exp-rodcal #pcActions{display:block}
   background:#0c120d;border:1px solid var(--g);border-radius:10px;
 }
 #pcActions #pcPred .btn{width:auto;font-size:.8rem;padding:6px 14px;min-height:34px}
-#procCard.pc-collapsed #pcRodCal,
+#procCard.pc-collapsed #pcApproach,
 #procCard.pc-collapsed #pcSteps,
 #procCard.pc-collapsed #pcEnd{display:none}
 #pcLog{max-height:150px;overflow-y:auto;margin:2px 0}
 
-/* ── Priority graph slot (rod-cal): 1/M while k_eff is blinded, k_eff after DONE ── */
+/* ── Priority graph slot (approach-to-criticality-1m): 1/M while k_eff is blinded, k_eff after DONE ── */
 #gslot{display:none}
 .gwrap{
   display:flex;flex-direction:column;flex:1 1 0;min-height:110px;
@@ -368,7 +368,7 @@ body.exp-rodcal #pcActions{display:block}
 #gMNote{color:var(--c)}
 .gwrap canvas{flex:1 1 0;min-height:0;width:100%;height:100%;display:block}
 
-/* ── k_eff blindness during rod-cal logging ── */
+/* ── k_eff blindness during 1/M approach logging ── */
 body.k-blind #kv,
 body.k-blind #kst,
 body.k-blind #kg,
@@ -381,7 +381,7 @@ body.k-blind #kcol::after{
   color:var(--y);font-size:.6rem;line-height:1.3;text-align:center;pointer-events:none;
 }
 
-/* ── Locked divisions (rod-cal only uses rods) ── */
+/* ── Locked divisions (approach-to-criticality-1m only uses rods) ── */
 .pn.pc-locked{position:relative;opacity:.45;filter:grayscale(.7)}
 .pn.pc-locked *{pointer-events:none}
 .pn.pc-locked::after{
@@ -400,29 +400,29 @@ body.exp-run #mainRow{
 }
 body.exp-run #expCol{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
 body.exp-run #ctr{min-height:0}
-body.exp-rodcal #gslot{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
+body.exp-approach #gslot{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-height:0}
 body.exp-run #procCard{max-height:38%}
 body.exp-run #kcol{padding:6px}
 body.exp-run .kvert-hd{font-size:.9rem}
 body.exp-run .kscale{font-size:.65rem}
 body.exp-run #kv{font-size:1.05rem}
 body.exp-run #kst{font-size:.65rem}
-body.exp-rodcal #instrRow{grid-template-columns:1.6fr 1fr 1fr 1fr}
-/* only the rods division is live in rod-cal: show it as one slim row, drop the dimmed ones */
+body.exp-approach #instrRow{grid-template-columns:1.6fr 1fr 1fr 1fr}
+/* only the rods division is live in approach-to-criticality-1m: show it as one slim row, drop the dimmed ones */
 body.exp-run #thermalReadout{display:none}
 body.exp-run #top .pn{padding:.4vh .8vw}
 body.exp-run #top .big{font-size:clamp(1.2rem,2vw,1.9rem)}
 body.exp-run .instr-sub{display:none}
 @media (min-width:901px) and (min-aspect-ratio:1/1) and (min-height:521px){
-  body.exp-rodcal #right .pn:not([data-role="rods"]){display:none}
-  body.exp-rodcal #right .pn[data-role="rods"]{
+  body.exp-approach #right .pn:not([data-role="rods"]){display:none}
+  body.exp-approach #right .pn[data-role="rods"]{
     display:grid;grid-template-columns:minmax(150px,200px) minmax(100px,1fr) minmax(260px,2fr);
     align-items:center;gap:10px;padding:.6vh .8vw;
   }
-  body.exp-rodcal #right .pn[data-role="rods"] .lnk,
-  body.exp-rodcal #right .pn[data-role="rods"] .pn-ovr{display:none}
+  body.exp-approach #right .pn[data-role="rods"] .lnk,
+  body.exp-approach #right .pn[data-role="rods"] .pn-ovr{display:none}
 }
-body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
+body.exp-approach .instr-cell:first-child .instr-value{font-size:1.25rem}
 
 /* ═══ Phones and short screens: dock layout ═══
    Applies to sandbox AND advanced (both carry body.sbx).
@@ -452,8 +452,8 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.adv #recTime{font-size:.6rem;min-width:35px}
   body.adv #recRows{font-size:.55rem}
   body.adv .btn-rec{padding:3px 7px;font-size:.6rem}
-  body.exp-rodcal #instrRow{grid-template-columns:repeat(2,1fr)}
-  body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.88rem}
+  body.exp-approach #instrRow{grid-template-columns:repeat(2,1fr)}
+  body.exp-approach .instr-cell:first-child .instr-value{font-size:.88rem}
   body.exp-run #instrHeader{display:none}
   body.exp-run .instr-value{font-size:.82rem}
   body.exp-run #right{max-height:112px}
@@ -511,7 +511,7 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.sbx #right .pn-ctl .tb{flex:1;padding:14px 0;font-size:.9rem;opacity:1;pointer-events:auto;min-height:44px}
 
   /* experiments: only the rods division is live, so only its tab shows */
-  body.exp-rodcal #sbxTabs button:not([data-sbx="rods"]){display:none}
+  body.exp-approach #sbxTabs button:not([data-sbx="rods"]){display:none}
 
  /* experiment body: schematic strip on top, guide + actions + graph + log scroll underneath */
   body.exp-run #mainRow{
@@ -529,11 +529,11 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.exp-run #kst{font-size:.5rem}
   body.k-blind #kcol::after{content:'k hidden';font-size:.48rem;inset:auto 2px 50% 2px}
   body.exp-run #expCol > *{flex-shrink:0}
-  body.exp-rodcal #pcActions{order:-2;padding:2px 0 6px;background:#070b08}
-  body.exp-rodcal #gslot{flex:0 0 auto}
-  body.exp-rodcal .gwrap{flex:none;height:clamp(165px,30dvh,240px)}
+  body.exp-approach #pcActions{order:-2;padding:2px 0 6px;background:#070b08}
+  body.exp-approach #gslot{flex:0 0 auto}
+  body.exp-approach .gwrap{flex:none;height:clamp(165px,30dvh,240px)}
   body.exp-run #procCard{max-height:none;flex:0 0 auto}
-  body.exp-run #procCard #pcRodCal{overflow:visible}
+  body.exp-run #procCard #pcApproach{overflow:visible}
 
   #bar:not(.hide) ~ #bAbout{top:8px;bottom:auto;right:8px}
   body.adv .about-content{padding:2vh 3vw;font-size:.85rem}
@@ -556,14 +556,14 @@ body.exp-rodcal .instr-cell:first-child .instr-value{font-size:1.25rem}
   body.sbx #top .big,body.adv #top .big{font-size:.95rem}
  body.adv #instrHeader{display:none}
   body.adv #instrStrip{padding:2px 6px}
-  body.adv #instrRow,body.exp-rodcal #instrRow{grid-template-columns:repeat(4,1fr)}
+  body.adv #instrRow,body.exp-approach #instrRow{grid-template-columns:repeat(4,1fr)}
   body.adv .instr-sub{display:none}
   body.adv .instr-label{font-size:.45rem}
-  body.adv .instr-value,body.exp-rodcal .instr-cell:first-child .instr-value{font-size:.82rem}
+  body.adv .instr-value,body.exp-approach .instr-cell:first-child .instr-value{font-size:.82rem}
   body.exp-run #mainRow{
     grid-template-columns:44px minmax(0,1fr) minmax(0,1.1fr);
     grid-template-rows:minmax(0,1fr);
   }
   body.exp-run #expCol{grid-column:3;grid-row:1}
-  body.exp-rodcal .gwrap{flex:none;height:190px}
+  body.exp-approach .gwrap{flex:none;height:190px}
 }
