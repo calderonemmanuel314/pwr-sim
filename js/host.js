@@ -53,7 +53,7 @@ if (!S._experimentFreezeXe) {
 // ── Phase 5 experiment helpers ──
 // Called around advanceOneSecond() when S._experimentActive is set, in BOTH
 // the host's normal 1 Hz tick and the settle loop in experiments.js.
-// Together they keep the plant in a safe, stable band so the rod-calibration
+// Together they keep the plant in a safe, stable band so the approach-to-criticality
 // experiment can complete without tripping end().
 
 export function experimentalPreTick(S) {
@@ -70,7 +70,7 @@ export function experimentalPreTick(S) {
 
 export function experimentalPostTick(S) {
   if (!S._experimentActive) return;
-  // Soft Auto-SCRAM for low-power experiments (e.g. rod-cal) before power runs away
+  // Soft Auto-SCRAM for low-power experiments (e.g. approach-to-criticality-1m) before power runs away
   const maxPow = S._experimentMaxPower;
   if (maxPow && (!isFinite(S.Nf) || S.Nf > maxPow)) {
     const safeRods = S._experimentSafeRods ?? 100;
