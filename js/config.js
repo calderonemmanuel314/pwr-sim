@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-export const APP_VERSION = '2.4.1';
-export const APP_BUILD = '2026-11-17';
+export const APP_VERSION = '2.4.2';
+export const APP_BUILD = '2026-11-18';
 
 export const ROLES = {
   rods: { n: 'DIV 1 · CONTROL RODS', k: ['rods'] },
@@ -107,7 +107,7 @@ export const LEARN = {
 // phase:  which roadmap phase builds the mechanics. duration is seconds (approx).
 export const EXPERIMENTS = [
   // ── Tier 1 ──
-{ id: 'rod-calibration-1m', title: 'ROD CALIBRATION BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'rod-calibration-1m.pdf',
+{ id: 'approach-to-criticality-1m', title: 'APPROACH TO CRITICALITY BY 1/M', tier: 1, duration: 900, phase: 5, enabled: true, worksheet: 'approach-to-criticality-1m.pdf',
     concept: 'As you withdraw control rods, fewer neutrons are absorbed, so each fission triggers more follow-up fissions (subcritical multiplication, M). As the reactor approaches critical (k_eff = 1), M grows toward infinity—meaning its inverse 1/M drops toward 0. Plotting 1/M against rod % lets you extend a line down to 0 and predict the critical rod position safely before crossing critical.',
     goal: 'Collect subcritical 1/M measurements at your own pace, extrapolate where 1/M hits 0, and verify your prediction lands near k_eff = 1.000 without tripping Auto-SCRAM.',
     objective: 'Extrapolate the critical rod position from a 1/M plot using near-critical subcritical steps.',
