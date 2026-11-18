@@ -51,7 +51,7 @@ External runtime dependencies are only JetBrains Mono (Google Fonts) and PeerJS 
 
 ## File and folder conventions
 
-**Naming.** Keep every file and folder name **lowercase with hyphens** (for example `rod-calibration.pdf`). GitHub Pages is case-sensitive, so `About.html` and `about.html` are different files. The only exceptions are the conventional top-level files `README.md`, `ROADMAP.md` and `LICENSE`.
+**Naming.** Keep every file and folder name **lowercase with hyphens** (for example `approach-to-criticality-1m.pdf`). GitHub Pages is case-sensitive, so `About.html` and `about.html` are different files. The only exceptions are the conventional top-level files `README.md`, `ROADMAP.md` and `LICENSE`.
 
 **Where things go.**
 
